@@ -1,0 +1,1880 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>בודק זכויות יוצרים</title>
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700&family=DM+Mono&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:          #f5f5f3;
+    --white:       #ffffff;
+    --border:      #e2e2de;
+    --accent:      #2d6ef6;
+    --accent-light:#eff4ff;
+    --success:     #1a9e6e;
+    --success-light:#edfaf4;
+    --warn:        #d97706;
+    --warn-light:  #fffbeb;
+    --danger:      #dc2626;
+    --danger-light:#fef2f2;
+    --text:        #1a1a1a;
+    --muted:       #6b7280;
+    --radius:      10px;
+    --mono:        'DM Mono', monospace;
+    --sans:        'Heebo', sans-serif;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: var(--sans);
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    font-size: 15px;
+    line-height: 1.6;
+  }
+
+  .shell {
+    max-width: 680px;
+    margin: 0 auto;
+    padding: 48px 24px 80px;
+  }
+
+  /* Review screen uses full width */
+  .shell-wide {
+    max-width: 100%;
+    margin: 0;
+    padding: 0;
+  }
+
+  header { margin-bottom: 40px; }
+  .logo { display: flex; align-items: center; gap: 10px; margin-bottom: 4px; }
+  .logo-mark {
+    width: 32px; height: 32px;
+    background: var(--accent);
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    color: white; font-size: 15px; font-weight: 700;
+  }
+  h1 { font-size: 20px; font-weight: 700; }
+  .subtitle { font-size: 13px; color: var(--muted); }
+
+  .screen { display: none; }
+  .screen.active { display: block; }
+
+  .card {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 24px;
+    margin-bottom: 16px;
+  }
+  .card-label {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.7px;
+    color: var(--muted);
+    margin-bottom: 14px;
+  }
+
+  label { font-size: 14px; font-weight: 500; display: block; margin-bottom: 6px; }
+  input[type="text"] {
+    width: 100%;
+    border: 1px solid var(--border);
+    border-radius: 7px;
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--mono);
+    font-size: 13px;
+    padding: 9px 12px;
+    outline: none;
+    transition: border-color 0.15s, box-shadow 0.15s;
+    direction: ltr;
+  }
+  input[type="text"]:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(45,110,246,0.1);
+    background: white;
+  }
+  .hint { font-size: 12px; color: var(--muted); margin-top: 5px; }
+
+  .msg {
+    font-size: 13px;
+    border-radius: 7px;
+    padding: 8px 12px;
+    margin-top: 10px;
+    display: none;
+  }
+  .msg.visible { display: block; }
+  .msg-success { background: var(--success-light); color: var(--success); }
+  .msg-error   { background: var(--danger-light);  color: var(--danger);  }
+
+  .sources-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+  .source-toggle {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 12px;
+    cursor: pointer;
+    transition: border-color 0.15s, background 0.15s;
+    user-select: none;
+    background: var(--bg);
+  }
+  .source-toggle:hover { border-color: var(--accent); }
+  .source-toggle.active { border-color: var(--accent); background: var(--accent-light); }
+  .source-toggle input { display: none; }
+  .check-box {
+    width: 17px; height: 17px;
+    border: 1.5px solid var(--border);
+    border-radius: 4px;
+    flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.15s;
+    font-size: 11px;
+    color: white;
+  }
+  .source-toggle.active .check-box { background: var(--accent); border-color: var(--accent); }
+  .check-box::after { content: ''; }
+  .source-toggle.active .check-box::after { content: '✓'; }
+  .src-name { font-size: 13px; font-weight: 500; }
+  .src-desc { font-size: 11px; color: var(--muted); }
+
+  #pexels-key-row { margin-top: 14px; display: none; }
+  #pexels-key-row.visible { display: block; }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-family: var(--sans);
+    font-size: 14px;
+    font-weight: 600;
+    padding: 10px 20px;
+    transition: opacity 0.15s, transform 0.1s;
+  }
+  .btn:active { transform: scale(0.98); }
+  .btn:disabled { opacity: 0.45; cursor: not-allowed; }
+  .btn-primary {
+    background: var(--accent);
+    color: white;
+    width: 100%;
+    padding: 12px;
+    margin-top: 16px;
+    font-size: 15px;
+  }
+  .btn-primary:hover:not(:disabled) { opacity: 0.88; }
+  .btn-ghost {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--muted);
+  }
+  .btn-ghost:hover { border-color: var(--accent); color: var(--accent); }
+  .btn-download {
+    background: var(--success);
+    color: white;
+    padding: 10px 22px;
+    font-size: 14px;
+  }
+  .btn-download:hover { opacity: 0.88; }
+  .btn-sm {
+    font-size: 12px;
+    padding: 5px 12px;
+    border-radius: 6px;
+  }
+  .btn-warn {
+    background: var(--warn);
+    color: white;
+  }
+  .btn-warn:hover { opacity: 0.88; }
+  .btn-success {
+    background: var(--success);
+    color: white;
+  }
+  .btn-success:hover { opacity: 0.88; }
+
+  .divider { height: 1px; background: var(--border); margin: 16px 0; }
+
+  /* ── Progress screen ── */
+  .progress-wrap { padding: 4px 0; }
+  .progress-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 10px;
+  }
+  .progress-title { font-size: 15px; font-weight: 600; }
+  .progress-count { font-size: 13px; color: var(--muted); }
+  .bar-track {
+    background: var(--bg);
+    border-radius: 99px;
+    height: 5px;
+    overflow: hidden;
+    margin-bottom: 10px;
+  }
+  .bar-fill {
+    height: 100%;
+    background: var(--accent);
+    border-radius: 99px;
+    transition: width 0.4s ease;
+    width: 0%;
+  }
+  .progress-file {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--text);
+    word-break: break-all;
+    direction: ltr;
+    text-align: left;
+    margin-bottom: 3px;
+  }
+  .progress-source {
+    font-size: 12px;
+    color: var(--accent);
+    min-height: 18px;
+    margin-bottom: 14px;
+  }
+
+  /* Live feed */
+  .live-feed {
+    border-top: 1px solid var(--border);
+    padding-top: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+  .live-item {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    font-size: 12px;
+  }
+  .live-dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    margin-top: 3px;
+  }
+  .live-dot.found   { background: var(--success); }
+  .live-dot.missing { background: var(--danger); }
+  .live-fname {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text);
+    flex: 1;
+    direction: ltr;
+    text-align: left;
+    word-break: break-all;
+  }
+  .live-src {
+    font-size: 11px;
+    color: var(--muted);
+    flex-shrink: 0;
+  }
+  .live-src.not-found { color: #c47a7a; }
+
+  /* ── Summary: pie chart ── */
+  .pie-wrap {
+    display: flex;
+    align-items: center;
+    gap: 28px;
+    flex-wrap: wrap;
+  }
+  .pie-stat {
+    text-align: center;
+    margin-bottom: 16px;
+  }
+  .pie-found { font-size: 26px; font-weight: 700; line-height: 1; color: var(--text); }
+  .pie-sublabel { font-size: 12px; color: var(--muted); margin-top: 4px; }
+  .legend { display: flex; flex-direction: column; gap: 9px; flex: 1; }
+  .legend-row {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    font-size: 13px;
+  }
+  .legend-dot {
+    width: 10px; height: 10px;
+    border-radius: 3px;
+    flex-shrink: 0;
+  }
+  .legend-label { flex: 1; }
+  .legend-count { font-weight: 600; color: var(--text); }
+
+  /* ── Credits ── */
+  .credits-text {
+    font-size: 13px;
+    line-height: 1.8;
+    color: var(--text);
+    background: var(--bg);
+    border-radius: 7px;
+    padding: 12px 14px;
+    word-break: break-word;
+    border: 1px solid var(--border);
+  }
+
+  /* ── General note ── */
+  .general-note {
+    font-size: 12px;
+    color: var(--muted);
+    background: var(--bg);
+    border-radius: 6px;
+    padding: 8px 12px;
+    margin-bottom: 16px;
+    border-right: 3px solid var(--border);
+  }
+
+  /* ── Flagged / corrections ── */
+  .flagged-group { margin-bottom: 18px; }
+  .flagged-group:last-child { margin-bottom: 0; }
+  .group-header {
+    font-size: 12px;
+    font-weight: 600;
+    margin-bottom: 8px;
+    padding: 5px 10px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .group-header.danger  { background: var(--danger-light);  color: var(--danger);  }
+  .group-header.warn    { background: var(--warn-light);    color: var(--warn);    }
+  .group-header.accent  { background: var(--accent-light);  color: var(--accent);  }
+  .group-header.muted   { background: var(--bg);            color: var(--muted);   border: 1px solid var(--border); }
+  .group-files {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding-right: 10px;
+  }
+  .group-fname {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text);
+    direction: ltr;
+    text-align: left;
+    word-break: break-word;
+    padding: 3px 0;
+    border-bottom: 1px dashed var(--border);
+    line-height: 1.5;
+  }
+  .group-fname:last-child { border-bottom: none; }
+
+  /* Unknown licenses */
+  .unknown-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 8px 12px;
+    background: var(--danger-light);
+    border-radius: 7px;
+    font-size: 12px;
+    margin-bottom: 6px;
+  }
+  .unknown-item:last-child { margin-bottom: 0; }
+  .unknown-badge {
+    background: var(--danger);
+    color: white;
+    border-radius: 4px;
+    padding: 1px 6px;
+    font-size: 10px;
+    font-weight: 700;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+  .unknown-file {
+    direction: ltr;
+    flex: 1;
+    color: var(--text);
+    word-break: break-word;
+    font-family: var(--mono);
+    font-size: 11px;
+  }
+  .unknown-lic { color: var(--warn); font-weight: 500; flex-shrink: 0; }
+
+  .empty { font-size: 13px; color: var(--muted); text-align: center; padding: 12px; }
+
+  /* Download card at top */
+  .download-card {
+    background: var(--success-light);
+    border: 1.5px solid var(--success);
+    border-radius: var(--radius);
+    padding: 16px 24px;
+    margin-bottom: 16px;
+  }
+
+  .summary-actions {
+    margin-top: 4px;
+  }
+
+  /* ════════════════════════════════════════════════════
+     REVIEW SCREEN
+  ════════════════════════════════════════════════════ */
+
+  #screen-review {
+    display: none;
+    flex-direction: column;
+    height: 100vh;
+    overflow: hidden;
+  }
+  #screen-review.active {
+    display: flex;
+  }
+
+  .review-header {
+    background: var(--white);
+    border-bottom: 1px solid var(--border);
+    padding: 14px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-shrink: 0;
+    gap: 16px;
+  }
+  .review-header-title {
+    font-size: 15px;
+    font-weight: 700;
+  }
+  .review-header-sub {
+    font-size: 12px;
+    color: var(--muted);
+  }
+
+  .review-body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    padding-bottom: 64px; /* space for fixed actions bar */
+  }
+
+  /* Issues panel */
+  .issues-panel {
+    background: var(--white);
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+    overflow-y: auto;
+    max-height: 38vh;
+    padding: 12px 24px;
+  }
+
+  .issue-card {
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    margin-bottom: 8px;
+    overflow: hidden;
+  }
+  .issue-card:last-child { margin-bottom: 0; }
+
+  .issue-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 9px 14px;
+    cursor: pointer;
+    user-select: none;
+    font-size: 13px;
+    font-weight: 600;
+    gap: 10px;
+    transition: background 0.12s;
+  }
+  .issue-card-header:hover { filter: brightness(0.97); }
+
+  .issue-card-header.danger  { background: var(--danger-light);  color: var(--danger);  }
+  .issue-card-header.warn    { background: var(--warn-light);    color: var(--warn);    }
+  .issue-card-header.muted   { background: var(--bg);            color: var(--muted);   }
+  .issue-card-header.success { background: var(--success-light); color: var(--success); }
+
+  .issue-card-header-left {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex: 1;
+  }
+  .issue-badge {
+    font-size: 10px;
+    font-weight: 700;
+    padding: 1px 7px;
+    border-radius: 99px;
+    background: rgba(0,0,0,0.12);
+  }
+  .issue-chevron {
+    font-size: 11px;
+    transition: transform 0.2s;
+    flex-shrink: 0;
+  }
+  .issue-card.open .issue-chevron { transform: rotate(180deg); }
+
+  .issue-card-body {
+    display: none;
+    padding: 8px 14px 12px;
+    border-top: 1px solid var(--border);
+    background: var(--white);
+  }
+  .issue-card.open .issue-card-body { display: block; }
+
+  /* Issue items */
+  .issue-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 5px 8px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 12px;
+    transition: background 0.1s;
+    margin-bottom: 3px;
+  }
+  .issue-item:hover { background: var(--bg); }
+  .issue-item-fname {
+    font-family: var(--mono);
+    font-size: 11px;
+    direction: ltr;
+    flex: 1;
+    word-break: break-all;
+    color: var(--text);
+  }
+  .issue-item-meta {
+    font-size: 11px;
+    color: var(--muted);
+    flex-shrink: 0;
+  }
+
+  /* OK button for notes */
+  .btn-noted {
+    font-size: 11px;
+    padding: 2px 10px;
+    border-radius: 5px;
+    border: 1px solid var(--border);
+    background: var(--bg);
+    cursor: pointer;
+    color: var(--muted);
+    font-family: var(--sans);
+    transition: background 0.12s;
+    flex-shrink: 0;
+  }
+  .btn-noted:hover { background: var(--success-light); color: var(--success); border-color: var(--success); }
+
+  /* Dupe group UI */
+  .dupe-group {
+    background: var(--warn-light);
+    border: 1px solid #f3d990;
+    border-radius: 8px;
+    padding: 10px 12px;
+    margin-bottom: 8px;
+  }
+  .dupe-group:last-child { margin-bottom: 0; }
+  .dupe-group-files { margin-bottom: 8px; display: flex; flex-direction: column; gap: 4px; }
+  .dupe-fname {
+    font-family: var(--mono);
+    font-size: 11px;
+    direction: ltr;
+    color: var(--text);
+  }
+  .dupe-checkbox-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+  }
+  .dupe-group-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+
+  .issues-divider {
+    height: 1px;
+    background: var(--border);
+    margin: 8px 0;
+  }
+
+  /* ── Table area ── */
+  .table-area {
+    flex: 1;
+    overflow-y: auto;
+    padding: 0;
+  }
+
+  .review-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+    table-layout: fixed;
+  }
+
+  .review-table th {
+    position: sticky;
+    top: 0;
+    background: var(--bg);
+    border-bottom: 2px solid var(--border);
+    padding: 8px 10px;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--muted);
+    text-align: right;
+    white-space: nowrap;
+    z-index: 10;
+  }
+
+  .review-table td {
+    border-bottom: 1px solid var(--border);
+    padding: 6px 10px;
+    vertical-align: middle;
+    max-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .review-table tr.row-separator td {
+    background: var(--bg);
+    color: var(--muted);
+    font-size: 11px;
+    text-align: center;
+    padding: 4px;
+    border-bottom: 1px solid var(--border);
+    border-top: 1px solid var(--border);
+  }
+
+  .review-table tr.row-issue { border-right: 3px solid var(--warn); }
+  .review-table tr.row-danger { border-right: 3px solid var(--danger); }
+  .review-table tr.row-ok { border-right: none; }
+
+  .review-table tr.row-highlight td {
+    animation: row-pulse 0.8s ease;
+  }
+  @keyframes row-pulse {
+    0%   { background: #fffbeb; }
+    60%  { background: #fffbeb; }
+    100% { background: transparent; }
+  }
+
+  /* Column widths */
+  .col-thumb  { width: 70px; }
+  .col-item   { width: 160px; }
+  .col-file   { width: 180px; }
+  .col-source { width: 110px; }
+  .col-link   { width: 70px; }
+  .col-lic    { width: 120px; }
+  .col-credit { width: 50px; }
+  .col-how    { width: 200px; }
+  .col-com    { width: 60px; }
+  .col-ext    { width: 60px; }
+  .col-extra  { width: 140px; }
+
+  .cell-thumb img {
+    height: 48px;
+    width: auto;
+    max-width: 64px;
+    border-radius: 4px;
+    object-fit: cover;
+    display: block;
+  }
+  .cell-thumb-placeholder {
+    width: 48px; height: 48px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--muted);
+    font-size: 16px;
+  }
+
+  .cell-fname-wrap {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    direction: ltr;
+  }
+  .cell-fname-text {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    flex: 1;
+    font-family: var(--mono);
+    font-size: 11px;
+    direction: ltr;
+  }
+  .icon-search {
+    cursor: pointer;
+    font-size: 13px;
+    color: var(--muted);
+    flex-shrink: 0;
+    text-decoration: none;
+    line-height: 1;
+  }
+  .icon-search:hover { color: var(--accent); }
+
+  .cell-link a {
+    color: var(--accent);
+    text-decoration: none;
+    font-size: 11px;
+    white-space: nowrap;
+  }
+  .cell-link a:hover { text-decoration: underline; }
+
+  /* Editable cells */
+  .editable-cell {
+    cursor: text;
+    position: relative;
+    min-height: 28px;
+  }
+  .editable-cell:hover { background: var(--accent-light); }
+  .editable-cell .cell-display {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 100%;
+  }
+  .editable-cell input,
+  .editable-cell textarea {
+    width: 100%;
+    font-family: var(--sans);
+    font-size: 12px;
+    border: 1px solid var(--accent);
+    border-radius: 4px;
+    padding: 3px 6px;
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(45,110,246,0.15);
+    background: white;
+    color: var(--text);
+    resize: vertical;
+  }
+
+  /* ── Fixed actions bar ── */
+  .review-actions-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: var(--white);
+    border-top: 1px solid var(--border);
+    padding: 10px 24px;
+    display: none;
+    flex-direction: column;
+    gap: 0;
+    z-index: 100;
+  }
+  .review-actions-bar.visible { display: flex; }
+
+  .review-actions-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  /* Monday accordion */
+  .monday-accordion {
+    overflow: hidden;
+    max-height: 0;
+    transition: max-height 0.3s ease;
+  }
+  .monday-accordion.open {
+    max-height: 40vh;
+    overflow-y: auto;
+  }
+  .monday-toggle-btn {
+    background: none;
+    border: none;
+    color: var(--muted);
+    font-size: 12px;
+    cursor: pointer;
+    padding: 4px 0;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-family: var(--sans);
+    margin-top: 4px;
+  }
+  .monday-toggle-btn:hover { color: var(--accent); }
+  .monday-arrow {
+    display: inline-block;
+    transition: transform 0.2s;
+    font-size: 11px;
+  }
+  .monday-toggle-btn.open .monday-arrow { transform: rotate(180deg); }
+
+  /* ── Summary: stat boxes ── */
+  .stat-row { display:flex; gap:12px; margin-bottom:16px; }
+  .stat-box { flex:1; background:var(--white); border:1px solid var(--border); border-radius:var(--radius); padding:16px; text-align:center; }
+  .stat-num { font-size:32px; font-weight:700; line-height:1; }
+  .stat-label { font-size:12px; color:var(--muted); margin-top:4px; }
+  .stat-total .stat-num { color:var(--accent); }
+  .stat-found .stat-num { color:var(--success); }
+  .stat-nf    .stat-num { color:var(--warn); }
+
+  /* ── Summary: source breakdown ── */
+  .source-row { display:flex; align-items:center; justify-content:space-between; padding:6px 0; border-bottom:1px solid var(--border); font-size:13px; }
+  .source-row:last-child { border-bottom:none; }
+  .source-pill { background:var(--accent-light); color:var(--accent); border-radius:99px; font-size:12px; font-weight:600; padding:2px 10px; }
+  .source-pill.muted { background:var(--bg); color:var(--muted); }
+
+  /* ── Summary: issue count rows ── */
+  .issue-sum-row { display:flex; align-items:center; justify-content:space-between; padding:5px 0; border-bottom:1px dashed var(--border); font-size:13px; }
+  .issue-sum-row:last-child { border-bottom:none; }
+  .issue-sum-badge { font-size:11px; font-weight:700; padding:2px 9px; border-radius:99px; background:var(--warn-light); color:var(--warn); }
+  .issue-sum-badge.danger { background:var(--danger-light); color:var(--danger); }
+
+  /* ── Outlined secondary button ── */
+  .btn-outline { background:transparent; border:1.5px solid var(--accent); color:var(--accent); }
+  .btn-outline:hover:not(:disabled) { background:var(--accent-light); }
+  .btn-outline:disabled { opacity:0.4; cursor:not-allowed; }
+
+  .monday-content {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px 16px;
+    font-size: 13px;
+    line-height: 1.7;
+    color: var(--text);
+    margin-bottom: 8px;
+    direction: rtl;
+  }
+  .monday-content ol {
+    padding-right: 20px;
+    margin: 8px 0;
+  }
+  .monday-content li { margin-bottom: 6px; }
+  .monday-content .tip {
+    background: var(--accent-light);
+    border-right: 3px solid var(--accent);
+    padding: 6px 10px;
+    border-radius: 4px;
+    font-size: 12px;
+    margin-top: 10px;
+    color: var(--accent);
+  }
+</style>
+</head>
+<body>
+<div class="shell" id="main-shell">
+
+  <header style="display:flex; justify-content:space-between; align-items:flex-start;">
+    <div>
+      <div class="logo">
+        <div class="logo-mark">©</div>
+        <h1>בודק זכויות יוצרים</h1>
+      </div>
+      <p class="subtitle">סריקה אוטומטית של תמונות ומציאת מידע על זכויות יוצרים</p>
+    </div>
+    <button class="btn btn-ghost" id="btn-back-header" style="display:none; margin-top:4px; font-size:13px; padding:8px 14px;">← חיפוש חדש</button>
+  </header>
+
+  <!-- SCREEN 1: Setup -->
+  <div id="screen-setup" class="screen active">
+
+    <div class="card">
+      <div class="card-label">תיקיית התמונות</div>
+      <label for="folder-input">בחר תיקייה</label>
+      <input type="file" id="folder-input" webkitdirectory multiple
+             style="font-family:var(--mono);font-size:13px;padding:8px 0;width:100%;cursor:pointer;color:var(--text);">
+      <p class="hint">בחר את התיקייה המכילה את קבצי התמונה</p>
+      <div class="msg msg-success" id="msg-ok"></div>
+      <div class="msg msg-error"   id="msg-err"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-label">ארכיונים לחיפוש</div>
+      <div class="sources-grid">
+
+        <label class="source-toggle active" id="toggle-wikimedia">
+          <input type="checkbox" checked data-source="wikimedia">
+          <div class="check-box"></div>
+          <div><div class="src-name">Wikimedia Commons</div><div class="src-desc">API ציבורי</div></div>
+        </label>
+
+        <label class="source-toggle active" id="toggle-loc">
+          <input type="checkbox" checked data-source="loc">
+          <div class="check-box"></div>
+          <div><div class="src-name">Library of Congress</div><div class="src-desc">API ציבורי</div></div>
+        </label>
+
+        <label class="source-toggle active" id="toggle-pexels">
+          <input type="checkbox" checked data-source="pexels">
+          <div class="check-box"></div>
+          <div><div class="src-name">Pexels</div><div class="src-desc">זיהוי לפי שם קובץ</div></div>
+        </label>
+
+        <label class="source-toggle active" id="toggle-shutterstock">
+          <input type="checkbox" checked data-source="shutterstock">
+          <div class="check-box"></div>
+          <div><div class="src-name">Shutterstock</div><div class="src-desc">זיהוי לפי שם קובץ</div></div>
+        </label>
+
+      </div>
+
+      <div id="pexels-key-row">
+        <div class="divider"></div>
+        <label for="pexels-key">Pexels API Key <span style="color:var(--muted);font-weight:400">(אופציונלי)</span></label>
+        <input type="text" id="pexels-key" placeholder="לקישורים מדויקים יותר" dir="ltr">
+        <p class="hint">הרשמה חינמית ב-pexels.com/api</p>
+      </div>
+    </div>
+
+    <button class="btn btn-primary" id="btn-search" disabled>חפש זכויות יוצרים</button>
+
+  </div>
+
+  <!-- SCREEN 2: Progress -->
+  <div id="screen-progress" class="screen">
+    <div class="card">
+      <div class="progress-wrap">
+        <div class="progress-header">
+          <span class="progress-title">מחפש זכויות יוצרים</span>
+          <span class="progress-count" id="progress-count">0 / 0</span>
+        </div>
+        <div class="bar-track"><div class="bar-fill" id="bar-fill"></div></div>
+        <div class="progress-file"   id="progress-file">מכין...</div>
+        <div class="progress-source" id="progress-source"></div>
+        <div class="live-feed" id="live-feed"></div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- end .shell -->
+
+<!-- SCREEN 3: Review (full-width, outside .shell) -->
+<div id="screen-review" class="screen">
+  <div class="review-header">
+    <div>
+      <div class="review-header-title">סקירה ועריכה</div>
+      <div class="review-header-sub" id="review-header-sub">טוען...</div>
+    </div>
+    <div style="display:flex;gap:10px;align-items:center;">
+      <button class="btn btn-ghost" id="btn-review-back" style="font-size:13px;padding:8px 14px;">← חיפוש חדש</button>
+    </div>
+  </div>
+
+  <div class="review-body">
+    <!-- Issues panel -->
+    <div class="issues-panel" id="issues-panel">
+      <!-- rendered by JS -->
+    </div>
+
+    <!-- Table area -->
+    <div class="table-area" id="table-area">
+      <table class="review-table" id="review-table">
+        <thead>
+          <tr>
+            <th class="col-thumb"></th>
+            <th class="col-item">שם פריט</th>
+            <th class="col-file">שם קובץ</th>
+            <th class="col-source">מקור</th>
+            <th class="col-link">קישור</th>
+            <th class="col-lic">סוג זכויות</th>
+            <th class="col-credit">קרדיט?</th>
+            <th class="col-how">איך לרשום</th>
+            <th class="col-com">מסחרי?</th>
+            <th class="col-ext">חיצוני?</th>
+            <th class="col-extra">קבצים נוספים</th>
+          </tr>
+        </thead>
+        <tbody id="review-tbody">
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Fixed actions bar -->
+  <div class="review-actions-bar" id="review-actions-bar">
+    <div class="monday-accordion" id="monday-accordion">
+      <div class="monday-content">
+        <strong>איך מייבאים את ה-CSV למאנדיי</strong>
+        <ol>
+          <li>פתח את הבורד הרלוונטי ב-Monday.com</li>
+          <li>לחץ על תפריט הבורד (שלוש נקודות ⋯ בפינה השמאלית העליונה)
+              ← בחר "Import data" ← "Excel / CSV"</li>
+          <li>גרור את קובץ ה-CSV לחלון שנפתח, או לחץ "Browse" ובחר אותו</li>
+          <li>Monday תציג תצוגה מקדימה של העמודות —
+              וודא שהעמודות ממופות נכון:
+              <br>• "שם פריט" → Name (עמודת השם)
+              <br>• שאר העמודות → עמודות טקסט רגילות</li>
+          <li>לחץ "Import" — הפריטים ייכנסו לבורד</li>
+        </ol>
+        <div class="tip">טיפ: אם הטקסט בעברית מוצג הפוך — ודא שהקובץ נפתח עם קידוד UTF-8. Monday בדרך כלל מזהה זאת אוטומטית.</div>
+      </div>
+    </div>
+    <div class="review-actions-row">
+      <button class="btn btn-download" id="btn-review-download">הורד CSV ↓</button>
+      <button class="btn btn-primary" id="btn-go-summary" style="width:auto;margin-top:0;padding:10px 20px;">סיים ←</button>
+      <div style="flex:1;"></div>
+      <button class="monday-toggle-btn" id="btn-monday-toggle">
+        <span class="monday-arrow" id="monday-arrow">▲</span>
+        ← איך להעלות ל-Monday.com
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- SCREEN 4: Summary -->
+<div id="screen-summary" class="screen">
+<div class="shell">
+
+    <!-- Stat boxes -->
+    <div class="stat-row">
+      <div class="stat-box stat-total">
+        <div class="stat-num" id="stat-total">0</div>
+        <div class="stat-label">סה"כ קבצים</div>
+      </div>
+      <div class="stat-box stat-found">
+        <div class="stat-num" id="stat-found">0</div>
+        <div class="stat-label">נמצאו</div>
+      </div>
+      <div class="stat-box stat-nf">
+        <div class="stat-num" id="stat-not-found">0</div>
+        <div class="stat-label">לא נמצאו</div>
+      </div>
+    </div>
+
+    <!-- Source breakdown -->
+    <div class="card">
+      <div class="card-label">לפי מקור</div>
+      <div id="source-breakdown-list"></div>
+    </div>
+
+    <!-- Issue counts (hidden if none) -->
+    <div class="card" id="issues-summary-card" style="display:none">
+      <div class="card-label">פריטים הדורשים תיקון</div>
+      <div id="issues-summary-list"></div>
+    </div>
+
+    <!-- Actions -->
+    <div style="display:flex;gap:12px;margin-top:8px;">
+      <button class="btn btn-download" id="btn-summary-download">הורד CSV ↓</button>
+      <button class="btn btn-outline" id="btn-go-review">עבור לעריכה ←</button>
+    </div>
+
+</div>
+</div>
+
+<script type="module">
+import { processFilenames, IMAGE_EXTENSIONS } from './lookup.js';
+
+// ════════════════════════════════════════════════════════════
+//  UTILITIES
+// ════════════════════════════════════════════════════════════
+let fileObjectMap = {};   // filename → File object (from folder picker)
+const thumbnailUrls = {}; // filename → cached object URL
+
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  // The review screen is full-width — hide the shell wrapper
+  const shell = document.getElementById('main-shell');
+  const actionsBar = document.getElementById('review-actions-bar');
+  if (id === 'screen-review') {
+    shell.style.display = 'none';
+    actionsBar.classList.add('visible');
+  } else {
+    shell.style.display = '';
+    actionsBar.classList.remove('visible');
+  }
+}
+function showMsg(el, txt) { el.textContent = txt; el.classList.add('visible'); }
+function hideMsg(el) { el.classList.remove('visible'); }
+function escHtml(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+function encodeURIComponentSafe(s) {
+  try { return encodeURIComponent(s); } catch(e) { return s; }
+}
+
+// ════════════════════════════════════════════════════════════
+//  SCREEN 1 — SETUP
+// ════════════════════════════════════════════════════════════
+
+// Source toggles
+document.querySelectorAll('.source-toggle').forEach(toggle => {
+  toggle.addEventListener('click', () => {
+    const cb = toggle.querySelector('input');
+    cb.checked = !cb.checked;
+    toggle.classList.toggle('active', cb.checked);
+    document.getElementById('pexels-key-row').classList.toggle(
+      'visible', document.querySelector('[data-source="pexels"]').checked);
+  });
+});
+
+// Folder validation
+const folderInput = document.getElementById('folder-input');
+const msgOk  = document.getElementById('msg-ok');
+const msgErr = document.getElementById('msg-err');
+const btnSearch = document.getElementById('btn-search');
+
+folderInput.addEventListener('change', () => {
+  hideMsg(msgOk); hideMsg(msgErr);
+  btnSearch.disabled = true;
+  const imageFiles = Array.from(folderInput.files || [])
+    .filter(f => IMAGE_EXTENSIONS.includes(f.name.split('.').pop().toLowerCase()));
+  fileObjectMap = {};
+  for (const f of imageFiles) fileObjectMap[f.name] = f;
+  if (imageFiles.length > 0) {
+    showMsg(msgOk, `נמצאו ${imageFiles.length} קבצי תמונה`);
+    btnSearch.disabled = false;
+  } else if (folderInput.files && folderInput.files.length > 0) {
+    showMsg(msgErr, 'לא נמצאו קבצי תמונה בתיקייה שנבחרה');
+  }
+});
+
+// Search
+btnSearch.addEventListener('click', async () => {
+  const filenames = Object.keys(fileObjectMap);
+  if (!filenames.length) { showMsg(msgErr, 'יש לבחור תיקייה עם קבצי תמונה'); return; }
+
+  const enabled = Array.from(document.querySelectorAll('[data-source]'))
+    .filter(cb => cb.checked).map(cb => cb.dataset.source);
+
+  btnSearch.disabled = true;
+  btnSearch.textContent = 'מחפש...';
+
+  document.getElementById('live-feed').innerHTML = '';
+  document.getElementById('bar-fill').style.width = '0%';
+  document.getElementById('progress-count').textContent = '0 / ' + filenames.length;
+  document.getElementById('progress-file').textContent = 'מכין...';
+  document.getElementById('progress-source').textContent = '';
+  showScreen('screen-progress');
+
+  try {
+    const { results, summary } = await processFilenames(filenames, enabled, (current, total, filename, result) => {
+      const pct = total > 0 ? (current / total * 100) : 0;
+      document.getElementById('bar-fill').style.width = pct + '%';
+      document.getElementById('progress-count').textContent = `${current} / ${total}`;
+      document.getElementById('progress-file').textContent = filename || '';
+
+      if (result) {
+        const feed = document.getElementById('live-feed');
+        const found = result._found;
+        const item = document.createElement('div');
+        item.className = 'live-item';
+        item.innerHTML = `
+          <div class="live-dot" style="background:${found ? 'var(--success)' : 'var(--danger)'}"></div>
+          <span class="live-fname">${escHtml(filename)}</span>
+          <span class="live-src ${found ? '' : 'not-found'}">${found ? escHtml(result._source) : 'לא נמצא'}</span>
+        `;
+        feed.insertBefore(item, feed.firstChild);
+      }
+    });
+
+    initReview(results, summary.potentialDuplicates, summary);
+    buildSummaryFromReview();
+    showScreen('screen-summary');
+    document.getElementById('btn-back-header').style.display = '';
+  } catch(e) {
+    alert('שגיאה: ' + (e.message || e));
+    showScreen('screen-setup');
+    btnSearch.disabled = false;
+    btnSearch.textContent = 'חפש זכויות יוצרים';
+  }
+});
+
+// ════════════════════════════════════════════════════════════
+//  SCREEN 2 — PROGRESS
+// ════════════════════════════════════════════════════════════
+// Progress is driven by the onProgress callback passed to processFilenames().
+
+// ════════════════════════════════════════════════════════════
+//  SCREEN 3 — REVIEW
+// ════════════════════════════════════════════════════════════
+
+const STATUS_ORDER = ['לא זוהה', 'נדרש שם פריט', 'כפילויות אפשריות', 'רישיון לא מזוהה', 'הערות', 'תקין'];
+
+// Notes that are informational-only and should not appear in the הערות panel
+const TRIVIAL_NOTE_SUBSTRINGS = ['נמצא בהתאמה מדויקת', 'נמצא בספריית הקונגרס'];
+function filterMeaningfulNotes(notes) {
+  return (notes || []).filter(n => !TRIVIAL_NOTE_SUBSTRINGS.some(t => n.includes(t)));
+}
+
+const reviewState = {
+  rows: [],
+  dupeGroups: [],    // [{files: [...], resolved: false}]
+  notedItems: new Set(),
+  rawStems: {},      // filename -> original raw stem value for comparison
+};
+
+function computeStatus(row, dupeGroups, notedItems) {
+  // לא זוהה until both מקור and סוג זכויות are filled
+  if (!row['מקור'] || !row['סוג זכויות היוצרים']) {
+    return 'לא זוהה';
+  }
+  if (row._isRawFilename) {
+    return 'נדרש שם פריט';
+  }
+  // Check if in unresolved dupe group
+  const inDupe = dupeGroups.some(g => !g.resolved && g.files.includes(row['שם קובץ']));
+  if (inDupe) {
+    return 'כפילויות אפשריות';
+  }
+  if (row._unknownLicense) {
+    return 'רישיון לא מזוהה';
+  }
+  if ((row._notes || []).length > 0 && !notedItems.has(row['שם קובץ'])) {
+    return 'הערות';
+  }
+  return 'תקין';
+}
+
+function recomputeAllStatuses() {
+  for (const row of reviewState.rows) {
+    row._status = computeStatus(row, reviewState.dupeGroups, reviewState.notedItems);
+  }
+}
+
+function initReview(results, potentialDupes, summary) {
+  // Build rows
+  reviewState.rows = (results || []).map(r => {
+    const row = {
+      'שם פריט':              r['שם פריט'] || '',
+      'שם קובץ':              r['שם קובץ'] || '',
+      'מקור':                 r['מקור'] || '',
+      'קישור למדיה במקור':    r['קישור למדיה במקור'] || '',
+      'סוג זכויות היוצרים':   r['סוג זכויות היוצרים'] || '',
+      'יש צורך במתן קרדיט?':  r['יש צורך במתן קרדיט?'] || '',
+      'איך לרשום את הקרדיט?': r['איך לרשום את הקרדיט?'] || '',
+      'מותר לשימוש מסחרי?':   r['מותר לשימוש מסחרי?'] || '',
+      'מותר לשימוש חיצוני?':  r['מותר לשימוש חיצוני?'] || '',
+      'קבצים נוספים':          r['קבצים נוספים'] || '',
+      _isRawFilename:  !!r._isRawFilename,
+      _unknownLicense: !!r._unknownLicense,
+      _notes:            filterMeaningfulNotes(r._notes),
+      _found:            !!r._found,
+      _status:           'תקין',
+    };
+    return row;
+  });
+
+  // Store original raw stems for comparison
+  reviewState.rawStems = {};
+  for (const row of reviewState.rows) {
+    if (row._isRawFilename) {
+      reviewState.rawStems[row['שם קובץ']] = row['שם פריט'];
+    }
+  }
+
+  // Build dupe groups
+  reviewState.dupeGroups = (potentialDupes || []).map(files => ({files, resolved: false}));
+
+  reviewState.notedItems = new Set();
+
+  recomputeAllStatuses();
+
+  // Update header
+  const sub = document.getElementById('review-header-sub');
+  sub.textContent = `${reviewState.rows.length} קבצים`;
+
+  renderReview();
+}
+
+function renderReview() {
+  recomputeAllStatuses();
+  renderIssuesPanel();
+  renderTable();
+}
+
+// ── Issues panel ──────────────────────────────────────────────────────────────
+
+function renderIssuesPanel() {
+  const panel = document.getElementById('issues-panel');
+
+  const categories = {
+    'לא זוהה':            { cls: 'danger', items: [] },
+    'נדרש שם פריט':       { cls: 'warn',   items: [] },
+    'כפילויות אפשריות':   { cls: 'warn',   items: [] },
+    'רישיון לא מזוהה':    { cls: 'danger', items: [] },
+    'הערות':              { cls: 'muted',  items: [] },
+    'תקין':               { cls: 'success',items: [] },
+  };
+
+  for (const row of reviewState.rows) {
+    const s = row._status;
+    if (categories[s]) categories[s].items.push(row);
+  }
+
+  let html = '';
+
+  // Non-OK categories first
+  for (const cat of STATUS_ORDER.slice(0, -1)) {
+    const { cls, items } = categories[cat];
+    if (items.length === 0) continue;
+    const openAttr = ' open'; // start expanded if has items
+    html += renderIssueCard(cat, cls, items, openAttr);
+  }
+
+  // Divider before תקין
+  html += '<div class="issues-divider"></div>';
+
+  // תקין — always shown, starts collapsed
+  const okItems = categories['תקין'].items;
+  html += renderIssueCard('תקין', 'success', okItems, '');
+
+  panel.innerHTML = html;
+
+  // Wire up card toggle
+  panel.querySelectorAll('.issue-card-header').forEach(hdr => {
+    hdr.addEventListener('click', () => {
+      const card = hdr.closest('.issue-card');
+      card.classList.toggle('open');
+    });
+  });
+
+  // Wire up "הבנתי" buttons
+  panel.querySelectorAll('.btn-noted').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const fname = btn.dataset.fname;
+      reviewState.notedItems.add(fname);
+      renderReview();
+    });
+  });
+
+  // Wire up item clicks (scroll-to-row)
+  panel.querySelectorAll('.issue-item[data-fname]').forEach(item => {
+    item.addEventListener('click', () => {
+      const fname = item.dataset.fname;
+      scrollToRow(fname);
+    });
+  });
+
+  // Wire up dupe buttons
+  panel.querySelectorAll('.btn-dupe-merge').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const gIdx = parseInt(btn.dataset.gidx);
+      const group = reviewState.dupeGroups[gIdx];
+      if (!group) return;
+
+      // Collect checked files (for 3+ file groups) or all
+      let toMerge = group.files;
+      const checkboxes = btn.closest('.dupe-group').querySelectorAll('input[type=checkbox]:checked');
+      if (checkboxes.length > 0) {
+        toMerge = Array.from(checkboxes).map(cb => cb.value);
+      }
+
+      if (toMerge.length < 2) {
+        alert('יש לסמן לפחות שני קבצים למיזוג');
+        return;
+      }
+
+      mergeRows(toMerge);
+      group.resolved = true;
+      renderReview();
+    });
+  });
+
+  panel.querySelectorAll('.btn-dupe-keep').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const gIdx = parseInt(btn.dataset.gidx);
+      if (reviewState.dupeGroups[gIdx]) {
+        reviewState.dupeGroups[gIdx].resolved = true;
+        renderReview();
+      }
+    });
+  });
+}
+
+function renderIssueCard(cat, cls, items, openAttr) {
+  const isOpen = openAttr !== '';
+  const openClass = isOpen ? ' open' : '';
+  const count = items.length;
+  const chevron = '▼';
+
+  let bodyHtml = '';
+
+  if (cat === 'כפילויות אפשריות') {
+    // Group by dupe groups
+    const unresolvedGroups = reviewState.dupeGroups
+      .map((g, i) => ({...g, idx: i}))
+      .filter(g => !g.resolved);
+
+    if (unresolvedGroups.length === 0) {
+      bodyHtml = '<div class="empty">אין כפילויות</div>';
+    } else {
+      bodyHtml = unresolvedGroups.map(g => renderDupeGroup(g)).join('');
+    }
+  } else if (cat === 'הערות') {
+    bodyHtml = items.map(row => {
+      const notes = row._notes.filter(n => n);
+      return `
+        <div class="issue-item" data-fname="${escHtml(row['שם קובץ'])}">
+          <span class="issue-item-fname">${escHtml(row['שם קובץ'])}</span>
+          <span class="issue-item-meta">${escHtml(notes[0] || '')}</span>
+          <button class="btn-noted" data-fname="${escHtml(row['שם קובץ'])}">הבנתי</button>
+        </div>`;
+    }).join('');
+  } else if (cat === 'נדרש שם פריט') {
+    bodyHtml = items.map(row => `
+      <div class="issue-item" data-fname="${escHtml(row['שם קובץ'])}">
+        <span class="issue-item-fname">${escHtml(row['שם קובץ'])}</span>
+        <span class="issue-item-meta">שם אוטומטי: ${escHtml(row['שם פריט'])}</span>
+      </div>`).join('');
+  } else {
+    bodyHtml = items.map(row => `
+      <div class="issue-item" data-fname="${escHtml(row['שם קובץ'])}">
+        <span class="issue-item-fname">${escHtml(row['שם קובץ'])}</span>
+        <span class="issue-item-meta">${escHtml(row['מקור'] || '')}</span>
+      </div>`).join('');
+  }
+
+  return `
+    <div class="issue-card${openClass}">
+      <div class="issue-card-header ${cls}">
+        <div class="issue-card-header-left">
+          <span>${escHtml(cat)}</span>
+          <span class="issue-badge">${count}</span>
+        </div>
+        <span class="issue-chevron">${chevron}</span>
+      </div>
+      <div class="issue-card-body">${bodyHtml}</div>
+    </div>`;
+}
+
+function renderDupeGroup(g) {
+  const isMulti = g.files.length > 2;
+  const filesHtml = g.files.map(fn => {
+    if (isMulti) {
+      return `<div class="dupe-checkbox-row">
+        <input type="checkbox" value="${escHtml(fn)}" checked>
+        <span class="dupe-fname">${escHtml(fn)}</span>
+      </div>`;
+    }
+    return `<div class="dupe-fname">${escHtml(fn)}</div>`;
+  }).join('');
+
+  const mergeLabel = isMulti ? 'מיזוג מסומנים' : 'מיזוג';
+  const keepLabel = isMulti ? 'השאר נפרד לכולם' : 'השאר נפרד';
+
+  return `
+    <div class="dupe-group">
+      <div class="dupe-group-files">${filesHtml}</div>
+      <div class="dupe-group-actions">
+        <button class="btn btn-sm btn-warn btn-dupe-merge" data-gidx="${g.idx}">${mergeLabel}</button>
+        <button class="btn btn-sm btn-ghost btn-dupe-keep" data-gidx="${g.idx}">${keepLabel}</button>
+      </div>
+    </div>`;
+}
+
+function mergeRows(filenames) {
+  if (filenames.length < 2) return;
+  const primary = filenames[0];
+  const rest = filenames.slice(1);
+
+  const primaryRow = reviewState.rows.find(r => r['שם קובץ'] === primary);
+  if (!primaryRow) return;
+
+  // Add rest to קבצים נוספים
+  const existing = primaryRow['קבצים נוספים'] ? primaryRow['קבצים נוספים'].split(', ').filter(Boolean) : [];
+  const merged = Array.from(new Set([...existing, ...rest]));
+  primaryRow['קבצים נוספים'] = merged.join(', ');
+
+  // Remove merged rows
+  reviewState.rows = reviewState.rows.filter(r => !rest.includes(r['שם קובץ']));
+}
+
+// ── Thumbnail helper ──────────────────────────────────────────────────────────
+
+function getThumbnailUrl(fname) {
+  if (!thumbnailUrls[fname] && fileObjectMap[fname]) {
+    thumbnailUrls[fname] = URL.createObjectURL(fileObjectMap[fname]);
+  }
+  return thumbnailUrls[fname] || null;
+}
+
+// ── Table ─────────────────────────────────────────────────────────────────────
+
+function renderTable() {
+  const tbody = document.getElementById('review-tbody');
+
+  // Sort: issues first (by status order), then OK
+  const ordered = [...reviewState.rows];
+  ordered.sort((a, b) => {
+    const ai = STATUS_ORDER.indexOf(a._status);
+    const bi = STATUS_ORDER.indexOf(b._status);
+    return ai - bi;
+  });
+
+  let separatorInserted = false;
+  let html = '';
+  for (const row of ordered) {
+    if (!separatorInserted && row._status === 'תקין') {
+      html += `<tr class="row-separator"><td colspan="11">— תקינים —</td></tr>`;
+      separatorInserted = true;
+    }
+    html += renderTableRow(row);
+  }
+
+  tbody.innerHTML = html;
+
+  // Wire up editable cells
+  tbody.querySelectorAll('.editable-cell').forEach(cell => {
+    cell.addEventListener('click', (e) => {
+      if (cell.querySelector('input, textarea')) return; // already editing
+      startEdit(cell);
+    });
+  });
+
+  // Wire up URL double-click
+  tbody.querySelectorAll('.cell-link').forEach(cell => {
+    cell.addEventListener('dblclick', () => {
+      const fname = cell.dataset.fname;
+      const row = reviewState.rows.find(r => r['שם קובץ'] === fname);
+      if (!row) return;
+      const val = row['קישור למדיה במקור'];
+      const newVal = prompt('ערוך קישור:', val);
+      if (newVal !== null) {
+        row['קישור למדיה במקור'] = newVal.trim();
+        renderReview();
+      }
+    });
+  });
+}
+
+function renderTableRow(row) {
+  const fname = row['שם קובץ'];
+  const status = row._status;
+  let rowClass = 'row-ok';
+  if (status === 'לא זוהה' || status === 'רישיון לא מזוהה') rowClass = 'row-danger';
+  else if (status !== 'תקין') rowClass = 'row-issue';
+
+  const thumbUrl = getThumbnailUrl(fname);
+  const thumb = `<td class="cell-thumb col-thumb">
+    ${thumbUrl
+      ? `<img src="${escHtml(thumbUrl)}" loading="lazy"
+             style="height:48px;width:auto;max-width:64px;border-radius:4px;object-fit:cover;"
+             onerror="this.parentElement.innerHTML='<div class=\\"cell-thumb-placeholder\\">🖼</div>'">`
+      : '<div class="cell-thumb-placeholder">🖼</div>'}
+  </td>`;
+
+  const stemForSearch = fname.replace(/\.[^.]+$/, '').replace(/[_\-]/g, ' ');
+  const searchUrl = `https://www.google.com/search?tbm=isch&q=${encodeURIComponentSafe(stemForSearch)}`;
+
+  const fileCell = `<td class="col-file">
+    <div class="cell-fname-wrap">
+      <span class="cell-fname-text" title="${escHtml(fname)}">${escHtml(fname)}</span>
+      <a class="icon-search" href="${escHtml(searchUrl)}" target="_blank" title="חפש בגוגל תמונות">🔍</a>
+    </div>
+  </td>`;
+
+  const url = row['קישור למדיה במקור'];
+  const linkCell = `<td class="cell-link col-link" data-fname="${escHtml(fname)}" title="לחץ פעמיים לעריכה">
+    ${url ? `<a href="${escHtml(url)}" target="_blank">פתח ↗</a>` : '<span style="color:var(--muted);font-size:11px;">—</span>'}
+  </td>`;
+
+  const cols = [
+    { field: 'שם פריט',              cls: 'col-item',   tag: 'input'    },
+    { field: 'מקור',                  cls: 'col-source', tag: 'input'    },
+    { field: 'סוג זכויות היוצרים',   cls: 'col-lic',    tag: 'input'    },
+    { field: 'יש צורך במתן קרדיט?',  cls: 'col-credit', tag: 'input'    },
+    { field: 'איך לרשום את הקרדיט?', cls: 'col-how',    tag: 'textarea' },
+    { field: 'מותר לשימוש מסחרי?',   cls: 'col-com',    tag: 'input'    },
+    { field: 'מותר לשימוש חיצוני?',  cls: 'col-ext',    tag: 'input'    },
+    { field: 'קבצים נוספים',          cls: 'col-extra',  tag: 'input'    },
+  ];
+
+  // Build in field-order matching header: thumb | שם פריט | שם קובץ | מקור | קישור | סוג | קרדיט? | איך | מסחרי | חיצוני | נוספים
+  const itemCell = `<td class="col-item editable-cell" data-fname="${escHtml(fname)}" data-field="שם פריט">
+    <div class="cell-display">${escHtml(row['שם פריט'])}</div>
+  </td>`;
+
+  const srcCell = `<td class="col-source editable-cell" data-fname="${escHtml(fname)}" data-field="מקור">
+    <div class="cell-display">${escHtml(row['מקור'])}</div>
+  </td>`;
+
+  const licCell = `<td class="col-lic editable-cell" data-fname="${escHtml(fname)}" data-field="סוג זכויות היוצרים">
+    <div class="cell-display">${escHtml(row['סוג זכויות היוצרים'])}</div>
+  </td>`;
+
+  const creditCell = `<td class="col-credit editable-cell" data-fname="${escHtml(fname)}" data-field="יש צורך במתן קרדיט?">
+    <div class="cell-display">${escHtml(row['יש צורך במתן קרדיט?'])}</div>
+  </td>`;
+
+  const howCell = `<td class="col-how editable-cell" data-fname="${escHtml(fname)}" data-field="איך לרשום את הקרדיט?">
+    <div class="cell-display" title="${escHtml(row['איך לרשום את הקרדיט?'])}">${escHtml(row['איך לרשום את הקרדיט?'])}</div>
+  </td>`;
+
+  const comCell = `<td class="col-com editable-cell" data-fname="${escHtml(fname)}" data-field="מותר לשימוש מסחרי?">
+    <div class="cell-display">${escHtml(row['מותר לשימוש מסחרי?'])}</div>
+  </td>`;
+
+  const extCell = `<td class="col-ext editable-cell" data-fname="${escHtml(fname)}" data-field="מותר לשימוש חיצוני?">
+    <div class="cell-display">${escHtml(row['מותר לשימוש חיצוני?'])}</div>
+  </td>`;
+
+  const extraCell = `<td class="col-extra editable-cell" data-fname="${escHtml(fname)}" data-field="קבצים נוספים">
+    <div class="cell-display" title="${escHtml(row['קבצים נוספים'])}">${escHtml(row['קבצים נוספים'])}</div>
+  </td>`;
+
+  return `<tr class="${rowClass}" data-fname="${escHtml(fname)}" id="row-${escRowId(fname)}">
+    ${thumb}${itemCell}${fileCell}${srcCell}${linkCell}${licCell}${creditCell}${howCell}${comCell}${extCell}${extraCell}
+  </tr>`;
+}
+
+function escRowId(fname) {
+  // Convert filename to a safe CSS id fragment
+  return fname.replace(/[^a-zA-Z0-9\u0590-\u05ff]/g, '_');
+}
+
+// ── Inline editing ────────────────────────────────────────────────────────────
+
+function startEdit(cell) {
+  const fname = cell.dataset.fname;
+  const field = cell.dataset.field;
+  const row = reviewState.rows.find(r => r['שם קובץ'] === fname);
+  if (!row) return;
+
+  const val = row[field] || '';
+  const isTextarea = cell.dataset.field === 'איך לרשום את הקרדיט?';
+
+  cell.innerHTML = '';
+  const input = document.createElement(isTextarea ? 'textarea' : 'input');
+  input.value = val;
+  if (!isTextarea) input.type = 'text';
+  cell.appendChild(input);
+  input.focus();
+  if (input.select) input.select();
+
+  function commit() {
+    const newVal = input.value;
+    row[field] = newVal;
+
+    // Re-evaluate _isRawFilename if שם פריט was edited
+    if (field === 'שם פריט') {
+      const originalRaw = reviewState.rawStems[fname];
+      if (originalRaw !== undefined) {
+        row._isRawFilename = (newVal === originalRaw);
+      }
+    }
+
+    // Re-evaluate _unknownLicense if סוג זכויות היוצרים was edited
+    if (field === 'סוג זכויות היוצרים') {
+      const recognized = [
+        'Public Domain', 'No known copyright restrictions',
+        'CC BY', 'CC BY 2.0', 'CC BY 3.0', 'CC BY 4.0',
+        'CC BY-SA', 'CC BY-SA 2.0', 'CC BY-SA 3.0', 'CC BY-SA 4.0',
+        'Royalty free', 'C',
+      ];
+      row._unknownLicense = !recognized.includes(newVal) && newVal !== '';
+    }
+
+    // Re-evaluate _found status if מקור was filled
+    if (field === 'מקור' && newVal) {
+      row._found = true;
+    }
+
+    renderReview();
+  }
+
+  input.addEventListener('blur', commit);
+  input.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && !isTextarea) { e.preventDefault(); input.blur(); }
+    if (e.key === 'Escape') { input.value = val; input.blur(); }
+  });
+}
+
+// ── Scroll to row ─────────────────────────────────────────────────────────────
+
+function scrollToRow(fname) {
+  const rowId = 'row-' + escRowId(fname);
+  const row = document.getElementById(rowId);
+  if (!row) return;
+  row.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  row.classList.add('row-highlight');
+  // Force re-animation
+  row.querySelectorAll('td').forEach(td => {
+    td.style.animation = 'none';
+    td.offsetHeight; // reflow
+    td.style.animation = '';
+  });
+  setTimeout(() => row.classList.remove('row-highlight'), 1000);
+}
+
+// ── Actions bar ───────────────────────────────────────────────────────────────
+
+document.getElementById('btn-monday-toggle').addEventListener('click', function() {
+  const accordion = document.getElementById('monday-accordion');
+  const arrow = document.getElementById('monday-arrow');
+  const isOpen = accordion.classList.toggle('open');
+  this.classList.toggle('open', isOpen);
+});
+
+document.getElementById('btn-review-download').addEventListener('click', () => {
+  const csv = buildCSV();
+  downloadBlob(csv, 'copyright_report.csv');
+});
+
+document.getElementById('btn-go-summary').addEventListener('click', () => {
+  buildSummaryFromReview();
+  showScreen('screen-summary');
+  document.getElementById('btn-back-header').style.display = '';
+  // Show the shell + header
+  document.getElementById('main-shell').style.display = '';
+});
+
+document.getElementById('btn-review-back').addEventListener('click', () => {
+  resetState();
+  showScreen('screen-setup');
+});
+
+// ── CSV generation ────────────────────────────────────────────────────────────
+
+const CSV_COLUMNS = [
+  'שם פריט',
+  'שם קובץ',
+  'מקור',
+  'קישור למדיה במקור',
+  'סוג זכויות היוצרים',
+  'יש צורך במתן קרדיט?',
+  'איך לרשום את הקרדיט?',
+  'מותר לשימוש מסחרי?',
+  'מותר לשימוש חיצוני?',
+  'קבצים נוספים',
+];
+
+function csvEscape(val) {
+  const s = String(val || '');
+  if (s.includes(',') || s.includes('"') || s.includes('\n') || s.includes('\r')) {
+    return '"' + s.replace(/"/g, '""') + '"';
+  }
+  return s;
+}
+
+function buildCSV() {
+  const lines = [CSV_COLUMNS.join(',')];
+  for (const row of reviewState.rows) {
+    const cols = CSV_COLUMNS.map(c => csvEscape(row[c] || ''));
+    lines.push(cols.join(','));
+  }
+  // UTF-8 BOM + content
+  return '\ufeff' + lines.join('\r\n');
+}
+
+function downloadBlob(text, filename) {
+  const blob = new Blob([text], {type: 'text/csv;charset=utf-8;'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+// ════════════════════════════════════════════════════════════
+//  SCREEN 4 — SUMMARY (built from review state)
+// ════════════════════════════════════════════════════════════
+
+function buildSummaryFromReview() {
+  recomputeAllStatuses();
+  const rows = reviewState.rows;
+
+  const total = rows.length;
+  const found = rows.filter(r => r._found || r['מקור']).length;
+  const notFound = total - found;
+
+  const bySource = {};
+  for (const r of rows) {
+    const src = r['מקור'];
+    if (src) bySource[src] = (bySource[src] || 0) + 1;
+  }
+
+  const issueCounts = {};
+  for (const row of rows) {
+    if (row._status !== 'תקין') {
+      issueCounts[row._status] = (issueCounts[row._status] || 0) + 1;
+    }
+  }
+
+  buildSummary({ total, found, notFound, bySource, issueCounts });
+}
+
+function buildSummary({ total, found, notFound, bySource, issueCounts }) {
+  // Stat boxes
+  document.getElementById('stat-total').textContent = total;
+  document.getElementById('stat-found').textContent = found;
+  document.getElementById('stat-not-found').textContent = notFound;
+
+  // Source breakdown
+  const sourceList = document.getElementById('source-breakdown-list');
+  const sourceEntries = Object.entries(bySource || {}).sort((a, b) => b[1] - a[1]);
+  if (sourceEntries.length || notFound > 0) {
+    let html = sourceEntries.map(([src, count]) => `
+      <div class="source-row">
+        <span>${escHtml(src)}</span>
+        <span class="source-pill">${count}</span>
+      </div>`).join('');
+    if (notFound > 0) {
+      html += `<div class="source-row">
+        <span style="color:var(--muted)">לא נמצאו</span>
+        <span class="source-pill muted">${notFound}</span>
+      </div>`;
+    }
+    sourceList.innerHTML = html;
+  } else {
+    sourceList.innerHTML = '<div class="empty">לא נמצאו תוצאות</div>';
+  }
+
+  // Issue counts
+  const ISSUE_STATUSES = ['לא זוהה', 'נדרש שם פריט', 'כפילויות אפשריות', 'רישיון לא מזוהה', 'הערות'];
+  const DANGER_STATUSES = new Set(['לא זוהה', 'רישיון לא מזוהה']);
+  const issueCard = document.getElementById('issues-summary-card');
+  const issueList = document.getElementById('issues-summary-list');
+  const hasIssues = ISSUE_STATUSES.some(s => (issueCounts[s] || 0) > 0);
+
+  if (hasIssues) {
+    issueCard.style.display = '';
+    issueList.innerHTML = ISSUE_STATUSES
+      .filter(s => (issueCounts[s] || 0) > 0)
+      .map(s => `
+        <div class="issue-sum-row">
+          <span>${escHtml(s)}</span>
+          <span class="issue-sum-badge${DANGER_STATUSES.has(s) ? ' danger' : ''}">${issueCounts[s]}</span>
+        </div>`).join('');
+  } else {
+    issueCard.style.display = 'none';
+  }
+
+  // Review button state
+  const btnReview = document.getElementById('btn-go-review');
+  btnReview.disabled = !hasIssues;
+  btnReview.title = hasIssues ? '' : 'אין פריטים הדורשים תיקון';
+}
+
+// Summary buttons
+document.getElementById('btn-summary-download').addEventListener('click', () => {
+  downloadBlob(buildCSV(), 'copyright_report.csv');
+});
+document.getElementById('btn-go-review').addEventListener('click', () => {
+  showScreen('screen-review');
+});
+
+function resetState() {
+  // Revoke cached thumbnail object URLs to free memory
+  for (const url of Object.values(thumbnailUrls)) URL.revokeObjectURL(url);
+  Object.keys(thumbnailUrls).forEach(k => delete thumbnailUrls[k]);
+  fileObjectMap = {};
+  reviewState.rows = [];
+  reviewState.dupeGroups = [];
+  reviewState.notedItems = new Set();
+  document.getElementById('btn-search').disabled = true;
+  document.getElementById('btn-search').textContent = 'חפש זכויות יוצרים';
+}
+
+function goBack() {
+  resetState();
+  document.getElementById('btn-back-header').style.display = 'none';
+  showScreen('screen-setup');
+}
+
+document.getElementById('btn-back-header').addEventListener('click', goBack);
+</script>
+</body>
+</html>
