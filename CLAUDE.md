@@ -311,5 +311,5 @@ Key functions:
 
 - Hosted on **GitHub Pages**
 - Auto-deploys on every push to `main` via `.github/workflows/deploy.yml`
-- Live URL: `https://[username].github.io/[repo-name]` — update this once the repo is created and Pages is enabled
+- Live URL: https://guydi.github.io/copyright-tool/
 - After deploying, update the `[URL]` placeholder in `README.md` with the actual live URL
