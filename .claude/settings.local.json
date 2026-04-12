@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python -c \":*)",
+      "Bash(rm app.py lookup.py run.bat run.sh install.bat)",
+      "Bash(rm -rf templates/)"
+    ]
+  }
+}
