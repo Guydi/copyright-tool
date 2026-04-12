@@ -176,6 +176,8 @@ CSV is generated client-side with UTF-8 BOM so Hebrew displays correctly in Exce
 - Style: clean, minimal, bright — white cards on light grey background (#f5f5f3), blue accents (#2d6ef6)
 - 4 screens managed by JS show/hide, no routing library
 - Review screen is full-width (the `.shell` wrapper is hidden while review is active)
+- "← חיפוש חדש" buttons (header + review screen) call `location.reload()` for a fully clean reset
+- Summary screen uses `compact-header` CSS class on `#main-shell` to reduce the header's bottom margin (40px → 12px)
 - All archive calls use fetch() with proper error handling
 
 ---
@@ -186,7 +188,7 @@ CSV is generated client-side with UTF-8 BOM so Hebrew displays correctly in Exce
 User selects a folder (via file input) and selects archive sources.
 
 ### Screen 2: Progress
-Live feed shows results as they arrive via `onProgress` callback from `processFilenames()`.
+Live feed shows results as they arrive via `onProgress` callback from `processFilenames()`. New items animate in with a slide-down fade (`live-item-in` keyframe).
 
 ### Screen 3: Review
 Full-width layout. Two sections:
@@ -216,7 +218,10 @@ Columns: thumbnail | שם פריט | שם קובץ [🔍] | מקור | קישו�
 - Monday.com import instructions (collapsible accordion, opens upward)
 
 ### Screen 4: Summary
-Pie chart, required credits, flagged items, unknown licenses. Download button generates CSV from reviewed JS state.
+Stat boxes, source breakdown, flagged item counts. CSV download button is full-width (like the primary search button).
+
+- **"פריטים הדורשים תיקון" card** — shown only when issues exist; contains the issue count list and the "עריכת פריטים" button (`btn-go-review`) which navigates back to the review screen. Button is disabled (and card hidden) when there are no issues.
+- **"הורד CSV"** — full-width green button below the cards; generates CSV from current `reviewState`.
 
 ---
 

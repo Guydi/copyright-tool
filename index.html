@@ -50,6 +50,7 @@
   }
 
   header { margin-bottom: 40px; }
+  .compact-header header { margin-bottom: 12px; }
   .logo { display: flex; align-items: center; gap: 10px; margin-bottom: 4px; }
   .logo-mark {
     width: 32px; height: 32px;
@@ -255,11 +256,16 @@
     flex-direction: column;
     gap: 5px;
   }
+  @keyframes live-item-in {
+    from { opacity: 0; transform: translateY(-8px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
   .live-item {
     display: flex;
     align-items: baseline;
     gap: 8px;
     font-size: 12px;
+    animation: live-item-in 0.2s ease;
   }
   .live-dot {
     width: 7px; height: 7px;
@@ -877,10 +883,10 @@
 
     <div class="card">
       <div class="card-label">תיקיית התמונות</div>
-      <label for="folder-input">בחר תיקייה</label>
+      <label for="folder-input">בחרו את תיקיית התמונות</label>
+      <p class="hint">שימו לב: התיקייה תוצג כריקה אך התמונות ייטענו</p>
       <input type="file" id="folder-input" webkitdirectory multiple
-             style="font-family:var(--mono);font-size:13px;padding:8px 0;width:100%;cursor:pointer;color:var(--text);">
-      <p class="hint">בחר את התיקייה המכילה את קבצי התמונה</p>
+             style="font-family:var(--sans);font-size:13px;padding:8px 0;width:100%;cursor:pointer;color:var(--text);">
       <div class="msg msg-success" id="msg-ok"></div>
       <div class="msg msg-error"   id="msg-err"></div>
     </div>
@@ -1048,13 +1054,12 @@
     <div class="card" id="issues-summary-card" style="display:none">
       <div class="card-label">פריטים הדורשים תיקון</div>
       <div id="issues-summary-list"></div>
+      <button class="btn btn-outline" id="btn-go-review" style="margin-top:12px;width:100%;">עריכת פריטים ←</button>
     </div>
 
     <!-- Actions -->
-    <div style="display:flex;gap:12px;margin-top:8px;">
-      <button class="btn btn-download" id="btn-summary-download">הורד CSV ↓</button>
-      <button class="btn btn-outline" id="btn-go-review">עבור לעריכה ←</button>
-    </div>
+    <button class="btn btn-download" id="btn-summary-download"
+      style="width:100%;margin-top:8px;padding:12px;font-size:15px;">הורד CSV ↓</button>
 
 </div>
 </div>
@@ -1073,6 +1078,7 @@ function showScreen(id) {
   document.getElementById(id).classList.add('active');
   // The review screen is full-width — hide the shell wrapper
   const shell = document.getElementById('main-shell');
+  shell.classList.toggle('compact-header', id === 'screen-summary');
   const actionsBar = document.getElementById('review-actions-bar');
   if (id === 'screen-review') {
     shell.style.display = 'none';
@@ -1719,8 +1725,7 @@ document.getElementById('btn-go-summary').addEventListener('click', () => {
 });
 
 document.getElementById('btn-review-back').addEventListener('click', () => {
-  resetState();
-  showScreen('screen-setup');
+  location.reload();
 });
 
 // ── CSV generation ────────────────────────────────────────────────────────────
@@ -1869,9 +1874,7 @@ function resetState() {
 }
 
 function goBack() {
-  resetState();
-  document.getElementById('btn-back-header').style.display = 'none';
-  showScreen('screen-setup');
+  location.reload();
 }
 
 document.getElementById('btn-back-header').addEventListener('click', goBack);
