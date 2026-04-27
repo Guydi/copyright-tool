@@ -41,22 +41,17 @@ const RESOLUTION_PREFIX = /^\d+px-/i;
 // ── License normalization ─────────────────────────────────────────────────────
 
 // Each entry: { pattern, label, requiresCredit, commercialOk, externalOk }
+// Canonical labels: 'Public Domain', 'No known copyright restrictions',
+//                   'CC BY', 'CC-BY-SA', 'Royalty free', 'C'
 const LICENSE_MAP = [
-  { pattern: /cc0|creative commons zero/i,          label: 'Public Domain',                   requiresCredit: false, commercialOk: true,  externalOk: true  },
-  { pattern: /public.?domain|no.?copyright/i,       label: 'Public Domain',                   requiresCredit: false, commercialOk: true,  externalOk: true  },
-  { pattern: /no.?known.?copyright/i,               label: 'No known copyright restrictions', requiresCredit: false, commercialOk: true,  externalOk: true  },
-  { pattern: /no.?restrictions/i,                   label: 'No known copyright restrictions', requiresCredit: false, commercialOk: true,  externalOk: true  },
-  { pattern: /cc.?by.?sa.?4/i,                      label: 'CC BY-SA 4.0',                    requiresCredit: true,  commercialOk: true,  externalOk: true  },
-  { pattern: /cc.?by.?sa.?3/i,                      label: 'CC BY-SA 3.0',                    requiresCredit: true,  commercialOk: true,  externalOk: true  },
-  { pattern: /cc.?by.?sa.?2/i,                      label: 'CC BY-SA 2.0',                    requiresCredit: true,  commercialOk: true,  externalOk: true  },
-  { pattern: /cc.?by.?sa/i,                         label: 'CC BY-SA',                        requiresCredit: true,  commercialOk: true,  externalOk: true  },
-  { pattern: /cc.?by.?4/i,                          label: 'CC BY 4.0',                       requiresCredit: true,  commercialOk: true,  externalOk: true  },
-  { pattern: /cc.?by.?3/i,                          label: 'CC BY 3.0',                       requiresCredit: true,  commercialOk: true,  externalOk: true  },
-  { pattern: /cc.?by.?2/i,                          label: 'CC BY 2.0',                       requiresCredit: true,  commercialOk: true,  externalOk: true  },
-  { pattern: /cc.?by(?!.?sa)/i,                     label: 'CC BY',                           requiresCredit: true,  commercialOk: true,  externalOk: true  },
-  { pattern: /pexels.?licen/i,                      label: 'Public Domain',                   requiresCredit: false, commercialOk: true,  externalOk: true  },
-  { pattern: /royalty.?free|shutterstock|rf\b/i,    label: 'Royalty free',                    requiresCredit: false, commercialOk: true,  externalOk: true  },
-  { pattern: /\bc\b|all rights reserved|copyright/i,label: 'C',                               requiresCredit: true,  commercialOk: false, externalOk: false },
+  { pattern: /cc0|creative commons zero/i,                   label: 'Public Domain',                   requiresCredit: false, commercialOk: true,  externalOk: true  },
+  { pattern: /public.?domain|no.?copyright/i,                label: 'Public Domain',                   requiresCredit: false, commercialOk: true,  externalOk: true  },
+  { pattern: /no.?known.?copyright/i,                        label: 'No known copyright restrictions', requiresCredit: false, commercialOk: true,  externalOk: true  },
+  { pattern: /no.?restrictions/i,                            label: 'No known copyright restrictions', requiresCredit: false, commercialOk: true,  externalOk: true  },
+  { pattern: /cc.?by.?sa/i,                                  label: 'CC-BY-SA',                        requiresCredit: true,  commercialOk: true,  externalOk: true  },
+  { pattern: /cc.?by(?!.?sa)/i,                              label: 'CC BY',                           requiresCredit: true,  commercialOk: true,  externalOk: true  },
+  { pattern: /pexels.?licen|royalty.?free|shutterstock|rf\b/i, label: 'Royalty free',                  requiresCredit: false, commercialOk: true,  externalOk: true  },
+  { pattern: /\bc\b|all rights reserved|copyright/i,         label: 'C',                               requiresCredit: true,  commercialOk: false, externalOk: false },
 ];
 
 /**
@@ -341,14 +336,15 @@ const WIKIMEDIA_API = 'https://commons.wikimedia.org/w/api.php';
 
 /** Parse Wikimedia imageinfo + extmetadata into a standard internal result. */
 function parseWikimediaMeta(info, meta) {
-  const objectName = stripHtml(meta.ObjectName?.value ?? '');
-  const title      = shortenTitle(objectName);
-  let   author     = stripHtml(meta.Artist?.value ?? '');
+  const objectName   = stripHtml(meta.ObjectName?.value ?? '');
+  const title        = shortenTitle(objectName);
+  let   author       = stripHtml(meta.Artist?.value ?? '');
   // Deduplicate repeated "Unknown author" strings
   author = author.replace(/(Unknown author)+/g, 'Unknown author');
-  const licenseRaw = meta.LicenseShortName?.value || meta.UsageTerms?.value || '';
-  const url        = info.descriptionurl ?? '';
-  return { _sourceName: 'Wikimedia Commons', _title: title, _author: author, _licenseRaw: licenseRaw, _url: url, _objectName: objectName };
+  const licenseRaw   = meta.LicenseShortName?.value || meta.UsageTerms?.value || '';
+  const url          = info.descriptionurl ?? '';
+  const thumbnailUrl = info.thumburl ?? '';
+  return { _sourceName: 'Wikimedia Commons', _title: title, _author: author, _licenseRaw: licenseRaw, _url: url, _objectName: objectName, _thumbnailUrl: thumbnailUrl };
 }
 
 /**
@@ -361,12 +357,13 @@ async function searchWikimedia(stem, notesOut) {
   // Strategy 1: exact title match
   for (const titleTry of [`File:${stem}`, stem]) {
     const params = new URLSearchParams({
-      action:  'query',
-      titles:  titleTry,
-      prop:    'imageinfo',
-      iiprop:  'url|extmetadata|canonicaltitle',
-      format:  'json',
-      origin:  '*',
+      action:     'query',
+      titles:     titleTry,
+      prop:       'imageinfo',
+      iiprop:     'url|extmetadata|canonicaltitle',
+      iiurlwidth: '300',
+      format:     'json',
+      origin:     '*',
     });
     try {
       const res  = await fetch(`${WIKIMEDIA_API}?${params}`);
@@ -408,12 +405,13 @@ async function searchWikimedia(stem, notesOut) {
     notesOut.push(`נמצא בחיפוש טקסט: '${shortenTitle(pageTitle, 60)}'`);
 
     const infoParams = new URLSearchParams({
-      action: 'query',
-      titles: pageTitle,
-      prop:   'imageinfo',
-      iiprop: 'url|extmetadata',
-      format: 'json',
-      origin: '*',
+      action:     'query',
+      titles:     pageTitle,
+      prop:       'imageinfo',
+      iiprop:     'url|extmetadata',
+      iiurlwidth: '300',
+      format:     'json',
+      origin:     '*',
     });
     const res2  = await fetch(`${WIKIMEDIA_API}?${infoParams}`);
     const data2 = await res2.json();
@@ -460,8 +458,10 @@ async function searchLOC(stem, notesOut) {
     let contributor = item.contributor || item.creator || '';
     if (Array.isArray(contributor)) contributor = contributor.join(', ');
 
+    const thumbRaw     = item.image_url || item.thumbnail || '';
+    const thumbnailUrl = Array.isArray(thumbRaw) ? (thumbRaw[0] || '') : (thumbRaw || '');
     notesOut.push('נמצא בספריית הקונגרס');
-    return { _sourceName: 'Library of Congress', _title: title, _author: contributor, _licenseRaw: rights, _url: link };
+    return { _sourceName: 'Library of Congress', _title: title, _author: contributor, _licenseRaw: rights, _url: link, _thumbnailUrl: thumbnailUrl };
   } catch (_) {
     return null;
   }
@@ -478,7 +478,7 @@ function resolvePexels(stem, notesOut) {
   const photoId = idMatch ? idMatch[1] : null;
   const url = photoId ? `https://www.pexels.com/photo/${photoId}/` : 'https://www.pexels.com';
   notesOut.push('Pexels — זוהה לפי שם קובץ, ללא API key');
-  return { _sourceName: 'Pexels', _title: '', _author: '', _licenseRaw: 'Pexels License', _url: url };
+  return { _sourceName: 'Pexels', _title: '', _author: '', _licenseRaw: 'Pexels License', _url: url, _thumbnailUrl: '' };
 }
 
 // ── Shutterstock resolver ─────────────────────────────────────────────────────
@@ -493,7 +493,7 @@ function resolveShutterstock(stem, notesOut) {
   const url = photoId ? `https://www.shutterstock.com/image/${photoId}` : 'https://www.shutterstock.com';
   const title = titleFromShutterstockStem(stem);
   notesOut.push('Shutterstock — זוהה לפי שם קובץ, יש לאמת ידנית');
-  return { _sourceName: 'Shutterstock', _title: title, _author: '', _licenseRaw: 'Royalty free', _url: url };
+  return { _sourceName: 'Shutterstock', _title: title, _author: '', _licenseRaw: 'Royalty free', _url: url, _thumbnailUrl: '' };
 }
 
 // ── Main dispatcher ───────────────────────────────────────────────────────────
@@ -564,6 +564,7 @@ async function lookupImage(filename, enabledSources) {
       _source:         '',
       _unknownLicense: false,
       _isRawFilename:  isRawStem,
+      _thumbnailUrl:   '',
     };
   }
 
@@ -616,6 +617,7 @@ async function lookupImage(filename, enabledSources) {
     _source:         sourceName,
     _unknownLicense: isUnknown,
     _isRawFilename:  isRawStem,
+    _thumbnailUrl:   resultRaw._thumbnailUrl || '',
   };
 }
 

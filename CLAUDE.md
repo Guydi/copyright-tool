@@ -36,11 +36,11 @@ The following files were deleted when the app was converted to a static SPA:
 - `templates/index.html` — Jinja template (replaced by static `index.html`)
 
 ### Flow
-1. User selects a folder via `<input type="file" webkitdirectory>` (or enters filenames manually)
-2. User clicks Search → `processFilenames()` in `lookup.js` runs asynchronously
+1. User selects a folder via `<input type="file" webkitdirectory>` and/or types filenames manually — both feed into a **checklist**
+2. User unchecks any files to exclude, then clicks Search → `processFilenames()` in `lookup.js` runs asynchronously
 3. UI updates live via `onProgress` callback
-4. On completion → **review screen** with editable table and issues panel
-5. User reviews, edits, resolves issues, then proceeds to summary
+4. On completion → state saved to localStorage, then **summary screen** shown
+5. User can navigate back to review screen to edit; sidebar lets user reload any past run directly into review
 6. User downloads CSV from review screen or summary screen
 
 ---
@@ -138,13 +138,13 @@ Files NOT confirmed as derivatives but sharing a common prefix of ≥ 8 characte
 
 ## License normalization
 
-All license strings are normalized to these labels:
-- `Public Domain` (includes CC0, "public domain", "no copyright")
-- `No known copyright restrictions`
-- `CC BY` / `CC BY 2.0` / `CC BY 3.0` / `CC BY 4.0`
-- `CC BY-SA` / `CC BY-SA 2.0` / `CC BY-SA 3.0` / `CC BY-SA 4.0`
-- `Royalty free` (Shutterstock, Pexels)
-- `C` (all rights reserved)
+All license strings are normalized to exactly these 6 canonical labels:
+- `Public Domain` — CC0, "public domain", "no copyright"
+- `No known copyright restrictions` — "no known copyright restrictions", "no restrictions"
+- `CC BY` — all CC BY versions (2.0, 3.0, 4.0, or unversioned) collapse to this single label
+- `CC-BY-SA` — all CC BY-SA versions (2.0, 3.0, 4.0, or unversioned) collapse to this single label
+- `Royalty free` — Shutterstock, Pexels, "royalty free"
+- `C` — all rights reserved, "©", "copyright"
 
 If a license string can't be mapped → kept as-is, flagged in summary as "unknown license".
 
@@ -155,7 +155,6 @@ If a license string can't be mapped → kept as-is, flagged in summary as "unkno
 | Hebrew column | Notes |
 |---|---|
 | שם פריט | Item name — from archive title or cleaned filename stem (FIRST column) |
-| שם קובץ | Filename |
 | מקור | Archive name |
 | קישור למדיה במקור | URL to source page |
 | סוג זכויות היוצרים | Normalized license label |
@@ -163,7 +162,8 @@ If a license string can't be mapped → kept as-is, flagged in summary as "unkno
 | איך לרשום את הקרדיט? | `[title], by [author], under [license], via [source]` |
 | מותר לשימוש מסחרי? | מותר / אסור |
 | מותר לשימוש חיצוני? | מותר / אסור |
-| קבצים נוספים | Derivative/merged filenames (LAST column) |
+
+Note: `שם קובץ` and `קבצים נוספים` remain in `reviewState.rows` and visible in the review table — they are excluded from the CSV export only.
 
 CSV is generated client-side with UTF-8 BOM so Hebrew displays correctly in Excel and Monday.com.
 
@@ -175,7 +175,9 @@ CSV is generated client-side with UTF-8 BOM so Hebrew displays correctly in Exce
 - Font: Heebo (sans) + DM Mono (filenames/paths)
 - Style: clean, minimal, bright — white cards on light grey background (#f5f5f3), blue accents (#2d6ef6)
 - 4 screens managed by JS show/hide, no routing library
-- Review screen is full-width (the `.shell` wrapper is hidden while review is active)
+- Layout: fixed 220px sidebar on CSS-left (`--sidebar-w`), `.main-area` has `margin-left: 220px`
+- Review screen: when active, `position: fixed; top: var(--steps-h); left: var(--sidebar-w); right: 0; bottom: 0;`
+- Steps bar: `position: sticky; top: 0; height: var(--steps-h)` inside `.main-area`, spans only the main content area
 - "← חיפוש חדש" buttons (header + review screen) call `location.reload()` for a fully clean reset
 - Summary screen uses `compact-header` CSS class on `#main-shell` to reduce the header's bottom margin (40px → 12px)
 - All archive calls use fetch() with proper error handling
@@ -185,7 +187,13 @@ CSV is generated client-side with UTF-8 BOM so Hebrew displays correctly in Exce
 ## 4-screen flow
 
 ### Screen 1: Setup
-User selects a folder (via file input) and selects archive sources.
+User builds a checklist of filenames and selects archive sources.
+
+**Input model:**
+- **Folder picker** (`webkitdirectory`): scans selected folder, filters by `IMAGE_EXTENSIONS`, appends to checklist. Can be used multiple times.
+- **Manual textarea**: user types/pastes filenames (one per line, with extension), clicks "הוסף" → appended to checklist. Duplicates skipped.
+- **Checklist**: each item has a checkbox (default checked) + filename. Two buttons: "הכל" (check all) / "כלום" (uncheck all). "חפש" runs only on checked items; shows validation error if nothing is checked.
+- File objects (for local thumbnails) are tracked in `fileObjectMap` only for files added via folder picker. Manual entries have `file: null`.
 
 ### Screen 2: Progress
 Live feed shows results as they arrive via `onProgress` callback from `processFilenames()`. New items animate in with a slide-down fade (`live-item-in` keyframe).
@@ -205,10 +213,11 @@ Collapsible cards in fixed order:
 **Editable table (bottom, scrollable):**
 Columns: thumbnail | שם פריט | שם קובץ [🔍] | מקור | קישור | סוג זכויות | קרדיט? | איך לרשום | מסחרי? | חיצוני? | קבצים נוספים
 
-- Thumbnails shown from the selected local files (via `URL.createObjectURL`)
+- Thumbnails: priority order — (1) local blob URL from `fileObjectMap`, (2) `_thumbnailUrl` from API response, (3) placeholder icon
 - שם קובץ has a 🔍 icon linking to Google Image Search
 - קישור shown as "פתח ↗" link; double-click to edit raw URL
-- All other cells are click-to-edit (input or textarea)
+- Constrained fields use `<select>` dropdowns on click (not free-text input): **סוג זכויות היוצרים** (6 canonical values), **יש צורך במתן קרדיט?** (כן/לא), **מותר לשימוש מסחרי?** (מותר/אסור), **מותר לשימוש חיצוני?** (מותר/אסור)
+- Other cells are click-to-edit (input or textarea)
 - Rows sorted: unresolved issues first (by status order), then a separator row, then תקין rows
 - Row border-right indicates severity: danger color for לא זוהה/רישיון לא מזוהה, warn color for others
 
@@ -221,6 +230,7 @@ Columns: thumbnail | שם פריט | שם קובץ [🔍] | מקור | קישו�
 Stat boxes, source breakdown, flagged item counts. CSV download button is full-width (like the primary search button).
 
 - **"פריטים הדורשים תיקון" card** — shown only when issues exist; contains the issue count list and the "עריכת פריטים" button (`btn-go-review`) which navigates back to the review screen. Button is disabled (and card hidden) when there are no issues.
+- **"קרדיטים להעתקה" card** — always shown. Collects rows where `'יש צורך במתן קרדיט?' === 'כן'` and displays their attribution strings in a `<textarea readonly>` with an "העתק הכל" button (uses `navigator.clipboard.writeText`, changes label to "✓ הועתק" for 2s). If no rows require credit, shows a muted message instead.
 - **"הורד CSV"** — full-width green button below the cards; generates CSV from current `reviewState`.
 
 ---
@@ -271,6 +281,7 @@ const reviewState = {
   _notes: [],
   _found: true/false,
   _status: 'לא זוהה' | 'נדרש שם פריט' | 'כפילויות אפשריות' | 'רישיון לא מזוהה' | 'הערות' | 'תקין',
+  _thumbnailUrl: '',            // https URL from API (Wikimedia thumburl, LOC image_url); empty for Pexels/Shutterstock
 }
 ```
 
@@ -279,6 +290,70 @@ Key functions:
 - `renderReview()` — calls `recomputeAllStatuses()`, then `renderIssuesPanel()` and `renderTable()`
 - `buildCSV()` — generates UTF-8 BOM CSV string from `reviewState.rows` (public columns only)
 - `downloadBlob(text, filename)` — triggers browser download
+- `renderCreditsCard()` — builds the credits copy box on the summary screen
+
+---
+
+## Persistent sidebar (previous runs)
+
+A fixed 220px sidebar on the CSS-left edge shows all runs saved in localStorage.
+
+**Storage key:** `copyright_tool_runs` — JSON array of run objects:
+```json
+{
+  "id": 1714000000000,
+  "label": "12 קבצים — 26/04/2025",
+  "state": {
+    "rows":       [...],
+    "dupeGroups": [{"files": [...], "resolved": false}],
+    "notedItems": ["filename.jpg"],
+    "rawStems":   {"filename.jpg": "filename"}
+  }
+}
+```
+
+**Serialization rules:**
+- Strip `blob:` URLs from `_thumbnailUrl` (local object URLs are session-only)
+- Keep all other `_thumbnailUrl` values (regular https URLs from APIs)
+- `notedItems` (Set) serialized as array, restored as `new Set()`
+- Wrap every `localStorage.setItem()` in try/catch; on `QuotaExceededError` show inline warning in sidebar
+
+**Sidebar behavior:**
+- "טען" button: restores `reviewState`, navigates directly to review screen (`showScreen('screen-review')`)
+- "מחק" button: removes that single run, re-renders sidebar
+- "מחק הכל" button: clears `copyright_tool_runs` from localStorage entirely
+- Active/loaded run highlighted with `run-entry.active` class (`activeRunId` JS variable)
+- Runs are saved automatically after each search completes (`saveRun(reviewState)` called right after `initReview`)
+
+---
+
+## Steps bar
+
+A horizontal `<div class="steps-bar">` with `position: sticky; top: 0; height: var(--steps-h)` (44px) inside `.main-area`, visible on all 4 screens. Steps display LTR (`direction: ltr`):
+
+`① בחירת תמונות → ② חיפוש → ③ עריכה → ④ סיכום`
+
+- **Active step**: `.step.active` — blue filled pill, bold
+- **Done steps**: `.step.done` — success green, bold  
+- **Future steps**: `.step` (unstyled) — muted gray
+- Not interactive — clicking a step does not navigate
+- Updated by `updateStepsBar(screenId)` called from `showScreen()`
+
+Screen-to-step mapping: setup→1, progress→2, review→3, summary→4
+
+---
+
+## Two-source thumbnail strategy
+
+Each row has a `_thumbnailUrl` field populated by `lookup.js` from API responses:
+- **Wikimedia**: `info.thumburl` from `iiprop=url|extmetadata` + `iiurlwidth=300`
+- **LOC**: `item.image_url` (may be array; take first element)
+- **Pexels / Shutterstock**: empty string (no API call made)
+
+In `renderTableRow`, thumbnail priority:
+1. `getThumbnailUrl(fname)` — blob URL from `fileObjectMap[fname]` (folder picker files only)
+2. `row._thumbnailUrl` — https URL from API
+3. Placeholder (`<div class="cell-thumb-placeholder">🖼</div>`)
 
 ---
 
@@ -289,7 +364,7 @@ Key functions:
 - HTML tags sometimes appear in Wikimedia author fields — stripped with regex but edge cases exist
 - Shutterstock: only generates a link from the ID, no license verification possible without paid API
 - Artvee has no API — images from Artvee are typically Public Domain (sourced from museums) but cannot be auto-verified
-- Thumbnails require the user to have selected files via the file picker (no server-side path access)
+- Thumbnails for manually-entered filenames rely on API thumbnail URLs (`_thumbnailUrl`); no thumbnail for Pexels/Shutterstock without a key
 
 ---
 
