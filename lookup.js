@@ -42,13 +42,13 @@ const RESOLUTION_PREFIX = /^\d+px-/i;
 
 // Each entry: { pattern, label, requiresCredit, commercialOk, externalOk }
 // Canonical labels: 'Public Domain', 'No known copyright restrictions',
-//                   'CC BY', 'CC-BY-SA', 'Royalty free', 'C'
+//                   'CC BY', 'CC BY SA', 'Royalty free', 'C'
 const LICENSE_MAP = [
   { pattern: /cc0|creative commons zero/i,                   label: 'Public Domain',                   requiresCredit: false, commercialOk: true,  externalOk: true  },
   { pattern: /public.?domain|no.?copyright/i,                label: 'Public Domain',                   requiresCredit: false, commercialOk: true,  externalOk: true  },
   { pattern: /no.?known.?copyright/i,                        label: 'No known copyright restrictions', requiresCredit: false, commercialOk: true,  externalOk: true  },
   { pattern: /no.?restrictions/i,                            label: 'No known copyright restrictions', requiresCredit: false, commercialOk: true,  externalOk: true  },
-  { pattern: /cc.?by.?sa/i,                                  label: 'CC-BY-SA',                        requiresCredit: true,  commercialOk: true,  externalOk: true  },
+  { pattern: /cc.?by.?sa/i,                                  label: 'CC BY SA',                        requiresCredit: true,  commercialOk: true,  externalOk: true  },
   { pattern: /cc.?by(?!.?sa)/i,                              label: 'CC BY',                           requiresCredit: true,  commercialOk: true,  externalOk: true  },
   { pattern: /pexels.?licen|royalty.?free|shutterstock|rf\b/i, label: 'Royalty free',                  requiresCredit: false, commercialOk: true,  externalOk: true  },
   { pattern: /\bc\b|all rights reserved|copyright/i,         label: 'C',                               requiresCredit: true,  commercialOk: false, externalOk: false },
@@ -573,7 +573,7 @@ async function lookupImage(filename, enabledSources) {
 
   // Build attribution string
   const attribution = requiresCredit
-    ? formatAttribution(resultRaw._title, resultRaw._author, label, resultRaw._sourceName)
+    ? formatAttribution(resultRaw._title, resultRaw._author, resultRaw._licenseRaw, resultRaw._sourceName)
     : '';
 
   if (isUnknown) {
