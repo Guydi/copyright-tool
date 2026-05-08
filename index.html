@@ -50,10 +50,6 @@
         font-size: 15px;
         line-height: 1.6;
       }
-      body.review-mode {
-        overflow: hidden;
-      }
-
       /* ══════════════════════════════════════════════════════
      HISTORY PANEL (burger dropdown)
   ══════════════════════════════════════════════════════ */
@@ -949,499 +945,198 @@
       }
 
       /* ══════════════════════════════════════════════════════
-     REVIEW SCREEN
+     QUEUE SCREEN (screen-review)
   ══════════════════════════════════════════════════════ */
 
-      #screen-review {
-        display: none;
-      }
-      #screen-review.active {
-        display: flex;
-        flex-direction: column;
-        position: fixed;
-        top: var(--steps-h);
-        left: 0;
-        right: 0;
-        bottom: 0;
-        overflow: hidden;
-        background: var(--bg);
-      }
+      #screen-review { display: none; }
+      #screen-review.active { display: block; }
 
-      .review-header {
-        background: var(--white);
-        border-bottom: 1px solid var(--border);
-        padding: 14px 24px;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        flex-shrink: 0;
-        gap: 16px;
-      }
-      .review-header-title {
-        font-size: 15px;
-        font-weight: 700;
-      }
-      .review-header-sub {
-        font-size: 12px;
-        color: var(--muted);
-      }
-
-      .review-body {
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-        overflow: hidden;
-        padding-bottom: 64px;
-      }
-
-      /* Issues panel */
-      .issues-panel {
-        background: var(--white);
-        border-bottom: 1px solid var(--border);
-        flex-shrink: 0;
-        overflow-y: auto;
-        max-height: 38vh;
-        padding: 12px 24px;
-      }
-
-      .issue-card {
-        border: 1px solid var(--border);
-        border-radius: 8px;
-        margin-bottom: 8px;
-        overflow: hidden;
-      }
-      .issue-card:last-child {
-        margin-bottom: 0;
-      }
-
-      .issue-card-header {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 9px 14px;
-        cursor: pointer;
-        user-select: none;
-        font-size: 13px;
-        font-weight: 600;
-        gap: 10px;
-        transition: background 0.12s;
-      }
-      .issue-card-header:hover {
-        filter: brightness(0.97);
-      }
-      .issue-card-header.danger {
-        background: var(--danger-light);
-        color: var(--danger);
-      }
-      .issue-card-header.warn {
-        background: var(--warn-light);
-        color: var(--warn);
-      }
-      .issue-card-header.muted {
-        background: var(--bg);
-        color: var(--muted);
-      }
-      .issue-card-header.success {
-        background: var(--success-light);
-        color: var(--success);
-      }
-
-      .issue-card-header-left {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        flex: 1;
-      }
-      .issue-badge {
-        font-size: 10px;
-        font-weight: 700;
-        padding: 1px 7px;
-        border-radius: 99px;
-        background: rgba(0, 0, 0, 0.12);
-      }
-      .issue-chevron {
-        font-size: 11px;
-        transition: transform 0.2s;
-        flex-shrink: 0;
-      }
-      .issue-card.open .issue-chevron {
-        transform: rotate(180deg);
-      }
-
-      .issue-card-body {
-        display: none;
-        padding: 8px 14px 12px;
-        border-top: 1px solid var(--border);
-        background: var(--white);
-      }
-      .issue-card.open .issue-card-body {
-        display: block;
-      }
-
-      .issue-item {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        padding: 5px 8px;
-        border-radius: 6px;
-        cursor: pointer;
-        font-size: 12px;
-        transition: background 0.1s;
-        margin-bottom: 3px;
-      }
-      .issue-item:hover {
-        background: var(--bg);
-      }
-      .issue-item-fname {
-        font-family: var(--mono);
-        font-size: 11px;
-        direction: ltr;
-        flex: 1;
-        word-break: break-all;
-        color: var(--text);
-      }
-      .issue-item-meta {
-        font-size: 11px;
-        color: var(--muted);
-        flex-shrink: 0;
-      }
-
-      .btn-noted {
-        font-size: 11px;
-        padding: 2px 10px;
-        border-radius: 5px;
-        border: 1px solid var(--border);
-        background: var(--bg);
-        cursor: pointer;
-        color: var(--muted);
-        font-family: var(--sans);
-        transition: background 0.12s;
-        flex-shrink: 0;
-      }
-      .btn-noted:hover {
-        background: var(--success-light);
-        color: var(--success);
-        border-color: var(--success);
-      }
-
-      .dupe-group {
-        background: var(--warn-light);
-        border: 1px solid #f3d990;
-        border-radius: 8px;
-        padding: 10px 12px;
-        margin-bottom: 8px;
-      }
-      .dupe-group:last-child {
-        margin-bottom: 0;
-      }
-      .dupe-group-files {
-        margin-bottom: 8px;
-        display: flex;
-        flex-direction: column;
-        gap: 4px;
-      }
-      .dupe-fname {
-        font-family: var(--mono);
-        font-size: 11px;
-        direction: ltr;
-        color: var(--text);
-      }
-      .dupe-checkbox-row {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        font-size: 12px;
-      }
-      .dupe-group-actions {
-        display: flex;
-        gap: 8px;
-        flex-wrap: wrap;
-      }
-
-      .issues-divider {
-        height: 1px;
-        background: var(--border);
-        margin: 8px 0;
-      }
-
-      /* ── Table area ── */
-      .table-area {
-        flex: 1;
-        overflow-y: auto;
-        padding: 0;
-      }
-
-      .review-table {
-        width: 100%;
-        border-collapse: collapse;
-        font-size: 12px;
-        table-layout: fixed;
-      }
-      .review-table th {
+      .queue-header {
         position: sticky;
-        top: 0;
-        background: var(--bg);
-        border-bottom: 2px solid var(--border);
-        padding: 8px 10px;
-        font-size: 11px;
-        font-weight: 600;
-        color: var(--muted);
-        text-align: right;
-        white-space: nowrap;
-        z-index: 10;
-      }
-      .review-table td {
-        border-bottom: 1px solid var(--border);
-        padding: 6px 10px;
-        vertical-align: middle;
-        max-width: 0;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-      }
-      .review-table tr.row-separator td {
-        background: var(--bg);
-        color: var(--muted);
-        font-size: 11px;
-        text-align: center;
-        padding: 4px;
-        border-bottom: 1px solid var(--border);
-        border-top: 1px solid var(--border);
-      }
-      .review-table tr.row-issue {
-        border-right: 3px solid var(--warn);
-      }
-      .review-table tr.row-danger {
-        border-right: 3px solid var(--danger);
-      }
-      .review-table tr.row-ok {
-        border-right: none;
-      }
-
-      .review-table tr.row-highlight td {
-        animation: row-pulse 0.8s ease;
-      }
-      @keyframes row-pulse {
-        0% {
-          background: #fffbeb;
-        }
-        60% {
-          background: #fffbeb;
-        }
-        100% {
-          background: transparent;
-        }
-      }
-
-      /* Column widths */
-      .col-thumb {
-        width: 70px;
-      }
-      .col-item {
-        width: 160px;
-      }
-      .col-file {
-        width: 180px;
-      }
-      .col-source {
-        width: 110px;
-      }
-      .col-link {
-        width: 70px;
-      }
-      .col-lic {
-        width: 120px;
-      }
-      .col-credit {
-        width: 50px;
-      }
-      .col-how {
-        width: 200px;
-      }
-      .col-com {
-        width: 60px;
-      }
-      .col-ext {
-        width: 60px;
-      }
-      .col-extra {
-        width: 140px;
-      }
-
-      .cell-thumb img {
-        height: 48px;
-        width: auto;
-        max-width: 64px;
-        border-radius: 4px;
-        object-fit: cover;
-        display: block;
-      }
-      .cell-thumb-placeholder {
-        width: 48px;
-        height: 48px;
-        background: var(--bg);
-        border: 1px solid var(--border);
-        border-radius: 4px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: var(--muted);
-        font-size: 16px;
-      }
-
-      .cell-fname-wrap {
-        display: flex;
-        align-items: center;
-        gap: 5px;
-        direction: ltr;
-      }
-      .cell-fname-text {
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-        flex: 1;
-        font-family: var(--mono);
-        font-size: 11px;
-        direction: ltr;
-      }
-      .icon-search {
-        cursor: pointer;
-        font-size: 13px;
-        color: var(--muted);
-        flex-shrink: 0;
-        text-decoration: none;
-        line-height: 1;
-      }
-      .icon-search:hover {
-        color: var(--ink);
-      }
-
-      .cell-link a {
-        color: var(--ink);
-        text-decoration: none;
-        font-size: 11px;
-        white-space: nowrap;
-      }
-      .cell-link a:hover {
-        text-decoration: underline;
-      }
-
-      .editable-cell {
-        cursor: text;
-        position: relative;
-        min-height: 28px;
-      }
-      .editable-cell:hover {
-        background: var(--ink-light);
-      }
-      .editable-cell .cell-display {
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-        max-width: 100%;
-      }
-      .editable-cell input,
-      .editable-cell textarea,
-      .editable-cell select {
-        width: 100%;
-        font-family: var(--sans);
-        font-size: 12px;
-        border: 1px solid var(--ink);
-        border-radius: 4px;
-        padding: 3px 6px;
-        outline: none;
-        box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.1);
-        background: white;
-        color: var(--text);
-        resize: vertical;
-      }
-
-      /* ── Fixed actions bar ── */
-      .review-actions-bar {
-        position: fixed;
-        bottom: 0;
-        left: 0;
-        right: 0;
+        top: var(--steps-h);
+        z-index: 90;
         background: var(--white);
-        border-top: 1px solid var(--border);
+        border-bottom: 1px solid var(--border);
         padding: 10px 24px;
-        display: none;
-        flex-direction: column;
-        gap: 0;
-        z-index: 100;
-      }
-      .review-actions-bar.visible {
-        display: flex;
-      }
-
-      .review-actions-row {
         display: flex;
         align-items: center;
-        gap: 12px;
-      }
-
-      .monday-accordion {
-        overflow: hidden;
-        max-height: 0;
-        transition: max-height 0.3s ease;
-      }
-      .monday-accordion.open {
-        max-height: 40vh;
-        overflow-y: auto;
-      }
-
-      .monday-toggle-btn {
-        background: none;
-        border: none;
-        color: var(--muted);
-        font-size: 12px;
-        cursor: pointer;
-        padding: 4px 0;
-        display: flex;
-        align-items: center;
-        gap: 5px;
-        font-family: var(--sans);
-        margin-top: 4px;
-      }
-      .monday-toggle-btn:hover {
-        color: var(--ink);
-      }
-      .monday-arrow {
-        display: inline-block;
-        transition: transform 0.2s;
-        font-size: 11px;
-      }
-      .monday-toggle-btn.open .monday-arrow {
-        transform: rotate(180deg);
-      }
-
-      .monday-content {
-        background: var(--bg);
-        border: 1px solid var(--border);
-        border-radius: 8px;
-        padding: 14px 16px;
-        font-size: 13px;
-        line-height: 1.7;
-        color: var(--text);
-        margin-bottom: 8px;
+        justify-content: space-between;
+        gap: 16px;
         direction: rtl;
       }
-      .monday-content ol {
-        padding-right: 20px;
-        margin: 8px 0;
+      .queue-header-counter { font-size: 13px; color: var(--muted); }
+      .queue-header-counter.all-ok { color: var(--success); font-weight: 600; }
+      .btn-queue-action {
+        font-size: 13px;
+        padding: 6px 14px;
+        border-radius: 6px;
+        border: 1px solid var(--border);
+        background: var(--white);
+        cursor: pointer;
+        color: var(--text);
+        font-family: var(--sans);
+        transition: background 0.12s;
+        white-space: nowrap;
       }
-      .monday-content li {
-        margin-bottom: 6px;
+      .btn-queue-action:hover { background: var(--bg); }
+
+      .queue-list {
+        max-width: 680px;
+        margin: 0 auto;
+        padding: 24px 24px 80px;
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
       }
-      .monday-content .tip {
-        background: var(--ink-light);
-        border-right: 3px solid var(--ink);
-        padding: 6px 10px;
-        border-radius: 4px;
-        font-size: 12px;
-        margin-top: 10px;
-        color: var(--ink);
+
+      .queue-card {
+        background: var(--white);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        overflow: hidden;
+        border-right: 4px solid var(--border);
       }
+      .queue-card[data-status="לא זוהה"],
+      .queue-card[data-status="רישיון לא מזוהה"] { border-right-color: var(--danger); }
+      .queue-card[data-status="נדרש שם פריט"],
+      .queue-card[data-status="כפילויות אפשריות"],
+      .queue-card[data-status="הערות"] { border-right-color: var(--warn); }
+      .queue-card.reviewed { border-right-color: var(--success) !important; }
+
+      .queue-card .card-body {
+        padding: 12px 16px 16px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+      .queue-card.reviewed .card-body { display: none; }
+      .queue-card .card-collapsed {
+        display: none;
+        padding: 10px 16px;
+        align-items: center;
+        gap: 12px;
+        cursor: pointer;
+        direction: rtl;
+      }
+      .queue-card.reviewed .card-collapsed { display: flex; }
+      .queue-card.reviewed .card-header-open { display: none; }
+
+      .card-collapsed-thumb {
+        width: 36px; height: 36px;
+        object-fit: cover; border-radius: 4px; flex-shrink: 0;
+      }
+      .card-collapsed-thumb-placeholder {
+        width: 36px; height: 36px;
+        background: var(--bg); border: 1px solid var(--border);
+        border-radius: 4px; display: flex; align-items: center;
+        justify-content: center; color: var(--muted); font-size: 14px; flex-shrink: 0;
+      }
+      .card-collapsed-fname {
+        font-family: var(--mono); font-size: 12px; direction: ltr;
+        flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+      }
+      .badge-reviewed {
+        font-size: 11px; font-weight: 700; color: var(--success);
+        background: var(--success-light); border-radius: 99px;
+        padding: 2px 10px; flex-shrink: 0;
+      }
+
+      .card-header-open { padding: 16px 16px 12px; border-bottom: 1px solid var(--border); }
+      .card-columns { display: flex; gap: 16px; direction: rtl; }
+      .card-col-input {
+        flex-shrink: 0; width: 120px;
+        display: flex; flex-direction: column; gap: 8px; align-items: center;
+      }
+      .card-col-output { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 8px; }
+
+      .card-thumb-local, .card-thumb-api {
+        width: 100px; height: 80px; object-fit: cover;
+        border-radius: 6px; border: 1px solid var(--border); display: block;
+      }
+      .card-thumb-placeholder {
+        width: 100px; height: 80px; background: var(--bg);
+        border: 1px solid var(--border); border-radius: 6px;
+        display: flex; align-items: center; justify-content: center;
+        color: var(--muted); font-size: 22px;
+      }
+      .card-fname {
+        font-family: var(--mono); font-size: 11px; direction: ltr;
+        text-align: center; word-break: break-all; width: 100%;
+      }
+      .card-google-link { font-size: 13px; text-decoration: none; color: var(--muted); }
+      .card-google-link:hover { color: var(--ink); }
+
+      .card-field-row { display: flex; flex-direction: column; gap: 2px; }
+      .card-field-label {
+        font-size: 11px; color: var(--muted); font-weight: 600;
+        display: flex; align-items: center; gap: 4px;
+      }
+      .uncertain-icon { color: var(--warn); font-size: 11px; cursor: default; }
+      .card-field-input, .card-field-select, .card-field-textarea {
+        font-family: var(--sans); font-size: 13px;
+        border: 1px solid var(--border); border-radius: 5px;
+        padding: 5px 8px; background: var(--bg); color: var(--text);
+        outline: none; transition: border-color 0.12s; width: 100%;
+      }
+      .card-field-input:focus, .card-field-select:focus, .card-field-textarea:focus {
+        border-color: var(--ink); background: var(--white);
+      }
+      .card-field-textarea { resize: vertical; min-height: 52px; }
+
+      .card-notes-banner {
+        background: var(--bg); border: 1px solid var(--border);
+        border-radius: 5px; padding: 6px 10px; font-size: 12px; color: var(--muted);
+      }
+      .card-meta-actions { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+      .btn-clear-result {
+        font-size: 12px; padding: 4px 12px; border-radius: 5px;
+        border: 1px solid var(--border); background: transparent;
+        cursor: pointer; color: var(--muted); font-family: var(--sans);
+      }
+      .btn-clear-result:hover { border-color: var(--danger); color: var(--danger); }
+      .btn-reset-original {
+        font-size: 12px; padding: 4px 0; border: none; background: none;
+        cursor: pointer; color: var(--muted); font-family: var(--sans);
+        text-decoration: underline;
+      }
+      .btn-reset-original:hover { color: var(--text); }
+      .btn-mark-reviewed {
+        width: 100%; padding: 11px; border-radius: 7px; border: none;
+        background: var(--success); color: white; font-size: 14px;
+        font-weight: 600; font-family: var(--sans); cursor: pointer; direction: rtl;
+      }
+      .btn-mark-reviewed:hover { filter: brightness(0.93); }
+
+      /* Duplicate card */
+      .dupe-card {
+        background: var(--warn-light); border: 1px solid #f3d990;
+        border-right: 4px solid var(--warn); border-radius: var(--radius); padding: 14px 16px;
+      }
+      .dupe-card-title {
+        font-size: 12px; font-weight: 700; color: var(--warn);
+        margin-bottom: 10px; text-align: center;
+      }
+      .dupe-panels { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 12px; }
+      .dupe-panel {
+        flex: 1; min-width: 140px; background: var(--white);
+        border: 1px solid var(--border); border-radius: 6px; padding: 10px;
+        display: flex; flex-direction: column; align-items: center; gap: 6px;
+      }
+      .dupe-panel-thumb {
+        width: 72px; height: 56px; object-fit: cover;
+        border-radius: 4px; border: 1px solid var(--border);
+      }
+      .dupe-panel-thumb-placeholder {
+        width: 72px; height: 56px; background: var(--bg);
+        border: 1px solid var(--border); border-radius: 4px;
+        display: flex; align-items: center; justify-content: center;
+        color: var(--muted); font-size: 18px;
+      }
+      .dupe-panel-fname {
+        font-family: var(--mono); font-size: 10px; direction: ltr;
+        text-align: center; word-break: break-all;
+      }
+      .dupe-card-actions { display: flex; gap: 8px; flex-wrap: wrap; }
 
       /* ══════════════════════════════════════════════════════
      SUMMARY SCREEN
@@ -1634,7 +1329,12 @@
           <div class="step-connector" id="conn-2"></div>
           <div class="step-item" id="step-3">
             <div class="step-circle"></div>
-            <div class="step-label">תוצאות</div>
+            <div class="step-label">עריכה</div>
+          </div>
+          <div class="step-connector" id="conn-3"></div>
+          <div class="step-item" id="step-4">
+            <div class="step-circle"></div>
+            <div class="step-label">סיכום</div>
           </div>
         </div>
         <div class="steps-bar-actions">
@@ -1814,84 +1514,16 @@
       </div>
       <!-- /main-shell -->
 
-      <!-- SCREEN 3: Review (fixed-positioned when active) -->
+      <!-- SCREEN 3: Queue -->
       <div id="screen-review" class="screen">
-        <div class="review-header">
-          <div>
-            <div class="review-header-title">סקירה ועריכה</div>
-            <div class="review-header-sub" id="review-header-sub">טוען...</div>
+        <div class="queue-header" id="queue-header">
+          <span class="queue-header-counter" id="queue-header-counter">טוען...</span>
+          <div style="display:flex;gap:8px;align-items:center;">
+            <button class="btn-queue-action" id="btn-queue-download">הורד CSV ↓</button>
+            <button class="btn-queue-action" id="btn-skip-to-summary">דלג לסיכום ←</button>
           </div>
         </div>
-
-        <div class="review-body">
-          <div class="issues-panel" id="issues-panel"></div>
-          <div class="table-area" id="table-area">
-            <table class="review-table" id="review-table">
-              <thead>
-                <tr>
-                  <th class="col-thumb"></th>
-                  <th class="col-item">שם פריט</th>
-                  <th class="col-file">שם קובץ</th>
-                  <th class="col-source">מקור</th>
-                  <th class="col-link">קישור</th>
-                  <th class="col-lic">סוג זכויות</th>
-                  <th class="col-credit">קרדיט?</th>
-                  <th class="col-how">איך לרשום</th>
-                  <th class="col-com">מסחרי?</th>
-                  <th class="col-ext">חיצוני?</th>
-                  <th class="col-extra">קבצים נוספים</th>
-                </tr>
-              </thead>
-              <tbody id="review-tbody"></tbody>
-            </table>
-          </div>
-        </div>
-
-        <!-- Fixed actions bar -->
-        <div class="review-actions-bar" id="review-actions-bar">
-          <div class="monday-accordion" id="monday-accordion">
-            <div class="monday-content">
-              <strong>איך מייבאים את ה-CSV למאנדיי</strong>
-              <ol>
-                <li>פתח את הבורד הרלוונטי ב-Monday.com</li>
-                <li>
-                  לחץ על תפריט הבורד (שלוש נקודות ⋯ בפינה השמאלית העליונה) ← בחר
-                  "Import data" ← "Excel / CSV"
-                </li>
-                <li>
-                  גרור את קובץ ה-CSV לחלון שנפתח, או לחץ "Browse" ובחר אותו
-                </li>
-                <li>
-                  Monday תציג תצוגה מקדימה של העמודות — וודא שהעמודות ממופות
-                  נכון: <br />• "item" → Name (עמודת השם) <br />• שאר העמודות →
-                  עמודות טקסט רגילות
-                </li>
-                <li>לחץ "Import" — הפריטים ייכנסו לבורד</li>
-              </ol>
-              <div class="tip">
-                טיפ: אם הטקסט בעברית מוצג הפוך — ודא שהקובץ נפתח עם קידוד UTF-8.
-                Monday בדרך כלל מזהה זאת אוטומטית.
-              </div>
-            </div>
-          </div>
-          <div class="review-actions-row">
-            <button class="btn btn-download" id="btn-review-download">
-              הורד CSV ↓
-            </button>
-            <button
-              class="btn btn-primary"
-              id="btn-go-summary"
-              style="width: auto; margin-top: 0; padding: 10px 20px"
-            >
-              סיים ←
-            </button>
-            <div style="flex: 1"></div>
-            <button class="monday-toggle-btn" id="btn-monday-toggle">
-              <span class="monday-arrow" id="monday-arrow">▲</span>
-              ← איך להעלות ל-Monday.com
-            </button>
-          </div>
-        </div>
+        <div class="queue-list" id="queue-list"></div>
       </div>
       <!-- /screen-review -->
 
@@ -1984,21 +1616,12 @@
 
         const shell = document.getElementById("main-shell");
         shell.classList.toggle("compact-header", id === "screen-summary");
-
-        const actionsBar = document.getElementById("review-actions-bar");
-        if (id === "screen-review") {
-          shell.style.display = "none";
-          actionsBar.classList.add("visible");
-          document.body.classList.add("review-mode");
-        } else {
-          shell.style.display = id === "screen-summary" ? "none" : "";
-          actionsBar.classList.remove("visible");
-          document.body.classList.remove("review-mode");
-        }
+        shell.style.display =
+          id === "screen-review" || id === "screen-summary" ? "none" : "";
 
         const btnNewSearch = document.getElementById("btn-new-search");
-        const hideNewSearch = id === "screen-setup" || id === "screen-progress";
-        btnNewSearch.style.display = hideNewSearch ? "none" : "";
+        btnNewSearch.style.display =
+          id === "screen-setup" || id === "screen-progress" ? "none" : "";
 
         document.getElementById("history-panel").classList.remove("open");
 
@@ -2034,19 +1657,19 @@
         "screen-setup": 1,
         "screen-progress": 2,
         "screen-review": 3,
-        "screen-summary": 3,
+        "screen-summary": 4,
       };
 
       function updateStepsBar(screenId) {
         const active = SCREEN_TO_STEP[screenId] || 1;
-        for (let i = 1; i <= 3; i++) {
+        for (let i = 1; i <= 4; i++) {
           const el = document.getElementById("step-" + i);
           if (!el) continue;
           el.classList.remove("active", "done");
           if (i < active) el.classList.add("done");
           else if (i === active) el.classList.add("active");
         }
-        for (let i = 1; i <= 2; i++) {
+        for (let i = 1; i <= 3; i++) {
           const conn = document.getElementById("conn-" + i);
           if (conn) conn.classList.toggle("done", i < active);
         }
@@ -2080,6 +1703,8 @@
           const r = Object.assign({}, row);
           if (r._thumbnailUrl && r._thumbnailUrl.startsWith("blob:"))
             r._thumbnailUrl = "";
+          delete r._originalData;
+          delete r._reviewed;
           return r;
         });
 
@@ -2147,10 +1772,14 @@
         reviewState.notedItems = new Set(s.notedItems || []);
         reviewState.rawStems = s.rawStems || {};
 
+        // Backfill fields added after initial save
+        reviewState.rows.forEach((row) => {
+          if (row._reviewed === undefined) row._reviewed = false;
+          if (!row._originalData) row._originalData = { ...row };
+        });
+
         recomputeAllStatuses();
-        document.getElementById("review-header-sub").textContent =
-          `${reviewState.rows.length} קבצים`;
-        renderReview();
+        renderQueueScreen();
         showScreen("screen-review");
         renderSidebar();
       }
@@ -2484,8 +2113,7 @@
 
             initReview(results, summary.potentialDuplicates, summary);
             saveRun(reviewState);
-            buildSummaryFromReview();
-            showScreen("screen-summary");
+            showScreen("screen-review");
           } catch (e) {
             alert("שגיאה: " + (e.message || e));
             showScreen("screen-setup");
@@ -2550,24 +2178,29 @@
       }
 
       function initReview(results, potentialDupes, summary) {
-        reviewState.rows = (results || []).map((r) => ({
-          "שם פריט": r["שם פריט"] || "",
-          "שם קובץ": r["שם קובץ"] || "",
-          מקור: r["מקור"] || "",
-          "קישור למדיה במקור": r["קישור למדיה במקור"] || "",
-          "סוג זכויות היוצרים": r["סוג זכויות היוצרים"] || "",
-          "יש צורך במתן קרדיט?": r["יש צורך במתן קרדיט?"] || "",
-          "איך לרשום את הקרדיט?": r["איך לרשום את הקרדיט?"] || "",
-          "מותר לשימוש מסחרי?": r["מותר לשימוש מסחרי?"] || "",
-          "מותר לשימוש חיצוני?": r["מותר לשימוש חיצוני?"] || "",
-          "קבצים נוספים": r["קבצים נוספים"] || "",
-          _isRawFilename: !!r._isRawFilename,
-          _unknownLicense: !!r._unknownLicense,
-          _notes: filterMeaningfulNotes(r._notes),
-          _found: !!r._found,
-          _status: "תקין",
-          _thumbnailUrl: r._thumbnailUrl || "",
-        }));
+        reviewState.rows = (results || []).map((r) => {
+          const row = {
+            "שם פריט": r["שם פריט"] || "",
+            "שם קובץ": r["שם קובץ"] || "",
+            מקור: r["מקור"] || "",
+            "קישור למדיה במקור": r["קישור למדיה במקור"] || "",
+            "סוג זכויות היוצרים": r["סוג זכויות היוצרים"] || "",
+            "יש צורך במתן קרדיט?": r["יש צורך במתן קרדיט?"] || "",
+            "איך לרשום את הקרדיט?": r["איך לרשום את הקרדיט?"] || "",
+            "מותר לשימוש מסחרי?": r["מותר לשימוש מסחרי?"] || "",
+            "מותר לשימוש חיצוני?": r["מותר לשימוש חיצוני?"] || "",
+            "קבצים נוספים": r["קבצים נוספים"] || "",
+            _isRawFilename: !!r._isRawFilename,
+            _unknownLicense: !!r._unknownLicense,
+            _notes: filterMeaningfulNotes(r._notes),
+            _found: !!r._found,
+            _status: "תקין",
+            _thumbnailUrl: r._thumbnailUrl || "",
+            _reviewed: false,
+          };
+          row._originalData = { ...row };
+          return row;
+        });
 
         reviewState.rawStems = {};
         for (const row of reviewState.rows) {
@@ -2582,176 +2215,347 @@
         reviewState.notedItems = new Set();
 
         recomputeAllStatuses();
-        document.getElementById("review-header-sub").textContent =
-          `${reviewState.rows.length} קבצים`;
-        renderReview();
+        renderQueueScreen();
       }
 
-      function renderReview() {
+      // ── Queue screen ──────────────────────────────────────────────────────────────
+
+      function renderQueueScreen() {
         recomputeAllStatuses();
-        renderIssuesPanel();
-        renderTable();
+        renderQueueHeader();
+        renderQueueList();
       }
 
-      // ── Issues panel ──────────────────────────────────────────────────────────────
-
-      function renderIssuesPanel() {
-        const panel = document.getElementById("issues-panel");
-        const categories = {
-          "לא זוהה": { cls: "danger", items: [] },
-          "נדרש שם פריט": { cls: "warn", items: [] },
-          "כפילויות אפשריות": { cls: "warn", items: [] },
-          "רישיון לא מזוהה": { cls: "danger", items: [] },
-          הערות: { cls: "muted", items: [] },
-          תקין: { cls: "success", items: [] },
-        };
-
-        for (const row of reviewState.rows) {
-          const s = row._status;
-          if (categories[s]) categories[s].items.push(row);
+      function renderQueueHeader() {
+        const counter = document.getElementById("queue-header-counter");
+        const total = reviewState.rows.length;
+        const unresolved = reviewState.rows.filter(
+          (r) => !r._reviewed && r._status !== "תקין",
+        ).length;
+        if (unresolved === 0 && total > 0) {
+          counter.textContent = "הכל תקין ✓";
+          counter.className = "queue-header-counter all-ok";
+        } else {
+          counter.textContent = `${total} פריטים  •  ${unresolved} דורשים בדיקה`;
+          counter.className = "queue-header-counter";
         }
+      }
 
-        let html = "";
-        for (const cat of STATUS_ORDER.slice(0, -1)) {
-          const { cls, items } = categories[cat];
-          if (!items.length) continue;
-          html += renderIssueCard(cat, cls, items, true);
-        }
-        html += '<div class="issues-divider"></div>';
-        html += renderIssueCard(
-          "תקין",
-          "success",
-          categories["תקין"].items,
-          false,
+      function renderQueueList() {
+        const list = document.getElementById("queue-list");
+        const unresolvedGroups = reviewState.dupeGroups
+          .map((g, i) => ({ ...g, idx: i }))
+          .filter((g) => !g.resolved);
+
+        const FLAGGED = ["לא זוהה", "נדרש שם פריט", "רישיון לא מזוהה", "הערות"];
+        const flagged = reviewState.rows.filter((r) =>
+          FLAGGED.includes(r._status),
         );
+        const clean = reviewState.rows.filter((r) => r._status === "תקין");
 
-        panel.innerHTML = html;
+        let html = unresolvedGroups.map(renderDupeCard).join("");
+        html += [...flagged, ...clean].map(renderItemCard).join("");
+        list.innerHTML = html;
+        attachQueueListeners();
+      }
 
-        panel.querySelectorAll(".issue-card-header").forEach((hdr) => {
-          hdr.addEventListener("click", () =>
-            hdr.closest(".issue-card").classList.toggle("open"),
-          );
-        });
-        panel.querySelectorAll(".btn-noted").forEach((btn) => {
-          btn.addEventListener("click", (e) => {
-            e.stopPropagation();
-            reviewState.notedItems.add(btn.dataset.fname);
-            renderReview();
+      function renderItemCard(row) {
+        const fname = row["שם קובץ"];
+        const localThumb = getThumbnailUrl(fname);
+        const apiThumb = row._thumbnailUrl;
+        const thumbSrc = localThumb || apiThumb;
+
+        const inputThumbHtml = thumbSrc
+          ? `<img class="card-thumb-local" src="${escHtml(thumbSrc)}" loading="lazy"
+               onerror="this.outerHTML='<div class=\\"card-thumb-placeholder\\">🖼</div>'">`
+          : `<div class="card-thumb-placeholder">🖼</div>`;
+
+        const apiThumbHtml = apiThumb
+          ? `<img class="card-thumb-api" src="${escHtml(apiThumb)}" loading="lazy"
+               onerror="this.outerHTML='<div class=\\"card-thumb-placeholder\\">🖼</div>'">`
+          : `<div class="card-thumb-placeholder">🖼</div>`;
+
+        const stemForSearch = fname
+          .replace(/\.[^.]+$/, "")
+          .replace(/[_\-]/g, " ");
+        const searchUrl = `https://www.google.com/search?tbm=isch&q=${encodeURIComponentSafe(stemForSearch)}`;
+
+        const selectOpts = (options, current) =>
+          `<option value="">${current ? "" : "—"}</option>` +
+          options
+            .map(
+              (o) =>
+                `<option value="${escHtml(o)}"${current === o ? " selected" : ""}>${escHtml(o)}</option>`,
+            )
+            .join("");
+
+        const licOpts = [
+          "Public Domain",
+          "No known copyright restrictions",
+          "CC BY",
+          "CC BY SA",
+          "Royalty free",
+          "C",
+        ];
+
+        const fields = [
+          {
+            key: "שם פריט",
+            label: "שם פריט",
+            type: "text",
+            uncertain: row._isRawFilename,
+          },
+          { key: "מקור", label: "מקור", type: "text" },
+          {
+            key: "קישור למדיה במקור",
+            label: "קישור",
+            type: "text",
+          },
+          {
+            key: "סוג זכויות היוצרים",
+            label: "סוג זכויות",
+            type: "select",
+            options: licOpts,
+            uncertain: row._unknownLicense,
+          },
+          {
+            key: "יש צורך במתן קרדיט?",
+            label: "קרדיט?",
+            type: "select",
+            options: ["כן", "לא"],
+          },
+          {
+            key: "איך לרשום את הקרדיט?",
+            label: "נוסח הקרדיט",
+            type: "textarea",
+          },
+          {
+            key: "מותר לשימוש מסחרי?",
+            label: "מסחרי?",
+            type: "select",
+            options: ["מותר", "אסור"],
+          },
+          {
+            key: "מותר לשימוש חיצוני?",
+            label: "חיצוני?",
+            type: "select",
+            options: ["מותר", "אסור"],
+          },
+        ];
+
+        const fieldsHtml = fields
+          .map((f) => {
+            const val = row[f.key] || "";
+            const uncertainHtml = f.uncertain
+              ? `<span class="uncertain-icon" title="ערך זה הוצע אוטומטית — אנא בדוק">⚠</span>`
+              : "";
+            let inputHtml;
+            if (f.type === "select") {
+              inputHtml = `<select class="card-field-select" data-fname="${escHtml(fname)}" data-field="${escHtml(f.key)}">${selectOpts(f.options, val)}</select>`;
+            } else if (f.type === "textarea") {
+              inputHtml = `<textarea class="card-field-textarea" data-fname="${escHtml(fname)}" data-field="${escHtml(f.key)}" rows="2">${escHtml(val)}</textarea>`;
+            } else {
+              inputHtml = `<input class="card-field-input" type="text" data-fname="${escHtml(fname)}" data-field="${escHtml(f.key)}" value="${escHtml(val)}">`;
+            }
+            return `<div class="card-field-row">
+              <div class="card-field-label">${escHtml(f.label)}${uncertainHtml}</div>
+              ${inputHtml}
+            </div>`;
+          })
+          .join("");
+
+        const notesBanner =
+          (row._notes || []).length > 0
+            ? `<div class="card-notes-banner">הערה: ${escHtml(row._notes[0])}</div>`
+            : "";
+
+        const collapsedThumbHtml = thumbSrc
+          ? `<img class="card-collapsed-thumb" src="${escHtml(thumbSrc)}" loading="lazy">`
+          : `<div class="card-collapsed-thumb-placeholder">🖼</div>`;
+
+        const reviewedClass = row._reviewed ? " reviewed" : "";
+        const status = row._status || "תקין";
+        const cardId = `qcard-${escRowId(fname)}`;
+
+        return `
+<div class="queue-card${reviewedClass}" data-fname="${escHtml(fname)}" data-status="${escHtml(status)}" id="${cardId}">
+  <div class="card-collapsed">
+    ${collapsedThumbHtml}
+    <span class="card-collapsed-fname">${escHtml(fname)}</span>
+    <span class="badge-reviewed">✓ בדוק</span>
+  </div>
+  <div class="card-header-open">
+    <div class="card-columns">
+      <div class="card-col-input">
+        ${inputThumbHtml}
+        <span class="card-fname">${escHtml(fname)}</span>
+        <a class="card-google-link" href="${escHtml(searchUrl)}" target="_blank" title="חפש בגוגל תמונות">🔍</a>
+      </div>
+      <div class="card-col-output">
+        ${apiThumbHtml}
+        ${fieldsHtml}
+      </div>
+    </div>
+  </div>
+  <div class="card-body">
+    ${notesBanner}
+    <div class="card-meta-actions">
+      <button class="btn-clear-result" data-fname="${escHtml(fname)}">✕ תוצאה שגויה</button>
+      <button class="btn-reset-original" data-fname="${escHtml(fname)}">↺ איפוס לנתוני המקור</button>
+    </div>
+    <button class="btn-mark-reviewed" data-fname="${escHtml(fname)}">סמן כבדוק ←</button>
+  </div>
+</div>`;
+      }
+
+      function renderDupeCard(g) {
+        const panelsHtml = g.files
+          .map((fn) => {
+            const thumbSrc =
+              getThumbnailUrl(fn) ||
+              (reviewState.rows.find((r) => r["שם קובץ"] === fn) || {})
+                ._thumbnailUrl;
+            const thumbHtml = thumbSrc
+              ? `<img class="dupe-panel-thumb" src="${escHtml(thumbSrc)}" loading="lazy"
+                   onerror="this.outerHTML='<div class=\\"dupe-panel-thumb-placeholder\\">🖼</div>'">`
+              : `<div class="dupe-panel-thumb-placeholder">🖼</div>`;
+            return `<div class="dupe-panel">${thumbHtml}<span class="dupe-panel-fname">${escHtml(fn)}</span></div>`;
+          })
+          .join("");
+
+        return `
+<div class="dupe-card" data-gidx="${g.idx}">
+  <div class="dupe-card-title">כפילות אפשרית?</div>
+  <div class="dupe-panels">${panelsHtml}</div>
+  <div class="dupe-card-actions">
+    <button class="btn btn-sm btn-warn btn-dupe-merge" data-gidx="${g.idx}">מזג ←</button>
+    <button class="btn btn-sm btn-ghost btn-dupe-keep" data-gidx="${g.idx}">השאר נפרד</button>
+  </div>
+</div>`;
+      }
+
+      function attachQueueListeners() {
+        const list = document.getElementById("queue-list");
+
+        list.querySelectorAll(".card-field-input, .card-field-textarea").forEach((el) => {
+          el.addEventListener("input", () => {
+            const row = reviewState.rows.find((r) => r["שם קובץ"] === el.dataset.fname);
+            if (!row) return;
+            row[el.dataset.field] = el.value;
+            applyFieldSideEffects(el.dataset.field, el.value, row, el.dataset.fname);
+            updateCardStatus(el.dataset.fname);
+            renderQueueHeader();
           });
         });
-        panel.querySelectorAll(".issue-item[data-fname]").forEach((item) => {
-          item.addEventListener("click", () => scrollToRow(item.dataset.fname));
+
+        list.querySelectorAll(".card-field-select").forEach((el) => {
+          el.addEventListener("change", () => {
+            const row = reviewState.rows.find((r) => r["שם קובץ"] === el.dataset.fname);
+            if (!row) return;
+            row[el.dataset.field] = el.value;
+            applyFieldSideEffects(el.dataset.field, el.value, row, el.dataset.fname);
+            updateCardStatus(el.dataset.fname);
+            renderQueueHeader();
+          });
         });
-        panel.querySelectorAll(".btn-dupe-merge").forEach((btn) => {
+
+        list.querySelectorAll(".btn-mark-reviewed").forEach((btn) => {
+          btn.addEventListener("click", () => {
+            const row = reviewState.rows.find((r) => r["שם קובץ"] === btn.dataset.fname);
+            if (!row) return;
+            row._reviewed = true;
+            const card = document.getElementById("qcard-" + escRowId(btn.dataset.fname));
+            if (card) card.classList.add("reviewed");
+            renderQueueHeader();
+          });
+        });
+
+        list.querySelectorAll(".card-collapsed").forEach((el) => {
+          el.addEventListener("click", () => {
+            const card = el.closest(".queue-card");
+            if (!card) return;
+            const row = reviewState.rows.find((r) => r["שם קובץ"] === card.dataset.fname);
+            if (row) row._reviewed = false;
+            card.classList.remove("reviewed");
+            renderQueueHeader();
+          });
+        });
+
+        list.querySelectorAll(".btn-clear-result").forEach((btn) => {
+          btn.addEventListener("click", () => {
+            const fname = btn.dataset.fname;
+            const row = reviewState.rows.find((r) => r["שם קובץ"] === fname);
+            if (!row) return;
+            row["מקור"] = "";
+            row["קישור למדיה במקור"] = "";
+            row["סוג זכויות היוצרים"] = "";
+            row["יש צורך במתן קרדיט?"] = "";
+            row["איך לרשום את הקרדיט?"] = "";
+            row["מותר לשימוש מסחרי?"] = "";
+            row["מותר לשימוש חיצוני?"] = "";
+            row._found = false;
+            row._unknownLicense = false;
+            recomputeAllStatuses();
+            const card = document.getElementById("qcard-" + escRowId(fname));
+            if (card) {
+              card.outerHTML = renderItemCard(row);
+              attachQueueListeners();
+            }
+            renderQueueHeader();
+          });
+        });
+
+        list.querySelectorAll(".btn-reset-original").forEach((btn) => {
+          btn.addEventListener("click", () => {
+            const fname = btn.dataset.fname;
+            const row = reviewState.rows.find((r) => r["שם קובץ"] === fname);
+            if (!row || !row._originalData) return;
+            const orig = row._originalData;
+            const fieldsToRestore = [
+              "שם פריט", "מקור", "קישור למדיה במקור", "סוג זכויות היוצרים",
+              "יש צורך במתן קרדיט?", "איך לרשום את הקרדיט?",
+              "מותר לשימוש מסחרי?", "מותר לשימוש חיצוני?", "קבצים נוספים",
+              "_isRawFilename", "_unknownLicense", "_notes", "_found", "_thumbnailUrl",
+            ];
+            for (const k of fieldsToRestore) row[k] = orig[k];
+            recomputeAllStatuses();
+            const card = document.getElementById("qcard-" + escRowId(fname));
+            if (card) {
+              card.outerHTML = renderItemCard(row);
+              attachQueueListeners();
+            }
+            renderQueueHeader();
+          });
+        });
+
+        list.querySelectorAll(".btn-dupe-merge").forEach((btn) => {
           btn.addEventListener("click", () => {
             const gIdx = parseInt(btn.dataset.gidx);
             const group = reviewState.dupeGroups[gIdx];
             if (!group) return;
-            let toMerge = group.files;
-            const checked = btn
-              .closest(".dupe-group")
-              .querySelectorAll("input[type=checkbox]:checked");
-            if (checked.length)
-              toMerge = Array.from(checked).map((cb) => cb.value);
-            if (toMerge.length < 2) {
-              alert("יש לסמן לפחות שני קבצים למיזוג");
-              return;
-            }
-            mergeRows(toMerge);
+            mergeRows(group.files);
             group.resolved = true;
-            renderReview();
+            renderQueueScreen();
           });
         });
-        panel.querySelectorAll(".btn-dupe-keep").forEach((btn) => {
+
+        list.querySelectorAll(".btn-dupe-keep").forEach((btn) => {
           btn.addEventListener("click", () => {
             const gIdx = parseInt(btn.dataset.gidx);
             if (reviewState.dupeGroups[gIdx]) {
               reviewState.dupeGroups[gIdx].resolved = true;
-              renderReview();
+              renderQueueScreen();
             }
           });
         });
       }
 
-      function renderIssueCard(cat, cls, items, startOpen) {
-        const openClass = startOpen ? " open" : "";
-        const count = items.length;
-        let bodyHtml = "";
-
-        if (cat === "כפילויות אפשריות") {
-          const unresolved = reviewState.dupeGroups
-            .map((g, i) => ({ ...g, idx: i }))
-            .filter((g) => !g.resolved);
-          bodyHtml = unresolved.length
-            ? unresolved.map((g) => renderDupeGroup(g)).join("")
-            : '<div class="empty">אין כפילויות</div>';
-        } else if (cat === "הערות") {
-          bodyHtml = items
-            .map(
-              (row) => `
-      <div class="issue-item" data-fname="${escHtml(row["שם קובץ"])}">
-        <span class="issue-item-fname">${escHtml(row["שם קובץ"])}</span>
-        <span class="issue-item-meta">${escHtml((row._notes || [])[0] || "")}</span>
-        <button class="btn-noted" data-fname="${escHtml(row["שם קובץ"])}">הבנתי</button>
-      </div>`,
-            )
-            .join("");
-        } else if (cat === "נדרש שם פריט") {
-          bodyHtml = items
-            .map(
-              (row) => `
-      <div class="issue-item" data-fname="${escHtml(row["שם קובץ"])}">
-        <span class="issue-item-fname">${escHtml(row["שם קובץ"])}</span>
-        <span class="issue-item-meta">שם אוטומטי: ${escHtml(row["שם פריט"])}</span>
-      </div>`,
-            )
-            .join("");
-        } else {
-          bodyHtml = items
-            .map(
-              (row) => `
-      <div class="issue-item" data-fname="${escHtml(row["שם קובץ"])}">
-        <span class="issue-item-fname">${escHtml(row["שם קובץ"])}</span>
-        <span class="issue-item-meta">${escHtml(row["מקור"] || "")}</span>
-      </div>`,
-            )
-            .join("");
-        }
-
-        return `
-    <div class="issue-card${openClass}">
-      <div class="issue-card-header ${cls}">
-        <div class="issue-card-header-left">
-          <span>${escHtml(cat)}</span>
-          <span class="issue-badge">${count}</span>
-        </div>
-        <span class="issue-chevron">▼</span>
-      </div>
-      <div class="issue-card-body">${bodyHtml}</div>
-    </div>`;
-      }
-
-      function renderDupeGroup(g) {
-        const isMulti = g.files.length > 2;
-        const filesHtml = g.files
-          .map((fn) =>
-            isMulti
-              ? `<div class="dupe-checkbox-row">
-         <input type="checkbox" value="${escHtml(fn)}" checked>
-         <span class="dupe-fname">${escHtml(fn)}</span>
-       </div>`
-              : `<div class="dupe-fname">${escHtml(fn)}</div>`,
-          )
-          .join("");
-
-        return `
-    <div class="dupe-group">
-      <div class="dupe-group-files">${filesHtml}</div>
-      <div class="dupe-group-actions">
-        <button class="btn btn-sm btn-warn btn-dupe-merge" data-gidx="${g.idx}">${isMulti ? "מיזוג מסומנים" : "מיזוג"}</button>
-        <button class="btn btn-sm btn-ghost btn-dupe-keep" data-gidx="${g.idx}">${isMulti ? "השאר נפרד לכולם" : "השאר נפרד"}</button>
-      </div>
-    </div>`;
+      function updateCardStatus(fname) {
+        const row = reviewState.rows.find((r) => r["שם קובץ"] === fname);
+        if (!row) return;
+        row._status = computeStatus(row, reviewState.dupeGroups, reviewState.notedItems);
+        const card = document.getElementById("qcard-" + escRowId(fname));
+        if (card) card.dataset.status = row._status;
       }
 
       function mergeRows(filenames) {
@@ -2782,158 +2586,9 @@
         return thumbnailUrls[fname] || null;
       }
 
-      // ── Table ─────────────────────────────────────────────────────────────────────
-
-      function renderTable() {
-        const tbody = document.getElementById("review-tbody");
-        const ordered = [...reviewState.rows].sort(
-          (a, b) =>
-            STATUS_ORDER.indexOf(a._status) - STATUS_ORDER.indexOf(b._status),
-        );
-
-        let separatorInserted = false;
-        let html = "";
-        for (const row of ordered) {
-          if (!separatorInserted && row._status === "תקין") {
-            html += `<tr class="row-separator"><td colspan="11">— תקינים —</td></tr>`;
-            separatorInserted = true;
-          }
-          html += renderTableRow(row);
-        }
-
-        tbody.innerHTML = html;
-
-        tbody.querySelectorAll(".editable-cell").forEach((cell) => {
-          cell.addEventListener("click", () => {
-            if (cell.querySelector("input, textarea, select")) return;
-            startEdit(cell);
-          });
-        });
-
-        tbody.querySelectorAll(".cell-link").forEach((cell) => {
-          cell.addEventListener("dblclick", () => {
-            const fname = cell.dataset.fname;
-            const row = reviewState.rows.find((r) => r["שם קובץ"] === fname);
-            if (!row) return;
-            const newVal = prompt("ערוך קישור:", row["קישור למדיה במקור"]);
-            if (newVal !== null) {
-              row["קישור למדיה במקור"] = newVal.trim();
-              renderReview();
-            }
-          });
-        });
-      }
-
-      function renderTableRow(row) {
-        const fname = row["שם קובץ"];
-        const status = row._status;
-        let rowClass = "row-ok";
-        if (status === "לא זוהה" || status === "רישיון לא מזוהה")
-          rowClass = "row-danger";
-        else if (status !== "תקין") rowClass = "row-issue";
-
-        // Fix 2 thumbnail: local blob first, then API URL, then placeholder
-        const thumbUrl = getThumbnailUrl(fname) || row._thumbnailUrl || null;
-        const thumb = `<td class="cell-thumb col-thumb">
-    ${
-      thumbUrl
-        ? `<img src="${escHtml(thumbUrl)}" loading="lazy"
-             style="height:48px;width:auto;max-width:64px;border-radius:4px;object-fit:cover;"
-             onerror="this.parentElement.innerHTML='<div class=\\"cell-thumb-placeholder\\">🖼</div>'">`
-        : '<div class="cell-thumb-placeholder">🖼</div>'
-    }
-  </td>`;
-
-        const stemForSearch = fname
-          .replace(/\.[^.]+$/, "")
-          .replace(/[_\-]/g, " ");
-        const searchUrl = `https://www.google.com/search?tbm=isch&q=${encodeURIComponentSafe(stemForSearch)}`;
-
-        const fileCell = `<td class="col-file">
-    <div class="cell-fname-wrap">
-      <span class="cell-fname-text" title="${escHtml(fname)}">${escHtml(fname)}</span>
-      <a class="icon-search" href="${escHtml(searchUrl)}" target="_blank" title="חפש בגוגל תמונות">🔍</a>
-    </div>
-  </td>`;
-
-        const url = row["קישור למדיה במקור"];
-        const linkCell = `<td class="cell-link col-link" data-fname="${escHtml(fname)}" title="לחץ פעמיים לעריכה">
-    ${url ? `<a href="${escHtml(url)}" target="_blank">פתח ↗</a>` : '<span style="color:var(--muted);font-size:11px;">—</span>'}
-  </td>`;
-
-        const itemCell = makeEditableCell(
-          "col-item",
-          fname,
-          "שם פריט",
-          row["שם פריט"],
-        );
-        const srcCell = makeEditableCell(
-          "col-source",
-          fname,
-          "מקור",
-          row["מקור"],
-        );
-        const licCell = makeEditableCell(
-          "col-lic",
-          fname,
-          "סוג זכויות היוצרים",
-          row["סוג זכויות היוצרים"],
-        );
-        const credCell = makeEditableCell(
-          "col-credit",
-          fname,
-          "יש צורך במתן קרדיט?",
-          row["יש צורך במתן קרדיט?"],
-        );
-        const howCell = `<td class="col-how editable-cell" data-fname="${escHtml(fname)}" data-field="איך לרשום את הקרדיט?">
-    <div class="cell-display" title="${escHtml(row["איך לרשום את הקרדיט?"])}">${escHtml(row["איך לרשום את הקרדיט?"])}</div>
-  </td>`;
-        const comCell = makeEditableCell(
-          "col-com",
-          fname,
-          "מותר לשימוש מסחרי?",
-          row["מותר לשימוש מסחרי?"],
-        );
-        const extCell = makeEditableCell(
-          "col-ext",
-          fname,
-          "מותר לשימוש חיצוני?",
-          row["מותר לשימוש חיצוני?"],
-        );
-        const extraCell = `<td class="col-extra editable-cell" data-fname="${escHtml(fname)}" data-field="קבצים נוספים">
-    <div class="cell-display" title="${escHtml(row["קבצים נוספים"])}">${escHtml(row["קבצים נוספים"])}</div>
-  </td>`;
-
-        return `<tr class="${rowClass}" data-fname="${escHtml(fname)}" id="row-${escRowId(fname)}">
-    ${thumb}${itemCell}${fileCell}${srcCell}${linkCell}${licCell}${credCell}${howCell}${comCell}${extCell}${extraCell}
-  </tr>`;
-      }
-
-      function makeEditableCell(cls, fname, field, value) {
-        return `<td class="${cls} editable-cell" data-fname="${escHtml(fname)}" data-field="${escHtml(field)}">
-    <div class="cell-display">${escHtml(value)}</div>
-  </td>`;
-      }
-
       function escRowId(fname) {
         return fname.replace(/[^a-zA-Z0-9\u0590-\u05ff]/g, "_");
       }
-
-      // ── Inline editing (Fix 1: dropdowns for constrained fields) ─────────────────
-
-      const SELECT_FIELDS = {
-        "סוג זכויות היוצרים": [
-          "Public Domain",
-          "No known copyright restrictions",
-          "CC BY",
-          "CC BY SA",
-          "Royalty free",
-          "C",
-        ],
-        "יש צורך במתן קרדיט?": ["כן", "לא"],
-        "מותר לשימוש מסחרי?": ["מותר", "אסור"],
-        "מותר לשימוש חיצוני?": ["מותר", "אסור"],
-      };
 
       const RECOGNIZED_LICENSES = [
         "Public Domain",
@@ -2956,120 +2611,16 @@
         if (field === "מקור" && newVal) row._found = true;
       }
 
-      function startEdit(cell) {
-        const fname = cell.dataset.fname;
-        const field = cell.dataset.field;
-        const row = reviewState.rows.find((r) => r["שם קובץ"] === fname);
-        if (!row) return;
+      // ── Queue header buttons ──────────────────────────────────────────────────────
 
-        const val = row[field] || "";
-        cell.innerHTML = "";
+      document.getElementById("btn-skip-to-summary").addEventListener("click", () => {
+        buildSummaryFromReview();
+        showScreen("screen-summary");
+      });
 
-        const selectOptions = SELECT_FIELDS[field];
-
-        if (selectOptions) {
-          const select = document.createElement("select");
-          if (!val || !selectOptions.includes(val)) {
-            const emptyOpt = document.createElement("option");
-            emptyOpt.value = val;
-            emptyOpt.textContent = val || "—";
-            emptyOpt.selected = true;
-            select.appendChild(emptyOpt);
-          }
-          for (const opt of selectOptions) {
-            const o = document.createElement("option");
-            o.value = opt;
-            o.textContent = opt;
-            if (opt === val) o.selected = true;
-            select.appendChild(o);
-          }
-          cell.appendChild(select);
-          select.focus();
-
-          let committed = false;
-          const commit = () => {
-            if (committed) return;
-            committed = true;
-            row[field] = select.value;
-            applyFieldSideEffects(field, select.value, row, fname);
-            renderReview();
-          };
-          select.addEventListener("change", commit);
-          select.addEventListener("blur", commit);
-          select.addEventListener("keydown", (e) => {
-            if (e.key === "Escape") {
-              committed = true;
-              row[field] = val;
-              renderReview();
-            }
-          });
-          return;
-        }
-
-        const isTextarea = field === "איך לרשום את הקרדיט?";
-        const input = document.createElement(isTextarea ? "textarea" : "input");
-        input.value = val;
-        if (!isTextarea) input.type = "text";
-        cell.appendChild(input);
-        input.focus();
-        if (input.select) input.select();
-
-        const commit = () => {
-          const newVal = input.value;
-          row[field] = newVal;
-          applyFieldSideEffects(field, newVal, row, fname);
-          renderReview();
-        };
-        input.addEventListener("blur", commit);
-        input.addEventListener("keydown", (e) => {
-          if (e.key === "Enter" && !isTextarea) {
-            e.preventDefault();
-            input.blur();
-          }
-          if (e.key === "Escape") {
-            input.value = val;
-            input.blur();
-          }
-        });
-      }
-
-      // ── Scroll to row ─────────────────────────────────────────────────────────────
-
-      function scrollToRow(fname) {
-        const row = document.getElementById("row-" + escRowId(fname));
-        if (!row) return;
-        row.scrollIntoView({ behavior: "smooth", block: "center" });
-        row.classList.add("row-highlight");
-        row.querySelectorAll("td").forEach((td) => {
-          td.style.animation = "none";
-          td.offsetHeight;
-          td.style.animation = "";
-        });
-        setTimeout(() => row.classList.remove("row-highlight"), 1000);
-      }
-
-      // ── Actions bar ───────────────────────────────────────────────────────────────
-
-      document
-        .getElementById("btn-monday-toggle")
-        .addEventListener("click", function () {
-          const accordion = document.getElementById("monday-accordion");
-          const isOpen = accordion.classList.toggle("open");
-          this.classList.toggle("open", isOpen);
-        });
-
-      document
-        .getElementById("btn-review-download")
-        .addEventListener("click", () => {
-          downloadBlob(buildCSV(), "copyright_report.csv");
-        });
-
-      document
-        .getElementById("btn-go-summary")
-        .addEventListener("click", () => {
-          buildSummaryFromReview();
-          showScreen("screen-summary");
-        });
+      document.getElementById("btn-queue-download").addEventListener("click", () => {
+        downloadBlob(buildCSV(), "copyright_report.csv");
+      });
 
       // ── CSV ───────────────────────────────────────────────────────────────────────
 
