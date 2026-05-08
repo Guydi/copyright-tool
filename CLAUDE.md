@@ -36,12 +36,14 @@ The following files were deleted when the app was converted to a static SPA:
 - `templates/index.html` — Jinja template (replaced by static `index.html`)
 
 ### Flow
-1. User selects a folder via `<input type="file" webkitdirectory>` and/or types filenames manually — both feed into a **checklist**
-2. User unchecks any files to exclude, then clicks Search → `processFilenames()` in `lookup.js` runs asynchronously
-3. UI updates live via `onProgress` callback
-4. On completion → state saved to localStorage, then **summary screen** shown
-5. User can navigate back to review screen to edit; sidebar lets user reload any past run directly into review
-6. User downloads CSV from review screen or summary screen
+1. User selects a folder via `<input type="file" webkitdirectory>` and/or types filenames manually — both feed into the **file entries list**
+2. Non-image files are automatically marked as invalid (strikethrough, red border, error message) and excluded from processing — they do not block the search button
+3. A summary bar above the list shows total count + skipped count; a "הסר ידולגו" button removes all invalid entries at once
+4. User clicks Search → only valid entries are passed to `processFilenames()` in `lookup.js`
+5. UI updates live via `onProgress` callback
+6. On completion → state saved to localStorage, then **summary screen** shown
+7. User can navigate back to review screen to edit; sidebar lets user reload any past run directly into review
+8. User downloads CSV from review screen or summary screen
 
 ---
 
@@ -142,28 +144,32 @@ All license strings are normalized to exactly these 6 canonical labels:
 - `Public Domain` — CC0, "public domain", "no copyright"
 - `No known copyright restrictions` — "no known copyright restrictions", "no restrictions"
 - `CC BY` — all CC BY versions (2.0, 3.0, 4.0, or unversioned) collapse to this single label
-- `CC-BY-SA` — all CC BY-SA versions (2.0, 3.0, 4.0, or unversioned) collapse to this single label
+- `CC BY SA` — all CC BY-SA versions (2.0, 3.0, 4.0, or unversioned) collapse to this single label
 - `Royalty free` — Shutterstock, Pexels, "royalty free"
 - `C` — all rights reserved, "©", "copyright"
 
 If a license string can't be mapped → kept as-is, flagged in summary as "unknown license".
 
+The **normalized label** is used for `'סוג זכויות היוצרים'` (review table + CSV).
+The **raw API license string** (e.g. `CC BY-SA 2.0`, `CC BY 4.0`) is used for `'איך לרשום את הקרדיט?'` — so the credit attribution preserves the exact version from the source.
+
 ---
 
 ## CSV output columns
 
-| Hebrew column | Notes |
-|---|---|
-| שם פריט | Item name — from archive title or cleaned filename stem (FIRST column) |
-| מקור | Archive name |
-| קישור למדיה במקור | URL to source page |
-| סוג זכויות היוצרים | Normalized license label |
-| יש צורך במתן קרדיט? | כן / לא |
-| איך לרשום את הקרדיט? | `[title], by [author], under [license], via [source]` |
-| מותר לשימוש מסחרי? | מותר / אסור |
-| מותר לשימוש חיצוני? | מותר / אסור |
+| CSV header | Internal key | Notes |
+|---|---|---|
+| `item` | `שם פריט` | Item name — Monday.com auto-detects this as the item name column (FIRST column) |
+| `מקור` | `מקור` | Archive name |
+| `קישור למדיה במקור` | `קישור למדיה במקור` | URL to source page |
+| `סוג זכויות היוצרים` | `סוג זכויות היוצרים` | Normalized license label |
+| `יש צורך במתן קרדיט?` | `יש צורך במתן קרדיט?` | כן / לא |
+| `איך לרשום את הקרדיט?` | `איך לרשום את הקרדיט?` | `[title], by [author], under [raw license], via [source]` |
+| `מותר לשימוש מסחרי?` | `מותר לשימוש מסחרי?` | מותר / אסור |
+| `מותר לשימוש חיצוני?` | `מותר לשימוש חיצוני?` | מותר / אסור |
 
 Note: `שם קובץ` and `קבצים נוספים` remain in `reviewState.rows` and visible in the review table — they are excluded from the CSV export only.
+The review table column header and all JS references use `שם פריט`; only the CSV output header is `item`.
 
 CSV is generated client-side with UTF-8 BOM so Hebrew displays correctly in Excel and Monday.com.
 
@@ -173,13 +179,24 @@ CSV is generated client-side with UTF-8 BOM so Hebrew displays correctly in Exce
 
 - Language: Hebrew, RTL
 - Font: Heebo (sans) + DM Mono (filenames/paths)
-- Style: clean, minimal, bright — white cards on light grey background (#f5f5f3), blue accents (#2d6ef6)
+- Style: clean, minimal — white cards on `#f5f5f3` background; **black/white with single green accent** (no blue)
+  - `--ink: #111111` — primary interactive/active color
+  - `--ink-light: #f0f0f0` — tinted backgrounds (replaces old accent-light)
+  - `--success: #1a9e6e` — positive actions (search/download buttons, active step, found items, progress bar)
+  - `--danger: #dc2626` — errors, not-found items
+  - Blue (`--accent`) has been removed entirely
 - 4 screens managed by JS show/hide, no routing library
-- Layout: fixed 220px sidebar on CSS-left (`--sidebar-w`), `.main-area` has `margin-left: 220px`
-- Review screen: when active, `position: fixed; top: var(--steps-h); left: var(--sidebar-w); right: 0; bottom: 0;`
-- Steps bar: `position: sticky; top: 0; height: var(--steps-h)` inside `.main-area`, spans only the main content area
-- "← חיפוש חדש" buttons (header + review screen) call `location.reload()` for a fully clean reset
-- Summary screen uses `compact-header` CSS class on `#main-shell` to reduce the header's bottom margin (40px → 12px)
+- Layout: collapsible sidebar on CSS-right, default **closed** (36px strip); opens to 220px on click
+  - Toggle strip shows "פרויקטים קודמים" label rotated vertically
+  - Logo (©) + tool name live in the **steps-bar** (right side), not the sidebar
+  - `.main-area` uses `margin-right: var(--sidebar-w-closed)` when closed, `var(--sidebar-w)` when open
+  - `body.sidebar-open` class drives `.review-actions-bar` right offset
+- Steps bar: `position: sticky; top: 0; height: var(--steps-h)` inside `.main-area`, spans main content area
+  - Future step: hollow circle, `#ccc` border, white fill
+  - Active step: green filled circle (`--success`)
+  - Done step: solid black filled circle (`--ink`)
+- "חיפוש חדש" button in sidebar: ghost style (no fill, muted color, font-weight 400)
+- Summary screen: `#screen-summary .shell { padding-top: 20px }` to prevent excess top gap
 - All archive calls use fetch() with proper error handling
 
 ---
@@ -187,13 +204,13 @@ CSV is generated client-side with UTF-8 BOM so Hebrew displays correctly in Exce
 ## 4-screen flow
 
 ### Screen 1: Setup
-User builds a checklist of filenames and selects archive sources.
+User builds a file list and selects archive sources.
 
 **Input model:**
-- **Folder picker** (`webkitdirectory`): scans selected folder, filters by `IMAGE_EXTENSIONS`, appends to checklist. Can be used multiple times.
-- **Manual textarea**: user types/pastes filenames (one per line, with extension), clicks "הוסף" → appended to checklist. Duplicates skipped.
-- **Checklist**: each item has a checkbox (default checked) + filename. Two buttons: "הכל" (check all) / "כלום" (uncheck all). "חפש" runs only on checked items; shows validation error if nothing is checked.
-- File objects (for local thumbnails) are tracked in `fileObjectMap` only for files added via folder picker. Manual entries have `file: null`.
+- **Folder picker** (`webkitdirectory`): imports ALL files from the selected folder. Valid image files (matching `IMAGE_EXTENSIONS`) are added normally; non-image files are added as invalid (strikethrough, red border, `entry.invalid = true`). Can be used multiple times.
+- **Manual text inputs**: user types filenames one per input. On blur, extension is validated — missing extension or unsupported type marks the entry invalid with an inline error message.
+- **Invalid files** are excluded from `getSearchFilenames()` and `processFilenames()` — they never block the search button. A compact summary bar above the list shows `N קבצים • M ידולגו [הסר ידולגו ×]`; the "הסר ידולגו" button calls `removeInvalidEntries()`.
+- File objects (for local thumbnails) are tracked in `fileObjectMap` only for valid files from folder picker. Manual entries and invalid entries have `file: null`.
 
 ### Screen 2: Progress
 Live feed shows results as they arrive via `onProgress` callback from `processFilenames()`. New items animate in with a slide-down fade (`live-item-in` keyframe).
@@ -227,7 +244,12 @@ Columns: thumbnail | שם פריט | שם קובץ [🔍] | מקור | קישו�
 - Monday.com import instructions (collapsible accordion, opens upward)
 
 ### Screen 4: Summary
-Stat boxes, source breakdown, flagged item counts. CSV download button is full-width (like the primary search button).
+Horizontal segmented bar (found/not-found), source breakdown, flagged item counts. CSV download button is full-width.
+
+**Segmented bar** (replaces old stat boxes):
+- Full-width bar, 12px height, rounded ends; left segment = green (found), right segment = red (not found), proportional via `style.flex`
+- Labels below: `לא זוהו N` (red, left) and `נמצאו N` (green, right); total count centered above
+- Driven by `buildSummary()` which sets `seg-bar-found`, `seg-bar-nf`, `seg-label-found`, `seg-label-nf`, `seg-bar-total`
 
 - **"פריטים הדורשים תיקון" card** — shown only when issues exist; contains the issue count list and the "עריכת פריטים" button (`btn-go-review`) which navigates back to the review screen. Button is disabled (and card hidden) when there are no issues.
 - **"קרדיטים להעתקה" card** — always shown. Collects rows where `'יש צורך במתן קרדיט?' === 'כן'` and displays their attribution strings in a `<textarea readonly>` with an "העתק הכל" button (uses `navigator.clipboard.writeText`, changes label to "✓ הועתק" for 2s). If no rows require credit, shows a muted message instead.
