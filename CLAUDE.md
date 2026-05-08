@@ -25,7 +25,7 @@ python -m http.server 8000
 | File | Role |
 |---|---|
 | `lookup.js` | All lookup logic — ES module. Filename analysis, archive API calls, license normalization, item name generation, duplicate detection, batch processor |
-| `index.html` | Full UI — 4 screens: setup → progress → review → summary |
+| `index.html` | Full UI — 4 screens: הכנה → חיפוש → עריכה → סיכום (queue-based review) |
 
 ### Removed Python files
 The following files were deleted when the app was converted to a static SPA:
@@ -41,9 +41,10 @@ The following files were deleted when the app was converted to a static SPA:
 3. A summary bar above the list shows total count + skipped count; a "הסר ידולגו" button removes all invalid entries at once
 4. User clicks Search → only valid entries are passed to `processFilenames()` in `lookup.js`
 5. UI updates live via `onProgress` callback
-6. On completion → state saved to localStorage, then **summary screen** shown
-7. User can navigate back to review screen to edit; sidebar lets user reload any past run directly into review
-8. User downloads CSV from review screen or summary screen
+6. On completion → state saved to localStorage, then **queue screen** (screen 3) shown
+7. User reviews items card by card in the queue; sidebar lets user reload any past run directly into the queue
+8. User clicks "דלג לסיכום ←" or resolves all items → navigates to summary screen
+9. User downloads CSV from queue header or summary screen
 
 ---
 
@@ -168,8 +169,8 @@ The **raw API license string** (e.g. `CC BY-SA 2.0`, `CC BY 4.0`) is used for `'
 | `מותר לשימוש מסחרי?` | `מותר לשימוש מסחרי?` | מותר / אסור |
 | `מותר לשימוש חיצוני?` | `מותר לשימוש חיצוני?` | מותר / אסור |
 
-Note: `שם קובץ` and `קבצים נוספים` remain in `reviewState.rows` and visible in the review table — they are excluded from the CSV export only.
-The review table column header and all JS references use `שם פריט`; only the CSV output header is `item`.
+Note: `שם קובץ` and `קבצים נוספים` remain in `reviewState.rows` and visible in the queue cards — they are excluded from the CSV export only.
+All JS references use `שם פריט`; only the CSV output header is `item`.
 
 CSV is generated client-side with UTF-8 BOM so Hebrew displays correctly in Excel and Monday.com.
 
@@ -190,8 +191,7 @@ CSV is generated client-side with UTF-8 BOM so Hebrew displays correctly in Exce
   - Toggle strip shows "פרויקטים קודמים" label rotated vertically
   - Logo (©) + tool name live in the **steps-bar** (right side), not the sidebar
   - `.main-area` uses `margin-right: var(--sidebar-w-closed)` when closed, `var(--sidebar-w)` when open
-  - `body.sidebar-open` class drives `.review-actions-bar` right offset
-- Steps bar: `position: sticky; top: 0; height: var(--steps-h)` inside `.main-area`, spans main content area
+- Steps bar: `position: sticky; top: 0; height: var(--steps-h)` inside `.main-area`, spans main content area — **4 steps**: הכנה → חיפוש → עריכה → סיכום
   - Future step: hollow circle, `#ccc` border, white fill
   - Active step: green filled circle (`--success`)
   - Done step: solid black filled circle (`--ink`)
@@ -215,33 +215,34 @@ User builds a file list and selects archive sources.
 ### Screen 2: Progress
 Live feed shows results as they arrive via `onProgress` callback from `processFilenames()`. New items animate in with a slide-down fade (`live-item-in` keyframe).
 
-### Screen 3: Review
-Full-width layout. Two sections:
+### Screen 3: Queue (`#screen-review`)
+Card-by-card review. Normal block layout (max-width 680px, centered) — not a fixed modal.
 
-**Issues panel (top, scrollable, max 38vh):**
-Collapsible cards in fixed order:
-1. לא זוהה (danger) — no source found
-2. נדרש שם פריט (warn) — item name is raw stem fallback
-3. כפילויות אפשריות (warn) — potential duplicate groups with merge/dismiss UI
-4. רישיון לא מזוהה (danger) — unrecognized license string
-5. הערות (muted) — notes from processing, dismissible with "הבנתי"
-6. תקין (success) — all resolved, always shown, starts collapsed
+**Sticky header bar** (below steps bar):
+- Counter: `N פריטים  •  M דורשים בדיקה` — decrements live as items are resolved
+- When all resolved: `הכל תקין ✓` (green)
+- Buttons: "הורד CSV ↓" and "דלג לסיכום ←" (skips to summary)
 
-**Editable table (bottom, scrollable):**
-Columns: thumbnail | שם פריט | שם קובץ [🔍] | מקור | קישור | סוג זכויות | קרדיט? | איך לרשום | מסחרי? | חיצוני? | קבצים נוספים
+**Queue order:** duplicate group cards first → flagged items → clean items
 
-- Thumbnails: priority order — (1) local blob URL from `fileObjectMap`, (2) `_thumbnailUrl` from API response, (3) placeholder icon
-- שם קובץ has a 🔍 icon linking to Google Image Search
-- קישור shown as "פתח ↗" link; double-click to edit raw URL
-- Constrained fields use `<select>` dropdowns on click (not free-text input): **סוג זכויות היוצרים** (6 canonical values), **יש צורך במתן קרדיט?** (כן/לא), **מותר לשימוש מסחרי?** (מותר/אסור), **מותר לשימוש חיצוני?** (מותר/אסור)
-- Other cells are click-to-edit (input or textarea)
-- Rows sorted: unresolved issues first (by status order), then a separator row, then תקין rows
-- Row border-right indicates severity: danger color for לא זוהה/רישיון לא מזוהה, warn color for others
+**Duplicate cards** (one per unresolved group, appear before all item cards):
+- Two-panel side-by-side layout: thumbnail + filename per file
+- "כפילות אפשרית?" title
+- Action buttons: "מזג ←" (calls `mergeRows`, removes extra rows) / "השאר נפרד" (dismisses group)
 
-**Fixed actions bar (bottom of viewport):**
-- הורד CSV — downloads reviewed CSV from JS state
-- סיים → — transitions to summary screen
-- Monday.com import instructions (collapsible accordion, opens upward)
+**Regular item cards** (`.queue-card`):
+- Two-column layout: left = input (local thumb, filename, 🔍 Google Images link) / right = output (API thumb + all editable fields)
+- Editable fields: שם פריט (text), מקור (text), קישור (text), סוג זכויות (select, 6 values), קרדיט? (select), נוסח קרדיט (textarea), מסחרי? (select), חיצוני? (select)
+- Auto-save: every `input`/`change` event saves to `reviewState.rows` immediately — no save button
+- ⚠ icon next to uncertain fields: שם פריט when `_isRawFilename`, סוג זכויות when `_unknownLicense`; tooltip: `ערך זה הוצע אוטומטית — אנא בדוק`
+- "✕ תוצאה שגויה" — clears all output fields, re-renders card
+- "↺ איפוס לנתוני המקור" — restores all fields from `row._originalData` snapshot
+- "סמן כבדוק ←" — sets `row._reviewed = true`, collapses card to compact row (thumb + filename + green ✓ בדוק badge)
+- Clicking a collapsed reviewed card re-expands it
+- Card left-border: red for לא זוהה/רישיון לא מזוהה, amber for other flagged, gray for תקין, green for reviewed
+
+**`_originalData` snapshot:**
+Set once in `initReview()` as a shallow copy of each row after all fields are populated. Excluded from CSV output and localStorage serialization (deleted in `saveRun()`). Backfilled as `{...row}` in `loadRunById()` for old saved runs.
 
 ### Screen 4: Summary
 Horizontal segmented bar (found/not-found), source breakdown, flagged item counts. CSV download button is full-width.
@@ -304,12 +305,18 @@ const reviewState = {
   _found: true/false,
   _status: 'לא זוהה' | 'נדרש שם פריט' | 'כפילויות אפשריות' | 'רישיון לא מזוהה' | 'הערות' | 'תקין',
   _thumbnailUrl: '',            // https URL from API (Wikimedia thumburl, LOC image_url); empty for Pexels/Shutterstock
+  _reviewed: false,             // true when user clicks "סמן כבדוק" — collapses the card
+  _originalData: {...},         // shallow copy set at initReview time; used by reset button; excluded from CSV + localStorage
 }
 ```
 
 Key functions:
 - `computeStatus(row, dupeGroups, notedItems)` — pure function, re-derives status from row data
-- `renderReview()` — calls `recomputeAllStatuses()`, then `renderIssuesPanel()` and `renderTable()`
+- `renderQueueScreen()` — calls `recomputeAllStatuses()`, then `renderQueueHeader()` and `renderQueueList()`
+- `renderItemCard(row)` — full HTML for one item card (two-column layout, editable fields, buttons)
+- `renderDupeCard(g)` — HTML for a duplicate group card (two panels, merge/keep buttons)
+- `attachQueueListeners()` — wires all field/button events after `renderQueueList()` sets innerHTML
+- `updateCardStatus(fname)` — lightweight per-card status update without full re-render
 - `buildCSV()` — generates UTF-8 BOM CSV string from `reviewState.rows` (public columns only)
 - `downloadBlob(text, filename)` — triggers browser download
 - `renderCreditsCard()` — builds the credits copy box on the summary screen
@@ -351,13 +358,13 @@ A fixed 220px sidebar on the CSS-left edge shows all runs saved in localStorage.
 
 ## Steps bar
 
-A horizontal `<div class="steps-bar">` with `position: sticky; top: 0; height: var(--steps-h)` (44px) inside `.main-area`, visible on all 4 screens. Steps display LTR (`direction: ltr`):
+A horizontal `<div class="steps-bar">` with `position: sticky; top: 0; height: var(--steps-h)` inside `.main-area`, visible on all 4 screens. Steps display LTR (`direction: ltr`):
 
-`① בחירת תמונות → ② חיפוש → ③ עריכה → ④ סיכום`
+`① הכנה → ② חיפוש → ③ עריכה → ④ סיכום`
 
-- **Active step**: `.step.active` — blue filled pill, bold
-- **Done steps**: `.step.done` — success green, bold  
-- **Future steps**: `.step` (unstyled) — muted gray
+- **Active step**: green filled circle (`--success`), bold
+- **Done steps**: solid black filled circle (`--ink`), bold
+- **Future steps**: hollow circle, `#ccc` border — muted
 - Not interactive — clicking a step does not navigate
 - Updated by `updateStepsBar(screenId)` called from `showScreen()`
 
