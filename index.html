@@ -27,6 +27,7 @@
         --mono: "DM Mono", monospace;
         --sans: "Heebo", sans-serif;
         --steps-h: 80px;
+        --sidebar-w: 200px;
       }
 
       *,
@@ -51,89 +52,71 @@
         line-height: 1.6;
       }
       /* ══════════════════════════════════════════════════════
-     HISTORY PANEL (burger dropdown)
+     SIDEBAR (always visible)
   ══════════════════════════════════════════════════════ */
 
-      .burger-btn {
-        background: none;
-        border: none;
-        cursor: pointer;
-        padding: 0 14px;
-        font-size: 22px;
-        color: var(--muted);
-        line-height: 1;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        align-self: stretch;
-        transition: background 0.12s, color 0.12s;
-        border-radius: 0;
-      }
-      .burger-btn:hover {
-        background: var(--bg);
-        color: var(--text);
-      }
-
-      .history-panel {
-        position: fixed;
-        top: var(--steps-h);
-        right: 0;
-        width: 260px;
-        max-height: calc(100vh - var(--steps-h));
-        background: var(--white);
+      .sidebar {
+        width: var(--sidebar-w);
+        flex-shrink: 0;
         border-left: 1px solid var(--border);
-        border-bottom: 1px solid var(--border);
-        border-radius: 0 0 0 10px;
-        box-shadow: -2px 4px 16px rgba(0, 0, 0, 0.08);
+        background: var(--white);
         display: flex;
         flex-direction: column;
-        z-index: 300;
         overflow: hidden;
-        transform: translateX(110%);
-        opacity: 0;
-        transition: transform 0.22s ease, opacity 0.18s ease;
-        pointer-events: none;
-      }
-      .history-panel.open {
-        transform: translateX(0);
-        opacity: 1;
-        pointer-events: auto;
       }
 
-      .history-panel-title {
-        font-size: 11px;
-        font-weight: 600;
-        color: var(--muted);
-        padding: 10px 14px 8px;
-        border-bottom: 1px solid var(--border);
-        flex-shrink: 0;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-        direction: rtl;
-      }
-
-      .history-panel-bottom {
-        padding: 10px 12px;
-        border-top: 1px solid var(--border);
-        text-align: center;
-        flex-shrink: 0;
+      @media (max-width: 900px) {
+        .sidebar { display: none; }
       }
 
       .btn-new-search {
-        background: var(--ink);
-        border: none;
-        color: white;
-        font-weight: 500;
-        font-size: 13px;
+        background: none;
+        border: 1px solid var(--border);
+        color: var(--muted);
+        font-weight: 400;
+        font-size: 12px;
         border-radius: 7px;
-        padding: 7px 14px;
+        padding: 7px 10px;
         cursor: pointer;
         font-family: var(--sans);
         transition: background 0.12s;
-        white-space: nowrap;
+        width: calc(100% - 16px);
+        margin: 8px;
+        text-align: center;
+        flex-shrink: 0;
+        display: block;
       }
       .btn-new-search:hover {
-        background: #333;
+        background: var(--bg);
+      }
+
+      .run-meta {
+        font-size: 10px;
+        color: var(--muted);
+        margin-top: 2px;
+      }
+
+      .run-save-indicator {
+        font-size: 10px;
+        color: var(--muted);
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        margin-top: 3px;
+      }
+      .run-save-indicator.is-saving { color: var(--muted); }
+      .save-dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: var(--success);
+        flex-shrink: 0;
+      }
+
+      .sidebar-bottom {
+        padding: 10px 12px;
+        border-top: 1px solid var(--border);
+        flex-shrink: 0;
       }
 
       .btn-danger-outline {
@@ -170,32 +153,48 @@
 
       .run-entry {
         display: flex;
-        align-items: center;
+        align-items: flex-start;
         gap: 6px;
         padding: 8px 10px;
-        border-radius: 8px;
-        margin-bottom: 2px;
-        transition: background 0.12s;
-      }
-      .run-entry:hover {
-        background: var(--bg);
-      }
-      .run-entry.active {
-        background: var(--ink-light);
-      }
-
-      .run-label-click {
-        flex: 1;
+        border-radius: var(--radius);
+        margin-bottom: 4px;
         cursor: pointer;
+        transition: background 0.12s;
+        border: 1px solid transparent;
+      }
+      .run-entry:hover { background: var(--bg); }
+      .run-entry.active {
+        background: var(--bg);
+        border-color: var(--border);
+      }
+      .run-info { flex: 1; min-width: 0; }
+      .run-name {
         font-size: 12px;
+        font-weight: 500;
         color: var(--text);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .run-name-unnamed {
+        font-style: italic;
+        color: var(--muted);
         font-weight: 400;
-        line-height: 1.4;
       }
-      .run-label-click:hover {
-        color: var(--ink);
+      .run-date {
+        font-size: 10px;
+        color: var(--muted);
+        margin-top: 1px;
       }
-
+      .run-saved-badge {
+        display: inline-block;
+        background: var(--success-light);
+        color: var(--success);
+        font-size: 9px;
+        border-radius: 99px;
+        padding: 1px 6px;
+        margin-top: 3px;
+      }
       .run-delete-btn {
         background: none;
         border: none;
@@ -227,11 +226,21 @@
       }
 
       /* ══════════════════════════════════════════════════════
-     MAIN AREA
+     LAYOUT
   ══════════════════════════════════════════════════════ */
 
+      .app-body {
+        display: flex;
+        flex-direction: row;
+        height: calc(100vh - var(--steps-h));
+        direction: rtl;
+        overflow: hidden;
+      }
+
       .main-area {
-        min-height: 100vh;
+        flex: 1;
+        min-width: 0;
+        overflow-y: auto;
       }
 
       /* ── Steps bar ── */
@@ -254,7 +263,7 @@
         align-items: center;
         gap: 8px;
         flex-shrink: 0;
-        width: 180px;
+        width: var(--sidebar-w);
         align-self: stretch;
       }
       .steps-bar-logo .logo-mark {
@@ -271,13 +280,6 @@
         white-space: nowrap;
       }
 
-      .steps-bar-actions {
-        display: flex;
-        align-items: center;
-        justify-content: flex-end;
-        flex-shrink: 0;
-        width: 180px;
-      }
 
       .steps-track {
         display: flex;
@@ -953,7 +955,7 @@
 
       .queue-header {
         position: sticky;
-        top: var(--steps-h);
+        top: 0;
         z-index: 90;
         background: var(--white);
         border-bottom: 1px solid var(--border);
@@ -980,132 +982,288 @@
       }
       .btn-queue-action:hover { background: var(--bg); }
 
-      .queue-list {
-        max-width: 680px;
-        margin: 0 auto;
-        padding: 24px 24px 80px;
+      /* ── Carousel layout ── */
+      #screen-review .queue-stage {
+        height: calc(100vh - var(--steps-h) - 52px - 60px);
         display: flex;
         flex-direction: column;
-        gap: 16px;
+        padding: 12px 24px 0;
+        max-width: 780px;
+        margin: 0 auto;
+        width: 100%;
       }
 
-      .queue-card {
-        background: var(--white);
-        border: 1px solid var(--border);
+      .rq-card {
+        flex: 1;
+        min-height: 0;
+        display: flex;
+        flex-direction: column;
+        background: #fff;
+        border: 1px solid #e5e5e3;
         border-radius: var(--radius);
+        position: relative;
         overflow: hidden;
-        border-right: 4px solid var(--border);
       }
-      .queue-card[data-status="לא זוהה"],
-      .queue-card[data-status="רישיון לא מזוהה"] { border-right-color: var(--danger); }
-      .queue-card[data-status="נדרש שם פריט"],
-      .queue-card[data-status="כפילויות אפשריות"],
-      .queue-card[data-status="הערות"] { border-right-color: var(--warn); }
-      .queue-card.reviewed { border-right-color: var(--success) !important; }
 
-      .queue-card .card-body {
-        padding: 12px 16px 16px;
+      .rq-card-cols {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: nowrap;
+        flex: 1;
+        min-height: 0;
+        direction: rtl;
+      }
+
+      .rq-col-source {
+        flex: 0 0 38%;
+        min-width: 0;
+        background: var(--ink-light);
+        padding: 14px 12px;
         display: flex;
         flex-direction: column;
         gap: 10px;
-      }
-      .queue-card.reviewed .card-body { display: none; }
-      .queue-card .card-collapsed {
-        display: none;
-        padding: 10px 16px;
         align-items: center;
-        gap: 12px;
-        cursor: pointer;
+        border-left: 1px solid #e5e5e3;
+        overflow-y: auto;
+      }
+
+      .rq-col-label {
+        font-size: 11px;
+        font-variant: small-caps;
+        color: #888;
+        letter-spacing: 0.04em;
+        align-self: flex-start;
+      }
+
+      .rq-thumb-source {
+        width: 100%;
+        aspect-ratio: 4/3;
+        background: #e5e5e3;
+        border-radius: 6px;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+      }
+      .rq-thumb-source img { width: 100%; height: 100%; object-fit: cover; }
+
+      .rq-thumb-placeholder {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 6px;
+        color: #aaa;
+        font-size: 24px;
+        text-align: center;
+        padding: 8px;
+      }
+      .rq-thumb-placeholder span { font-size: 11px; }
+
+      .rq-fname {
+        font-family: var(--mono);
+        font-size: 13px;
+        word-break: break-all;
+        direction: ltr;
+        text-align: center;
+        color: var(--ink);
+        line-height: 1.4;
+      }
+
+      .rq-google-link {
+        font-size: 11px;
+        color: #888;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+      }
+      .rq-google-link:hover { color: var(--ink); }
+
+      .rq-col-result {
+        flex: 1;
+        min-width: 0;
+        overflow-y: auto;
+        padding: 14px 14px 0;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
         direction: rtl;
       }
-      .queue-card.reviewed .card-collapsed { display: flex; }
-      .queue-card.reviewed .card-header-open { display: none; }
 
-      .card-collapsed-thumb {
-        width: 36px; height: 36px;
-        object-fit: cover; border-radius: 4px; flex-shrink: 0;
+      .rq-thumb-api {
+        width: 100%;
+        aspect-ratio: 16/9;
+        background: #e5e5e3;
+        border-radius: 6px;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
       }
-      .card-collapsed-thumb-placeholder {
-        width: 36px; height: 36px;
-        background: var(--bg); border: 1px solid var(--border);
-        border-radius: 4px; display: flex; align-items: center;
-        justify-content: center; color: var(--muted); font-size: 14px; flex-shrink: 0;
-      }
-      .card-collapsed-fname {
-        font-family: var(--mono); font-size: 12px; direction: ltr;
-        flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
-      }
-      .badge-reviewed {
-        font-size: 11px; font-weight: 700; color: var(--success);
-        background: var(--success-light); border-radius: 99px;
-        padding: 2px 10px; flex-shrink: 0;
-      }
+      .rq-thumb-api img { width: 100%; height: 100%; object-fit: cover; }
+      .rq-thumb-api-link { font-size: 12px; color: #888; text-decoration: none; }
+      .rq-thumb-api-link:hover { color: var(--ink); }
 
-      .card-header-open { padding: 16px 16px 12px; border-bottom: 1px solid var(--border); }
-      .card-columns { display: flex; gap: 16px; direction: rtl; }
-      .card-col-input {
-        flex-shrink: 0; width: 120px;
-        display: flex; flex-direction: column; gap: 8px; align-items: center;
+      .rq-field { display: flex; flex-direction: column; gap: 3px; }
+      .rq-field-label {
+        font-size: 11px;
+        color: #888;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 4px;
       }
-      .card-col-output { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 8px; }
+      .rq-uncertain-icon { color: #d97706; font-size: 12px; cursor: default; }
+      .rq-field input,
+      .rq-field select,
+      .rq-field textarea {
+        background: #fff;
+        border: 1px solid #d1d1cf;
+        border-radius: 4px;
+        font-size: 13px;
+        padding: 5px 8px;
+        direction: rtl;
+        color: var(--ink);
+        font-family: var(--sans);
+        width: 100%;
+      }
+      .rq-field input:focus,
+      .rq-field select:focus,
+      .rq-field textarea:focus { outline: none; border-color: var(--ink); }
+      .rq-field textarea { resize: vertical; min-height: 52px; }
+      .rq-field-note { font-size: 11px; color: var(--danger); line-height: 1.3; }
 
-      .card-thumb-local, .card-thumb-api {
-        width: 100px; height: 80px; object-fit: cover;
-        border-radius: 6px; border: 1px solid var(--border); display: block;
-      }
-      .card-thumb-placeholder {
-        width: 100px; height: 80px; background: var(--bg);
-        border: 1px solid var(--border); border-radius: 6px;
-        display: flex; align-items: center; justify-content: center;
-        color: var(--muted); font-size: 22px;
-      }
-      .card-fname {
-        font-family: var(--mono); font-size: 11px; direction: ltr;
-        text-align: center; word-break: break-all; width: 100%;
-      }
-      .card-google-link { font-size: 13px; text-decoration: none; color: var(--muted); }
-      .card-google-link:hover { color: var(--ink); }
-
-      .card-field-row { display: flex; flex-direction: column; gap: 2px; }
-      .card-field-label {
-        font-size: 11px; color: var(--muted); font-weight: 600;
-        display: flex; align-items: center; gap: 4px;
-      }
-      .uncertain-icon { color: var(--warn); font-size: 11px; cursor: default; }
-      .card-field-input, .card-field-select, .card-field-textarea {
-        font-family: var(--sans); font-size: 13px;
-        border: 1px solid var(--border); border-radius: 5px;
-        padding: 5px 8px; background: var(--bg); color: var(--text);
-        outline: none; transition: border-color 0.12s; width: 100%;
-      }
-      .card-field-input:focus, .card-field-select:focus, .card-field-textarea:focus {
-        border-color: var(--ink); background: var(--white);
-      }
-      .card-field-textarea { resize: vertical; min-height: 52px; }
-
-      .card-notes-banner {
-        background: var(--bg); border: 1px solid var(--border);
-        border-radius: 5px; padding: 6px 10px; font-size: 12px; color: var(--muted);
-      }
-      .card-meta-actions { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
-      .btn-clear-result {
-        font-size: 12px; padding: 4px 12px; border-radius: 5px;
-        border: 1px solid var(--border); background: transparent;
-        cursor: pointer; color: var(--muted); font-family: var(--sans);
-      }
-      .btn-clear-result:hover { border-color: var(--danger); color: var(--danger); }
-      .btn-reset-original {
-        font-size: 12px; padding: 4px 0; border: none; background: none;
-        cursor: pointer; color: var(--muted); font-family: var(--sans);
+      .rq-reset-original {
+        font-size: 11px;
+        color: #888;
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 0 0 10px;
         text-decoration: underline;
+        align-self: flex-start;
+        font-family: var(--sans);
       }
-      .btn-reset-original:hover { color: var(--text); }
-      .btn-mark-reviewed {
-        width: 100%; padding: 11px; border-radius: 7px; border: none;
-        background: var(--success); color: white; font-size: 14px;
-        font-weight: 600; font-family: var(--sans); cursor: pointer; direction: rtl;
+      .rq-reset-original:hover { color: var(--ink); }
+
+      .rq-card-actions {
+        display: flex;
+        gap: 8px;
+        padding: 10px 12px;
+        border-top: 1px solid #e5e5e3;
+        flex-shrink: 0;
+        background: #fff;
+        direction: rtl;
       }
-      .btn-mark-reviewed:hover { filter: brightness(0.93); }
+      .btn-rq-taom {
+        flex: 1;
+        background: var(--success);
+        color: #fff;
+        border: none;
+        border-radius: var(--radius);
+        padding: 8px 0;
+        font-size: 13px;
+        font-weight: 600;
+        cursor: pointer;
+        font-family: var(--sans);
+      }
+      .btn-rq-taom:hover { opacity: 0.9; }
+      .btn-rq-lo-taom {
+        flex: 1;
+        background: #fef2f2;
+        color: var(--danger);
+        border: 1px solid var(--danger);
+        border-radius: var(--radius);
+        padding: 8px 0;
+        font-size: 13px;
+        font-weight: 600;
+        cursor: pointer;
+        font-family: var(--sans);
+      }
+      .btn-rq-lo-taom:hover { background: #fee2e2; }
+      .btn-rq-reset {
+        background: none;
+        border: 1px solid #d1d1cf;
+        border-radius: var(--radius);
+        padding: 8px 14px;
+        font-size: 13px;
+        color: #888;
+        cursor: pointer;
+        font-family: var(--sans);
+      }
+      .btn-rq-reset:hover { border-color: var(--ink); color: var(--ink); }
+
+      .rq-stamp {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 16px;
+        font-weight: bold;
+        color: #fff;
+        z-index: 5;
+        pointer-events: none;
+        opacity: 0.92;
+      }
+      .rq-stamp.stamp-taom { background: var(--success); }
+      .rq-stamp.stamp-lo-taom { background: var(--danger); }
+
+      .rq-nav {
+        height: 60px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+        padding: 0 24px;
+        direction: ltr;
+      }
+      .rq-arrow {
+        background: none;
+        border: 1px solid #d1d1cf;
+        border-radius: 50%;
+        width: 34px;
+        height: 34px;
+        cursor: pointer;
+        font-size: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--ink);
+        transition: border-color 0.15s;
+        flex-shrink: 0;
+      }
+      .rq-arrow:hover:not(:disabled) { border-color: var(--ink); }
+      .rq-arrow:disabled { opacity: 0.3; cursor: default; }
+
+      .rq-dots {
+        display: flex;
+        gap: 7px;
+        align-items: center;
+        flex-wrap: wrap;
+        justify-content: center;
+        max-width: 480px;
+      }
+      .rq-dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        border: 2px solid var(--ink);
+        background: transparent;
+        cursor: pointer;
+        transition: all 0.15s;
+        padding: 0;
+        flex-shrink: 0;
+      }
+      .rq-dot.active { background: var(--ink); width: 12px; height: 12px; }
+      .rq-dot.stamp-taom { background: var(--success); border-color: var(--success); }
+      .rq-dot.stamp-lo-taom { background: var(--danger); border-color: var(--danger); }
 
       /* Duplicate card */
       .dupe-card {
@@ -1284,63 +1442,62 @@
   </head>
   <body>
     <!-- ════════════════════════════════════════════════
-     HISTORY PANEL (burger dropdown)
+     STEPS BAR
 ════════════════════════════════════════════════ -->
-    <div class="history-panel" id="history-panel">
-      <div class="history-panel-title">היסטוריית חיפושים</div>
-      <div class="sidebar-runs-list" id="sidebar-runs-list">
-        <div class="sidebar-empty">עדיין אין הרצות שמורות</div>
+    <div class="steps-bar" id="steps-bar">
+      <div class="steps-bar-logo">
+        <div class="logo-mark">©</div>
+        <span class="steps-bar-logo-name">בודק זכויות יוצרים</span>
       </div>
-      <div
-        class="sidebar-quota-warn"
-        id="sidebar-quota-warn"
-        style="display: none"
-      >
-        נגמר מקום האחסון המקומי — מחק הרצות ישנות כדי לפנות מקום
-      </div>
-      <div class="history-panel-bottom">
-        <button class="btn-danger-outline" id="btn-clear-all-runs">
-          מחק היסטוריית חיפושים
-        </button>
+      <div class="steps-track">
+        <div class="step-item active" id="step-1">
+          <div class="step-circle"></div>
+          <div class="step-label">הכנה</div>
+        </div>
+        <div class="step-connector" id="conn-1"></div>
+        <div class="step-item" id="step-2">
+          <div class="step-circle"></div>
+          <div class="step-label">חיפוש</div>
+        </div>
+        <div class="step-connector" id="conn-2"></div>
+        <div class="step-item" id="step-3">
+          <div class="step-circle"></div>
+          <div class="step-label">עריכה</div>
+        </div>
+        <div class="step-connector" id="conn-3"></div>
+        <div class="step-item" id="step-4">
+          <div class="step-circle"></div>
+          <div class="step-label">סיכום</div>
+        </div>
       </div>
     </div>
 
     <!-- ════════════════════════════════════════════════
-     MAIN AREA
+     APP BODY
 ════════════════════════════════════════════════ -->
-    <div class="main-area">
-      <!-- STEPS BAR -->
-      <div class="steps-bar" id="steps-bar">
-        <div class="steps-bar-logo">
-          <button class="burger-btn" id="burger-btn" title="היסטוריית חיפושים">☰</button>
-          <div class="logo-mark">©</div>
-          <span class="steps-bar-logo-name">בודק זכויות יוצרים</span>
+    <div class="app-body">
+      <!-- SIDEBAR -->
+      <div class="sidebar" id="sidebar">
+        <button class="btn-new-search" id="btn-new-search">+ חיפוש חדש</button>
+        <div class="sidebar-runs-list" id="sidebar-runs-list">
+          <div class="sidebar-empty">עדיין אין הרצות שמורות</div>
         </div>
-        <div class="steps-track">
-          <div class="step-item active" id="step-1">
-            <div class="step-circle"></div>
-            <div class="step-label">הכנה</div>
-          </div>
-          <div class="step-connector" id="conn-1"></div>
-          <div class="step-item" id="step-2">
-            <div class="step-circle"></div>
-            <div class="step-label">חיפוש</div>
-          </div>
-          <div class="step-connector" id="conn-2"></div>
-          <div class="step-item" id="step-3">
-            <div class="step-circle"></div>
-            <div class="step-label">עריכה</div>
-          </div>
-          <div class="step-connector" id="conn-3"></div>
-          <div class="step-item" id="step-4">
-            <div class="step-circle"></div>
-            <div class="step-label">סיכום</div>
-          </div>
+        <div
+          class="sidebar-quota-warn"
+          id="sidebar-quota-warn"
+          style="display: none"
+        >
+          נגמר מקום האחסון המקומי — מחק הרצות ישנות כדי לפנות מקום
         </div>
-        <div class="steps-bar-actions">
-          <button class="btn-new-search" id="btn-new-search" style="display:none">← חיפוש חדש</button>
+        <div class="sidebar-bottom">
+          <button class="btn-danger-outline" id="btn-clear-all-runs">
+            מחק היסטוריית חיפושים
+          </button>
         </div>
       </div>
+
+      <!-- MAIN AREA -->
+      <div class="main-area">
 
       <!-- SHELL: header + screens 1 & 2 -->
       <div class="shell" id="main-shell">
@@ -1514,16 +1671,18 @@
       </div>
       <!-- /main-shell -->
 
-      <!-- SCREEN 3: Queue -->
+      <!-- SCREEN 3: Queue (carousel) -->
       <div id="screen-review" class="screen">
         <div class="queue-header" id="queue-header">
           <span class="queue-header-counter" id="queue-header-counter">טוען...</span>
-          <div style="display:flex;gap:8px;align-items:center;">
-            <button class="btn-queue-action" id="btn-queue-download">הורד CSV ↓</button>
-            <button class="btn-queue-action" id="btn-skip-to-summary">דלג לסיכום ←</button>
-          </div>
+          <button class="btn-queue-action" id="btn-skip-to-summary">דלג לסיכום ←</button>
         </div>
-        <div class="queue-list" id="queue-list"></div>
+        <div class="queue-stage" id="queue-stage"></div>
+        <div class="rq-nav" id="rq-nav">
+          <button class="rq-arrow" id="rq-arrow-prev" aria-label="הקודם">→</button>
+          <div class="rq-dots" id="rq-dots"></div>
+          <button class="rq-arrow" id="rq-arrow-next" aria-label="הבא">←</button>
+        </div>
       </div>
       <!-- /screen-review -->
 
@@ -1578,28 +1737,13 @@
         </div>
       </div>
       <!-- /screen-summary -->
+      </div>
+      <!-- /main-area -->
     </div>
-    <!-- /main-area -->
+    <!-- /app-body -->
 
     <script type="module">
       import { processFilenames, IMAGE_EXTENSIONS } from "./lookup.js";
-
-      // ════════════════════════════════════════════════════════════
-      //  HISTORY PANEL TOGGLE
-      // ════════════════════════════════════════════════════════════
-      (function () {
-        const panel = document.getElementById("history-panel");
-        const burgerBtn = document.getElementById("burger-btn");
-        burgerBtn.addEventListener("click", (e) => {
-          e.stopPropagation();
-          panel.classList.toggle("open");
-        });
-        document.addEventListener("click", (e) => {
-          if (panel.classList.contains("open") && !panel.contains(e.target)) {
-            panel.classList.remove("open");
-          }
-        });
-      })();
 
       // ════════════════════════════════════════════════════════════
       //  UTILITIES
@@ -1607,6 +1751,8 @@
       let fileObjectMap = {}; // filename → File object (from folder picker)
       let runTitle = ""; // user-supplied title for the run (from "כותרת" field)
       const thumbnailUrls = {}; // filename → cached blob URL
+      let fileEntries = []; // [{id, name, file, invalid}]
+      let nextEntryId = 0;
 
       function showScreen(id) {
         document
@@ -1619,13 +1765,17 @@
         shell.style.display =
           id === "screen-review" || id === "screen-summary" ? "none" : "";
 
-        const btnNewSearch = document.getElementById("btn-new-search");
-        btnNewSearch.style.display =
-          id === "screen-setup" || id === "screen-progress" ? "none" : "";
-
-        document.getElementById("history-panel").classList.remove("open");
-
         updateStepsBar(id);
+
+        // Persist the current screen on the active run (review + summary only)
+        if (activeRunId && (id === "screen-review" || id === "screen-summary")) {
+          const runs = loadRuns();
+          const run = runs.find((r) => r.id === activeRunId);
+          if (run && run.lastScreen !== id) {
+            run.lastScreen = id;
+            try { localStorage.setItem(STORAGE_KEY, JSON.stringify(runs)); } catch {}
+          }
+        }
       }
 
       function escHtml(s) {
@@ -1680,6 +1830,7 @@
       // ════════════════════════════════════════════════════════════
       const STORAGE_KEY = "copyright_tool_runs";
       let activeRunId = null;
+      let _saveState = "saved"; // 'saving' | 'saved'
 
       function loadRuns() {
         try {
@@ -1687,6 +1838,21 @@
         } catch {
           return [];
         }
+      }
+
+      function createDraftRun() {
+        const runs = loadRuns();
+        const run = {
+          id: Date.now(),
+          label: "",
+          isDraft: true,
+          state: { rows: [], dupeGroups: [], notedItems: [], rawStems: {} },
+        };
+        runs.push(run);
+        try { localStorage.setItem(STORAGE_KEY, JSON.stringify(runs)); } catch {}
+        activeRunId = run.id;
+        _saveState = "saved";
+        renderSidebar();
       }
 
       function saveRun(state) {
@@ -1704,41 +1870,48 @@
           if (r._thumbnailUrl && r._thumbnailUrl.startsWith("blob:"))
             r._thumbnailUrl = "";
           delete r._originalData;
-          delete r._reviewed;
           return r;
         });
 
-        const run = {
-          id: Date.now(),
-          label,
-          state: {
-            rows: serializedRows,
-            dupeGroups: state.dupeGroups.map((g) => ({
-              files: g.files,
-              resolved: g.resolved,
-            })),
-            notedItems: [...state.notedItems],
-            rawStems: state.rawStems,
-          },
+        const runState = {
+          rows: serializedRows,
+          dupeGroups: state.dupeGroups.map((g) => ({
+            files: g.files,
+            resolved: g.resolved,
+          })),
+          notedItems: [...state.notedItems],
+          rawStems: state.rawStems,
         };
 
-        runs.push(run);
-        try {
-          localStorage.setItem(STORAGE_KEY, JSON.stringify(runs));
-          document.getElementById("sidebar-quota-warn").style.display = "none";
-        } catch (e) {
-          if (
-            e.name === "QuotaExceededError" ||
-            e.code === 22 ||
-            e.code === 1014
-          ) {
-            document.getElementById("sidebar-quota-warn").style.display = "";
+        const persistRun = (id) => {
+          try {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(runs));
+            document.getElementById("sidebar-quota-warn").style.display = "none";
+          } catch (e) {
+            if (e.name === "QuotaExceededError" || e.code === 22 || e.code === 1014) {
+              document.getElementById("sidebar-quota-warn").style.display = "";
+            }
+          }
+          activeRunId = id;
+          renderSidebar();
+          return id;
+        };
+
+        // Update existing draft run if one is active
+        if (activeRunId) {
+          const idx = runs.findIndex((r) => r.id === activeRunId);
+          if (idx !== -1) {
+            runs[idx].label = label;
+            runs[idx].isDraft = false;
+            runs[idx].state = runState;
+            return persistRun(activeRunId);
           }
         }
 
-        activeRunId = run.id;
-        renderSidebar();
-        return run.id;
+        // Create new run
+        const run = { id: Date.now(), label, isDraft: false, state: runState };
+        runs.push(run);
+        return persistRun(run.id);
       }
 
       function deleteRun(id) {
@@ -1774,14 +1947,42 @@
 
         // Backfill fields added after initial save
         reviewState.rows.forEach((row) => {
-          if (row._reviewed === undefined) row._reviewed = false;
+          if (row._stamp === undefined) row._stamp = null;
           if (!row._originalData) row._originalData = { ...row };
         });
 
         recomputeAllStatuses();
-        renderQueueScreen();
-        showScreen("screen-review");
+
+        const targetScreen = run.isDraft
+          ? "screen-setup"
+          : (run.lastScreen || "screen-review");
+
+        if (targetScreen === "screen-setup") {
+          // Restore setup state for draft runs
+          fileEntries = [];
+          nextEntryId = 0;
+          fileObjectMap = {};
+          runTitle = run.label || "";
+          document.getElementById("run-title").value = runTitle;
+          renderFileEntries();
+          showScreen("screen-setup");
+        } else {
+          renderQueueScreen();
+          if (targetScreen === "screen-summary") buildSummaryFromReview();
+          showScreen(targetScreen);
+        }
         renderSidebar();
+      }
+
+      function formatRunDate(id) {
+        const d = new Date(id);
+        const today = new Date();
+        const yesterday = new Date(today);
+        yesterday.setDate(today.getDate() - 1);
+        if (d.toDateString() === today.toDateString()) return "היום";
+        if (d.toDateString() === yesterday.toDateString()) return "אתמול";
+        const months = ["ינואר","פברואר","מרץ","אפריל","מאי","יוני","יולי","אוגוסט","ספטמבר","אוקטובר","נובמבר","דצמבר"];
+        return `${d.getDate()} ב${months[d.getMonth()]}`;
       }
 
       function renderSidebar() {
@@ -1797,19 +1998,39 @@
         list.innerHTML = runs
           .slice()
           .reverse()
-          .map(
-            (run) => `
-    <div class="run-entry ${run.id === activeRunId ? "active" : ""}" data-id="${run.id}">
-      <div class="run-label-click" data-id="${run.id}">${escHtml(run.label)}</div>
+          .map((run) => {
+            const isActive = run.id === activeRunId;
+            const hasName = run.label && run.label.trim();
+            const nameHtml = hasName
+              ? `<div class="run-name">${escHtml(run.label)}</div>`
+              : `<div class="run-name run-name-unnamed">ללא שם</div>`;
+            // For draft (active setup) run, count comes from live fileEntries; otherwise from saved rows
+            const count = isActive && run.isDraft
+              ? fileEntries.filter(e => !e.invalid && e.name.trim()).length
+              : (run.state && run.state.rows ? run.state.rows.length : 0);
+            const metaHtml = `<div class="run-meta">${formatRunDate(run.id)} • ${count} תמונות</div>`;
+            const saveHtml = isActive
+              ? `<div class="run-save-indicator${_saveState === "saving" ? " is-saving" : ""}">
+                  ${_saveState === "saving" ? "שומר..." : '<span class="save-dot"></span>נשמר'}
+                </div>`
+              : "";
+            return `
+    <div class="run-entry ${isActive ? "active" : ""}" data-id="${run.id}">
+      <div class="run-info" data-id="${run.id}">
+        ${nameHtml}
+        ${metaHtml}
+        ${saveHtml}
+      </div>
       <button class="run-delete-btn" data-id="${run.id}" title="מחק">×</button>
-    </div>`,
-          )
+    </div>`;
+          })
           .join("");
 
-        list.querySelectorAll(".run-label-click").forEach((lbl) => {
-          lbl.addEventListener("click", () =>
-            loadRunById(Number(lbl.dataset.id)),
-          );
+        list.querySelectorAll(".run-info").forEach((info) => {
+          info.addEventListener("click", () => {
+            const id = Number(info.dataset.id);
+            if (id !== activeRunId) loadRunById(id);
+          });
         });
         list.querySelectorAll(".run-delete-btn").forEach((btn) => {
           btn.addEventListener("click", (e) => {
@@ -1825,15 +2046,13 @@
           if (confirm("למחוק את כל ההרצות השמורות?")) clearAllRuns();
         });
 
-      // Initialize sidebar on load
+      // Initialize sidebar on load; create initial draft run
       renderSidebar();
+      createDraftRun();
 
       // ════════════════════════════════════════════════════════════
       //  SCREEN 1 — SETUP (file entries)
       // ════════════════════════════════════════════════════════════
-
-      let fileEntries = []; // [{id, name, file, invalid}]
-      let nextEntryId = 0;
 
       function getFileExt(name) {
         const parts = String(name).trim().split(".");
@@ -1855,6 +2074,7 @@
         renderFileEntries();
         updateSearchButton();
         updateFilelistSummary();
+        triggerSaveAnimation();
       }
 
       function getSearchFilenames() {
@@ -1964,7 +2184,10 @@
           });
           inp.addEventListener("blur", () => {
             const entry = fileEntries.find((e) => e.id === id);
-            if (entry && entry.name.trim()) validateEntryInput(inp, entry);
+            if (entry && entry.name.trim()) {
+              validateEntryInput(inp, entry);
+              triggerSaveAnimation();
+            }
           });
         });
         list.querySelectorAll(".file-entry-remove").forEach((btn) => {
@@ -1985,9 +2208,19 @@
         .getElementById("btn-remove-skipped")
         .addEventListener("click", removeInvalidEntries);
 
-      // Run title field
+      // Run title field — also updates active run label in sidebar live
       document.getElementById("run-title").addEventListener("input", (e) => {
         runTitle = e.target.value.trim();
+        if (activeRunId) {
+          const runs = loadRuns();
+          const run = runs.find((r) => r.id === activeRunId);
+          if (run) {
+            run.label = runTitle;
+            try { localStorage.setItem(STORAGE_KEY, JSON.stringify(runs)); } catch {}
+            renderSidebar();
+          }
+        }
+        triggerSaveAnimation();
       });
 
       // Add empty entry button
@@ -2011,11 +2244,26 @@
               "visible",
               document.querySelector('[data-source="pexels"]').checked,
             );
+          triggerSaveAnimation();
         });
       });
 
+      // ── Save indicator ──
+      let _saveTimer = null;
+      function triggerSaveAnimation() {
+        if (_saveTimer) clearTimeout(_saveTimer);
+        _saveState = "saving";
+        renderSidebar();
+        _saveTimer = setTimeout(() => {
+          _saveState = "saved";
+          renderSidebar();
+          _saveTimer = null;
+        }, 700);
+      }
+
       // Sidebar new-search button
       document.getElementById("btn-new-search").addEventListener("click", () => {
+        createDraftRun();
         fileEntries = [];
         nextEntryId = 0;
         fileObjectMap = {};
@@ -2050,6 +2298,7 @@
         renderFileEntries();
 
         if (allFiles.length === 0) showMsg(msgErr, "לא נמצאו קבצים בתיקייה");
+        else triggerSaveAnimation();
       });
 
       // Search
@@ -2151,6 +2400,7 @@
         notedItems: new Set(),
         rawStems: {},
       };
+      let currentCardIdx = 0;
 
       function computeStatus(row, dupeGroups, notedItems) {
         if (!row["מקור"] || !row["סוג זכויות היוצרים"]) return "לא זוהה";
@@ -2196,7 +2446,7 @@
             _found: !!r._found,
             _status: "תקין",
             _thumbnailUrl: r._thumbnailUrl || "",
-            _reviewed: false,
+            _stamp: null,
           };
           row._originalData = { ...row };
           return row;
@@ -2223,190 +2473,183 @@
       function renderQueueScreen() {
         recomputeAllStatuses();
         renderQueueHeader();
-        renderQueueList();
+        currentCardIdx = 0;
+        renderCarousel();
       }
 
       function renderQueueHeader() {
         const counter = document.getElementById("queue-header-counter");
         const total = reviewState.rows.length;
-        const unresolved = reviewState.rows.filter(
-          (r) => !r._reviewed && r._status !== "תקין",
-        ).length;
-        if (unresolved === 0 && total > 0) {
+        const unresolvedDupes = reviewState.dupeGroups.filter((g) => !g.resolved).length;
+        const unstamped = reviewState.rows.filter((r) => r._stamp === null).length;
+        if (unstamped === 0 && unresolvedDupes === 0 && total > 0) {
           counter.textContent = "הכל תקין ✓";
           counter.className = "queue-header-counter all-ok";
         } else {
-          counter.textContent = `${total} פריטים  •  ${unresolved} דורשים בדיקה`;
+          counter.textContent = `${total} פריטים  •  ${unstamped} ממתינים לסימון`;
           counter.className = "queue-header-counter";
         }
       }
 
-      function renderQueueList() {
-        const list = document.getElementById("queue-list");
-        const unresolvedGroups = reviewState.dupeGroups
-          .map((g, i) => ({ ...g, idx: i }))
-          .filter((g) => !g.resolved);
+      // ── Carousel ─────────────────────────────────────────────────────────────────
 
+      function buildCarouselItems() {
+        const items = [];
+        reviewState.dupeGroups.forEach((g, i) => {
+          if (!g.resolved) items.push({ type: "dupe", data: g, idx: i });
+        });
         const FLAGGED = ["לא זוהה", "נדרש שם פריט", "רישיון לא מזוהה", "הערות"];
-        const flagged = reviewState.rows.filter((r) =>
-          FLAGGED.includes(r._status),
-        );
-        const clean = reviewState.rows.filter((r) => r._status === "תקין");
-
-        let html = unresolvedGroups.map(renderDupeCard).join("");
-        html += [...flagged, ...clean].map(renderItemCard).join("");
-        list.innerHTML = html;
-        attachQueueListeners();
+        reviewState.rows
+          .filter((r) => FLAGGED.includes(r._status))
+          .forEach((r) => items.push({ type: "item", data: r }));
+        reviewState.rows
+          .filter((r) => !FLAGGED.includes(r._status))
+          .forEach((r) => items.push({ type: "item", data: r }));
+        return items;
       }
 
-      function renderItemCard(row) {
+      function renderCarousel() {
+        const items = buildCarouselItems();
+        const stage = document.getElementById("queue-stage");
+        if (!items.length) { stage.innerHTML = ""; return; }
+        if (currentCardIdx >= items.length) currentCardIdx = items.length - 1;
+        const item = items[currentCardIdx];
+        stage.innerHTML = item.type === "dupe"
+          ? renderDupeCard({ ...item.data, idx: item.idx })
+          : renderCarouselItemCard(item.data);
+        renderCarouselNav(items);
+        attachCarouselListeners(items);
+      }
+
+      function renderCarouselNav(items) {
+        const dotsEl = document.getElementById("rq-dots");
+        const prevBtn = document.getElementById("rq-arrow-prev");
+        const nextBtn = document.getElementById("rq-arrow-next");
+        prevBtn.disabled = currentCardIdx <= 0;
+        nextBtn.disabled = currentCardIdx >= items.length - 1;
+        dotsEl.innerHTML = items.map((item, i) => {
+          let cls = "rq-dot";
+          if (i === currentCardIdx) cls += " active";
+          else if (item.type === "item" && item.data._stamp === "תואם") cls += " stamp-taom";
+          else if (item.type === "item" && item.data._stamp === "לא תואם") cls += " stamp-lo-taom";
+          return `<button class="${cls}" data-cidx="${i}" aria-label="כרטיס ${i + 1}"></button>`;
+        }).join("");
+      }
+
+      function navigateToCard(idx) {
+        const items = buildCarouselItems();
+        if (idx < 0 || idx >= items.length) return;
+        currentCardIdx = idx;
+        renderCarousel();
+        renderQueueHeader();
+      }
+
+      function advanceToNextUnstamped() {
+        const items = buildCarouselItems();
+        for (let i = currentCardIdx + 1; i < items.length; i++) {
+          if (items[i].type !== "item" || items[i].data._stamp === null) {
+            navigateToCard(i); return;
+          }
+        }
+        for (let i = 0; i < currentCardIdx; i++) {
+          if (items[i].type !== "item" || items[i].data._stamp === null) {
+            navigateToCard(i); return;
+          }
+        }
+        renderCarousel();
+        renderQueueHeader();
+      }
+
+      function renderCarouselItemCard(row) {
         const fname = row["שם קובץ"];
         const localThumb = getThumbnailUrl(fname);
         const apiThumb = row._thumbnailUrl;
-        const thumbSrc = localThumb || apiThumb;
 
-        const inputThumbHtml = thumbSrc
-          ? `<img class="card-thumb-local" src="${escHtml(thumbSrc)}" loading="lazy"
-               onerror="this.outerHTML='<div class=\\"card-thumb-placeholder\\">🖼</div>'">`
-          : `<div class="card-thumb-placeholder">🖼</div>`;
+        const sourceThumbHtml = localThumb
+          ? `<div class="rq-thumb-source"><img src="${escHtml(localThumb)}" loading="lazy"
+               onerror="this.parentElement.innerHTML='<div class=\\"rq-thumb-placeholder\\"><span>🖼</span><span>no available image</span></div>'"></div>`
+          : `<div class="rq-thumb-source"><div class="rq-thumb-placeholder"><span>🖼</span><span>no available image</span></div></div>`;
 
+        const sourceUrl = escHtml(row["קישור למדיה במקור"] || "");
         const apiThumbHtml = apiThumb
-          ? `<img class="card-thumb-api" src="${escHtml(apiThumb)}" loading="lazy"
-               onerror="this.outerHTML='<div class=\\"card-thumb-placeholder\\">🖼</div>'">`
-          : `<div class="card-thumb-placeholder">🖼</div>`;
+          ? `<div class="rq-thumb-api"><img src="${escHtml(apiThumb)}" loading="lazy"
+               onerror="this.parentElement.innerHTML='${sourceUrl
+                 ? `<a class=\\"rq-thumb-api-link\\" href=\\"${sourceUrl}\\" target=\\"_blank\\">צפה בתמונה במקור ↗</a>`
+                 : `<div class=\\"rq-thumb-placeholder\\"><span>🖼</span></div>`}'"></div>`
+          : sourceUrl
+            ? `<div class="rq-thumb-api"><a class="rq-thumb-api-link" href="${sourceUrl}" target="_blank">צפה בתמונה במקור ↗</a></div>`
+            : `<div class="rq-thumb-api"><div class="rq-thumb-placeholder"><span>🖼</span></div></div>`;
 
-        const stemForSearch = fname
-          .replace(/\.[^.]+$/, "")
-          .replace(/[_\-]/g, " ");
+        const stemForSearch = fname.replace(/\.[^.]+$/, "").replace(/[_\-]/g, " ");
         const searchUrl = `https://www.google.com/search?tbm=isch&q=${encodeURIComponentSafe(stemForSearch)}`;
 
+        const licOpts = ["Public Domain","No known copyright restrictions","CC BY","CC BY SA","Royalty free","C"];
         const selectOpts = (options, current) =>
           `<option value="">${current ? "" : "—"}</option>` +
-          options
-            .map(
-              (o) =>
-                `<option value="${escHtml(o)}"${current === o ? " selected" : ""}>${escHtml(o)}</option>`,
-            )
-            .join("");
-
-        const licOpts = [
-          "Public Domain",
-          "No known copyright restrictions",
-          "CC BY",
-          "CC BY SA",
-          "Royalty free",
-          "C",
-        ];
+          options.map((o) => `<option value="${escHtml(o)}"${current === o ? " selected" : ""}>${escHtml(o)}</option>`).join("");
 
         const fields = [
-          {
-            key: "שם פריט",
-            label: "שם פריט",
-            type: "text",
-            uncertain: row._isRawFilename,
-          },
-          { key: "מקור", label: "מקור", type: "text" },
-          {
-            key: "קישור למדיה במקור",
-            label: "קישור",
-            type: "text",
-          },
-          {
-            key: "סוג זכויות היוצרים",
-            label: "סוג זכויות",
-            type: "select",
-            options: licOpts,
-            uncertain: row._unknownLicense,
-          },
-          {
-            key: "יש צורך במתן קרדיט?",
-            label: "קרדיט?",
-            type: "select",
-            options: ["כן", "לא"],
-          },
-          {
-            key: "איך לרשום את הקרדיט?",
-            label: "נוסח הקרדיט",
-            type: "textarea",
-          },
-          {
-            key: "מותר לשימוש מסחרי?",
-            label: "מסחרי?",
-            type: "select",
-            options: ["מותר", "אסור"],
-          },
-          {
-            key: "מותר לשימוש חיצוני?",
-            label: "חיצוני?",
-            type: "select",
-            options: ["מותר", "אסור"],
-          },
+          { key: "שם פריט",               label: "שם פריט",      type: "text",     uncertain: row._isRawFilename },
+          { key: "מקור",                   label: "מקור",         type: "text" },
+          { key: "קישור למדיה במקור",      label: "קישור",        type: "text" },
+          { key: "סוג זכויות היוצרים",     label: "סוג זכויות",   type: "select",   options: licOpts, uncertain: row._unknownLicense },
+          { key: "יש צורך במתן קרדיט?",   label: "קרדיט?",       type: "select",   options: ["כן","לא"] },
+          { key: "איך לרשום את הקרדיט?",  label: "נוסח הקרדיט",  type: "textarea" },
+          { key: "מותר לשימוש מסחרי?",    label: "מסחרי?",       type: "select",   options: ["מותר","אסור"] },
+          { key: "מותר לשימוש חיצוני?",   label: "חיצוני?",      type: "select",   options: ["מותר","אסור"] },
         ];
 
-        const fieldsHtml = fields
-          .map((f) => {
-            const val = row[f.key] || "";
-            const uncertainHtml = f.uncertain
-              ? `<span class="uncertain-icon" title="ערך זה הוצע אוטומטית — אנא בדוק">⚠</span>`
-              : "";
-            let inputHtml;
-            if (f.type === "select") {
-              inputHtml = `<select class="card-field-select" data-fname="${escHtml(fname)}" data-field="${escHtml(f.key)}">${selectOpts(f.options, val)}</select>`;
-            } else if (f.type === "textarea") {
-              inputHtml = `<textarea class="card-field-textarea" data-fname="${escHtml(fname)}" data-field="${escHtml(f.key)}" rows="2">${escHtml(val)}</textarea>`;
-            } else {
-              inputHtml = `<input class="card-field-input" type="text" data-fname="${escHtml(fname)}" data-field="${escHtml(f.key)}" value="${escHtml(val)}">`;
-            }
-            return `<div class="card-field-row">
-              <div class="card-field-label">${escHtml(f.label)}${uncertainHtml}</div>
-              ${inputHtml}
-            </div>`;
-          })
-          .join("");
+        const fieldsHtml = fields.map((f) => {
+          const val = row[f.key] || "";
+          const uncertainIcon = f.uncertain
+            ? `<span class="rq-uncertain-icon" title="ערך זה הוצע אוטומטית — אנא בדוק">⚠</span>` : "";
+          let inputHtml;
+          if (f.type === "select") {
+            inputHtml = `<select data-fname="${escHtml(fname)}" data-field="${escHtml(f.key)}">${selectOpts(f.options, val)}</select>`;
+          } else if (f.type === "textarea") {
+            inputHtml = `<textarea data-fname="${escHtml(fname)}" data-field="${escHtml(f.key)}" rows="2">${escHtml(val)}</textarea>`;
+          } else {
+            inputHtml = `<input type="text" data-fname="${escHtml(fname)}" data-field="${escHtml(f.key)}" value="${escHtml(val)}" autocomplete="off">`;
+          }
+          return `<div class="rq-field">
+            <span class="rq-field-label">${escHtml(f.label)}${uncertainIcon}</span>
+            ${inputHtml}
+          </div>`;
+        }).join("");
 
-        const notesBanner =
-          (row._notes || []).length > 0
-            ? `<div class="card-notes-banner">הערה: ${escHtml(row._notes[0])}</div>`
-            : "";
+        const notesHtml = (row._notes || []).map((n) =>
+          `<div class="rq-field-note">⚠ ${escHtml(n)}</div>`
+        ).join("");
 
-        const collapsedThumbHtml = thumbSrc
-          ? `<img class="card-collapsed-thumb" src="${escHtml(thumbSrc)}" loading="lazy">`
-          : `<div class="card-collapsed-thumb-placeholder">🖼</div>`;
+        const stampHtml = row._stamp
+          ? `<div class="rq-stamp ${row._stamp === "תואם" ? "stamp-taom" : "stamp-lo-taom"}">${row._stamp === "תואם" ? "✓" : "✕"}</div>`
+          : "";
 
-        const reviewedClass = row._reviewed ? " reviewed" : "";
-        const status = row._status || "תקין";
-        const cardId = `qcard-${escRowId(fname)}`;
-
-        return `
-<div class="queue-card${reviewedClass}" data-fname="${escHtml(fname)}" data-status="${escHtml(status)}" id="${cardId}">
-  <div class="card-collapsed">
-    ${collapsedThumbHtml}
-    <span class="card-collapsed-fname">${escHtml(fname)}</span>
-    <span class="badge-reviewed">✓ בדוק</span>
-  </div>
-  <div class="card-header-open">
-    <div class="card-columns">
-      <div class="card-col-input">
-        ${inputThumbHtml}
-        <span class="card-fname">${escHtml(fname)}</span>
-        <a class="card-google-link" href="${escHtml(searchUrl)}" target="_blank" title="חפש בגוגל תמונות">🔍</a>
-      </div>
-      <div class="card-col-output">
-        ${apiThumbHtml}
-        ${fieldsHtml}
-      </div>
+        return `<div class="rq-card" data-fname="${escHtml(fname)}">
+  ${stampHtml}
+  <div class="rq-card-cols">
+    <div class="rq-col-source">
+      <span class="rq-col-label">מקור</span>
+      ${sourceThumbHtml}
+      <span class="rq-fname">${escHtml(fname)}</span>
+      <a class="rq-google-link" href="${escHtml(searchUrl)}" target="_blank">🔍 חפש ב-Google Images</a>
+    </div>
+    <div class="rq-col-result">
+      <span class="rq-col-label">תוצאה</span>
+      ${apiThumbHtml}
+      ${fieldsHtml}
+      ${notesHtml}
+      <button class="rq-reset-original" data-fname="${escHtml(fname)}">↺ איפוס לנתוני המקור</button>
     </div>
   </div>
-  <div class="card-body">
-    ${notesBanner}
-    <div class="card-meta-actions">
-      <button class="btn-clear-result" data-fname="${escHtml(fname)}">✕ תוצאה שגויה</button>
-      <button class="btn-reset-original" data-fname="${escHtml(fname)}">↺ איפוס לנתוני המקור</button>
-    </div>
-    <button class="btn-mark-reviewed" data-fname="${escHtml(fname)}">סמן כבדוק ←</button>
+  <div class="rq-card-actions">
+    <button class="btn-rq-taom" data-fname="${escHtml(fname)}">✓ תואם</button>
+    <button class="btn-rq-lo-taom" data-fname="${escHtml(fname)}">✕ לא תואם</button>
+    <button class="btn-rq-reset" data-fname="${escHtml(fname)}">איפוס</button>
   </div>
 </div>`;
       }
+
 
       function renderDupeCard(g) {
         const panelsHtml = g.files
@@ -2434,78 +2677,64 @@
 </div>`;
       }
 
-      function attachQueueListeners() {
-        const list = document.getElementById("queue-list");
+      function attachCarouselListeners(items) {
+        const stage = document.getElementById("queue-stage");
+        const dotsEl = document.getElementById("rq-dots");
+        const prevBtn = document.getElementById("rq-arrow-prev");
+        const nextBtn = document.getElementById("rq-arrow-next");
 
-        list.querySelectorAll(".card-field-input, .card-field-textarea").forEach((el) => {
-          el.addEventListener("input", () => {
+        prevBtn?.addEventListener("click", () => navigateToCard(currentCardIdx - 1));
+        nextBtn?.addEventListener("click", () => navigateToCard(currentCardIdx + 1));
+
+        dotsEl?.querySelectorAll(".rq-dot").forEach((dot) => {
+          dot.addEventListener("click", () => navigateToCard(Number(dot.dataset.cidx)));
+        });
+
+        stage.querySelectorAll("[data-field]").forEach((el) => {
+          const evtName = el.tagName === "SELECT" ? "change" : "input";
+          el.addEventListener(evtName, () => {
             const row = reviewState.rows.find((r) => r["שם קובץ"] === el.dataset.fname);
             if (!row) return;
             row[el.dataset.field] = el.value;
             applyFieldSideEffects(el.dataset.field, el.value, row, el.dataset.fname);
-            updateCardStatus(el.dataset.fname);
+            row._status = computeStatus(row, reviewState.dupeGroups, reviewState.notedItems);
             renderQueueHeader();
           });
         });
 
-        list.querySelectorAll(".card-field-select").forEach((el) => {
-          el.addEventListener("change", () => {
-            const row = reviewState.rows.find((r) => r["שם קובץ"] === el.dataset.fname);
-            if (!row) return;
-            row[el.dataset.field] = el.value;
-            applyFieldSideEffects(el.dataset.field, el.value, row, el.dataset.fname);
-            updateCardStatus(el.dataset.fname);
-            renderQueueHeader();
-          });
-        });
-
-        list.querySelectorAll(".btn-mark-reviewed").forEach((btn) => {
+        stage.querySelectorAll(".btn-rq-taom").forEach((btn) => {
           btn.addEventListener("click", () => {
             const row = reviewState.rows.find((r) => r["שם קובץ"] === btn.dataset.fname);
             if (!row) return;
-            row._reviewed = true;
-            const card = document.getElementById("qcard-" + escRowId(btn.dataset.fname));
-            if (card) card.classList.add("reviewed");
+            row._stamp = "תואם";
+            renderCarousel();
             renderQueueHeader();
+            setTimeout(() => advanceToNextUnstamped(), 350);
           });
         });
 
-        list.querySelectorAll(".card-collapsed").forEach((el) => {
-          el.addEventListener("click", () => {
-            const card = el.closest(".queue-card");
-            if (!card) return;
-            const row = reviewState.rows.find((r) => r["שם קובץ"] === card.dataset.fname);
-            if (row) row._reviewed = false;
-            card.classList.remove("reviewed");
-            renderQueueHeader();
-          });
-        });
-
-        list.querySelectorAll(".btn-clear-result").forEach((btn) => {
+        stage.querySelectorAll(".btn-rq-lo-taom").forEach((btn) => {
           btn.addEventListener("click", () => {
-            const fname = btn.dataset.fname;
-            const row = reviewState.rows.find((r) => r["שם קובץ"] === fname);
+            const row = reviewState.rows.find((r) => r["שם קובץ"] === btn.dataset.fname);
             if (!row) return;
-            row["מקור"] = "";
-            row["קישור למדיה במקור"] = "";
-            row["סוג זכויות היוצרים"] = "";
-            row["יש צורך במתן קרדיט?"] = "";
-            row["איך לרשום את הקרדיט?"] = "";
-            row["מותר לשימוש מסחרי?"] = "";
-            row["מותר לשימוש חיצוני?"] = "";
-            row._found = false;
-            row._unknownLicense = false;
-            recomputeAllStatuses();
-            const card = document.getElementById("qcard-" + escRowId(fname));
-            if (card) {
-              card.outerHTML = renderItemCard(row);
-              attachQueueListeners();
-            }
+            row._stamp = "לא תואם";
+            renderCarousel();
+            renderQueueHeader();
+            setTimeout(() => advanceToNextUnstamped(), 350);
+          });
+        });
+
+        stage.querySelectorAll(".btn-rq-reset").forEach((btn) => {
+          btn.addEventListener("click", () => {
+            const row = reviewState.rows.find((r) => r["שם קובץ"] === btn.dataset.fname);
+            if (!row) return;
+            row._stamp = null;
+            renderCarousel();
             renderQueueHeader();
           });
         });
 
-        list.querySelectorAll(".btn-reset-original").forEach((btn) => {
+        stage.querySelectorAll(".rq-reset-original").forEach((btn) => {
           btn.addEventListener("click", () => {
             const fname = btn.dataset.fname;
             const row = reviewState.rows.find((r) => r["שם קובץ"] === fname);
@@ -2519,43 +2748,37 @@
             ];
             for (const k of fieldsToRestore) row[k] = orig[k];
             recomputeAllStatuses();
-            const card = document.getElementById("qcard-" + escRowId(fname));
-            if (card) {
-              card.outerHTML = renderItemCard(row);
-              attachQueueListeners();
-            }
+            renderCarousel();
             renderQueueHeader();
           });
         });
 
-        list.querySelectorAll(".btn-dupe-merge").forEach((btn) => {
+        stage.querySelectorAll(".btn-dupe-merge").forEach((btn) => {
           btn.addEventListener("click", () => {
             const gIdx = parseInt(btn.dataset.gidx);
             const group = reviewState.dupeGroups[gIdx];
             if (!group) return;
             mergeRows(group.files);
             group.resolved = true;
-            renderQueueScreen();
+            recomputeAllStatuses();
+            if (currentCardIdx >= buildCarouselItems().length) currentCardIdx = 0;
+            renderCarousel();
+            renderQueueHeader();
           });
         });
 
-        list.querySelectorAll(".btn-dupe-keep").forEach((btn) => {
+        stage.querySelectorAll(".btn-dupe-keep").forEach((btn) => {
           btn.addEventListener("click", () => {
             const gIdx = parseInt(btn.dataset.gidx);
             if (reviewState.dupeGroups[gIdx]) {
               reviewState.dupeGroups[gIdx].resolved = true;
-              renderQueueScreen();
+              recomputeAllStatuses();
+              if (currentCardIdx >= buildCarouselItems().length) currentCardIdx = 0;
+              renderCarousel();
+              renderQueueHeader();
             }
           });
         });
-      }
-
-      function updateCardStatus(fname) {
-        const row = reviewState.rows.find((r) => r["שם קובץ"] === fname);
-        if (!row) return;
-        row._status = computeStatus(row, reviewState.dupeGroups, reviewState.notedItems);
-        const card = document.getElementById("qcard-" + escRowId(fname));
-        if (card) card.dataset.status = row._status;
       }
 
       function mergeRows(filenames) {
@@ -2618,9 +2841,6 @@
         showScreen("screen-summary");
       });
 
-      document.getElementById("btn-queue-download").addEventListener("click", () => {
-        downloadBlob(buildCSV(), "copyright_report.csv");
-      });
 
       // ── CSV ───────────────────────────────────────────────────────────────────────
 

@@ -187,15 +187,20 @@ CSV is generated client-side with UTF-8 BOM so Hebrew displays correctly in Exce
   - `--danger: #dc2626` — errors, not-found items
   - Blue (`--accent`) has been removed entirely
 - 4 screens managed by JS show/hide, no routing library
-- Layout: collapsible sidebar on CSS-right, default **closed** (36px strip); opens to 220px on click
-  - Toggle strip shows "פרויקטים קודמים" label rotated vertically
-  - Logo (©) + tool name live in the **steps-bar** (right side), not the sidebar
-  - `.main-area` uses `margin-right: var(--sidebar-w-closed)` when closed, `var(--sidebar-w)` when open
-- Steps bar: `position: sticky; top: 0; height: var(--steps-h)` inside `.main-area`, spans main content area — **4 steps**: הכנה → חיפוש → עריכה → סיכום
+- Layout: always-visible 200px sidebar on the CSS-right; hidden below 900px (`@media (max-width: 900px)`)
+  - No burger button; no collapsible behavior
+  - Logo (©) + tool name live in the **steps-bar** (far right in RTL), always visible
+  - Body structure: `<steps-bar>` → `<app-body>` (flex row) → `<sidebar>` + `<main-area>`
+  - `.app-body { display: flex; height: calc(100vh - var(--steps-h)); overflow: hidden; }`
+  - `.main-area { flex: 1; overflow-y: auto; }` — content scrolls inside main-area
+- Steps bar: `position: sticky; top: 0; height: var(--steps-h)` — direct child of `<body>`, above `.app-body` — **4 steps**: הכנה → חיפוש → עריכה → סיכום
   - Future step: hollow circle, `#ccc` border, white fill
   - Active step: green filled circle (`--success`)
   - Done step: solid black filled circle (`--ink`)
-- "חיפוש חדש" button in sidebar: ghost style (no fill, muted color, font-weight 400)
+- Sidebar top section:
+  - "חיפוש חדש" button: ghost style (no fill, muted color, font-weight 400, 1px border, full width minus 16px margin)
+  - Save indicator strip (`#save-indicator`, min-height 22px): shows "שומר..." → green dot + "נשמר" → fades out; triggered by project name / source / file changes
+- `.queue-header { top: 0 }` — was `top: var(--steps-h)`, changed because steps-bar is now outside `.main-area`'s scroll context
 - Summary screen: `#screen-summary .shell { padding-top: 20px }` to prevent excess top gap
 - All archive calls use fetch() with proper error handling
 
@@ -215,31 +220,55 @@ User builds a file list and selects archive sources.
 ### Screen 2: Progress
 Live feed shows results as they arrive via `onProgress` callback from `processFilenames()`. New items animate in with a slide-down fade (`live-item-in` keyframe).
 
-### Screen 3: Queue (`#screen-review`)
-Card-by-card review. Normal block layout (max-width 680px, centered) — not a fixed modal.
+### Screen 3: Carousel review (`#screen-review`)
+Single-card carousel — one card at a time, centered, viewport-height constrained. No scrolling.
 
 **Sticky header bar** (below steps bar):
-- Counter: `N פריטים  •  M דורשים בדיקה` — decrements live as items are resolved
-- When all resolved: `הכל תקין ✓` (green)
-- Buttons: "הורד CSV ↓" and "דלג לסיכום ←" (skips to summary)
+- Counter: `N פריטים  •  M ממתינים לסימון` — updates live as items are stamped
+- When all stamped and no unresolved dupes: `הכל תקין ✓` (green)
+- Button: "דלג לסיכום ←" only — "הורד CSV" has been removed from this screen (summary screen only)
 
-**Queue order:** duplicate group cards first → flagged items → clean items
+**Layout:**
+- `.queue-stage` — `height: calc(100vh - var(--steps-h) - 52px - 60px)`, max-width 780px, centered
+- `.rq-card` — `flex: 1; min-height: 0; flex-direction: column`; two-column body + action bar at bottom
+- `.rq-nav` — 60px row below the stage: → arrow | dots | ← arrow (direction: ltr)
 
-**Duplicate cards** (one per unresolved group, appear before all item cards):
-- Two-panel side-by-side layout: thumbnail + filename per file
+**Carousel order:** unresolved dupe cards first → flagged item cards → clean item cards
+
+**Duplicate cards** (appear first in carousel, same `.dupe-card` layout):
+- Two-panel side-by-side: thumbnail + filename per file
 - "כפילות אפשרית?" title
-- Action buttons: "מזג ←" (calls `mergeRows`, removes extra rows) / "השאר נפרד" (dismisses group)
+- "מזג ←" (calls `mergeRows`, marks group resolved, removes from carousel) / "השאר נפרד" (marks resolved, removes card)
 
-**Regular item cards** (`.queue-card`):
-- Two-column layout: left = input (local thumb, filename, 🔍 Google Images link) / right = output (API thumb + all editable fields)
-- Editable fields: שם פריט (text), מקור (text), קישור (text), סוג זכויות (select, 6 values), קרדיט? (select), נוסח קרדיט (textarea), מסחרי? (select), חיצוני? (select)
-- Auto-save: every `input`/`change` event saves to `reviewState.rows` immediately — no save button
-- ⚠ icon next to uncertain fields: שם פריט when `_isRawFilename`, סוג זכויות when `_unknownLicense`; tooltip: `ערך זה הוצע אוטומטית — אנא בדוק`
-- "✕ תוצאה שגויה" — clears all output fields, re-renders card
-- "↺ איפוס לנתוני המקור" — restores all fields from `row._originalData` snapshot
-- "סמן כבדוק ←" — sets `row._reviewed = true`, collapses card to compact row (thumb + filename + green ✓ בדוק badge)
-- Clicking a collapsed reviewed card re-expands it
-- Card left-border: red for לא זוהה/רישיון לא מזוהה, amber for other flagged, gray for תקין, green for reviewed
+**Item cards** (`.rq-card`):
+- **Right column** (`.rq-col-source`, 38%, `var(--ink-light)` bg):
+  - Label "מקור" (small caps, muted)
+  - Source thumbnail box: aspect-ratio 4/3; local blob if available, else "no available image" placeholder
+  - Filename: 13px monospace (`var(--mono)`), `direction: ltr`, `word-break: break-all`, centered
+  - Google Images link (🔍 חפש ב-Google Images)
+- **Left column** (`.rq-col-result`, flex 1, `overflow-y: auto`):
+  - Label "תוצאה" (small caps, muted)
+  - API thumbnail: aspect-ratio 16/9; image if `_thumbnailUrl`, else "צפה בתמונה במקור ↗" link, else placeholder
+  - 8 editable fields (all `background: #fff` — white, not gray): שם פריט, מקור, קישור, סוג זכויות, קרדיט?, נוסח קרדיט, מסחרי?, חיצוני?
+  - ⚠ icon next to uncertain fields: שם פריט when `_isRawFilename`, סוג זכויות when `_unknownLicense`
+  - Notes in red inline below fields (`.rq-field-note`)
+  - "↺ איפוס לנתוני המקור" — text button, restores fields from `row._originalData`
+- **Action bar** (`.rq-card-actions`, always visible at bottom of card):
+  - "✓ תואם" (green, flex 1) — sets `row._stamp = 'תואם'`, auto-advances after 350ms
+  - "✕ לא תואם" (red tint, flex 1) — sets `row._stamp = 'לא תואם'`, auto-advances after 350ms
+  - "איפוס" (ghost) — resets stamp to null only (not field values)
+- **Stamp corner**: absolute-positioned circle (top-left of card) — green ✓ for תואם, red ✕ for לא תואם; `pointer-events: none`
+
+**Navigation row** (`.rq-nav`):
+- → arrow (`#rq-arrow-prev`) — goes to lower index; disabled at start
+- Pagination dots (`.rq-dot` per item): hollow = unstamped, filled black = active, green = תואם, red = לא תואם; clicking navigates directly
+- ← arrow (`#rq-arrow-next`) — goes to higher index; disabled at end
+
+**`_stamp` field** (replaces old `_reviewed`):
+- `null` — not yet stamped
+- `'תואם'` — user confirmed this card
+- `'לא תואם'` — user flagged this card
+- Persisted in localStorage via `saveRun()` (not deleted); backfilled as `null` in `loadRunById()` for old saved runs
 
 **`_originalData` snapshot:**
 Set once in `initReview()` as a shallow copy of each row after all fields are populated. Excluded from CSV output and localStorage serialization (deleted in `saveRun()`). Backfilled as `{...row}` in `loadRunById()` for old saved runs.
@@ -305,18 +334,22 @@ const reviewState = {
   _found: true/false,
   _status: 'לא זוהה' | 'נדרש שם פריט' | 'כפילויות אפשריות' | 'רישיון לא מזוהה' | 'הערות' | 'תקין',
   _thumbnailUrl: '',            // https URL from API (Wikimedia thumburl, LOC image_url); empty for Pexels/Shutterstock
-  _reviewed: false,             // true when user clicks "סמן כבדוק" — collapses the card
+  _stamp: null,                 // null | 'תואם' | 'לא תואם' — set by carousel action buttons
   _originalData: {...},         // shallow copy set at initReview time; used by reset button; excluded from CSV + localStorage
 }
 ```
 
 Key functions:
 - `computeStatus(row, dupeGroups, notedItems)` — pure function, re-derives status from row data
-- `renderQueueScreen()` — calls `recomputeAllStatuses()`, then `renderQueueHeader()` and `renderQueueList()`
-- `renderItemCard(row)` — full HTML for one item card (two-column layout, editable fields, buttons)
+- `renderQueueScreen()` — calls `recomputeAllStatuses()`, resets `currentCardIdx=0`, then `renderCarousel()`
+- `buildCarouselItems()` — returns ordered array `{type:'dupe'|'item', data, idx}` (dupes first, flagged items next, clean last)
+- `renderCarousel()` — renders current card into `#queue-stage`, calls `renderCarouselNav()` + `attachCarouselListeners()`
+- `renderCarouselItemCard(row)` — full HTML for one carousel item card (two-column layout, stamp, action buttons)
 - `renderDupeCard(g)` — HTML for a duplicate group card (two panels, merge/keep buttons)
-- `attachQueueListeners()` — wires all field/button events after `renderQueueList()` sets innerHTML
-- `updateCardStatus(fname)` — lightweight per-card status update without full re-render
+- `renderCarouselNav(items)` — renders dots + enables/disables arrows
+- `navigateToCard(idx)` — sets `currentCardIdx`, re-renders carousel
+- `advanceToNextUnstamped()` — after stamp click, finds next unstamped card and navigates; wraps around
+- `attachCarouselListeners(items)` — wires all field/button/dot/arrow events for the current card
 - `buildCSV()` — generates UTF-8 BOM CSV string from `reviewState.rows` (public columns only)
 - `downloadBlob(text, filename)` — triggers browser download
 - `renderCreditsCard()` — builds the credits copy box on the summary screen
@@ -325,7 +358,7 @@ Key functions:
 
 ## Persistent sidebar (previous runs)
 
-A fixed 220px sidebar on the CSS-left edge shows all runs saved in localStorage.
+Always-visible 200px sidebar on the CSS-right edge (RTL). Hidden below 900px breakpoint.
 
 **Storage key:** `copyright_tool_runs` — JSON array of run objects:
 ```json
@@ -341,6 +374,16 @@ A fixed 220px sidebar on the CSS-left edge shows all runs saved in localStorage.
 }
 ```
 
+**Draft run lifecycle:**
+- Clicking "חיפוש חדש" calls `createDraftRun()` — creates an empty run in localStorage immediately with `label: ""`; sets `activeRunId`
+- As user types in `#run-title`, the active run's label updates live in localStorage and re-renders the sidebar; `triggerSaveAnimation()` fires
+- When search completes, `saveRun()` updates the existing draft run (matched by `activeRunId`) with results instead of creating a new one
+
+**Run entry display:**
+- Name: `.run-name` (font-size 12px, weight 500) — if empty shows "ללא שם" in italic muted style (`.run-name-unnamed`)
+- Date: `.run-date` (font-size 10px, muted) — "היום" / "אתמול" / "D בMonth" via `formatRunDate(id)`
+- Active badge: `.run-saved-badge` (green pill, font-size 9px) shown only on active run
+
 **Serialization rules:**
 - Strip `blob:` URLs from `_thumbnailUrl` (local object URLs are session-only)
 - Keep all other `_thumbnailUrl` values (regular https URLs from APIs)
@@ -348,17 +391,17 @@ A fixed 220px sidebar on the CSS-left edge shows all runs saved in localStorage.
 - Wrap every `localStorage.setItem()` in try/catch; on `QuotaExceededError` show inline warning in sidebar
 
 **Sidebar behavior:**
-- "טען" button: restores `reviewState`, navigates directly to review screen (`showScreen('screen-review')`)
-- "מחק" button: removes that single run, re-renders sidebar
-- "מחק הכל" button: clears `copyright_tool_runs` from localStorage entirely
-- Active/loaded run highlighted with `run-entry.active` class (`activeRunId` JS variable)
-- Runs are saved automatically after each search completes (`saveRun(reviewState)` called right after `initReview`)
+- Clicking a run entry (`.run-info`) loads that run; no separate "טען" button
+- "מחק" (×) button per entry: removes that single run, re-renders sidebar
+- "מחק היסטוריית חיפושים" button: clears `copyright_tool_runs` from localStorage entirely
+- Active/loaded run highlighted with `run-entry.active` class and 1px border (`activeRunId` JS variable)
+- `saveRun()` updates existing draft run if `activeRunId` matches an existing run; otherwise creates a new run
 
 ---
 
 ## Steps bar
 
-A horizontal `<div class="steps-bar">` with `position: sticky; top: 0; height: var(--steps-h)` inside `.main-area`, visible on all 4 screens. Steps display LTR (`direction: ltr`):
+A horizontal `<div class="steps-bar">` with `position: sticky; top: 0; height: var(--steps-h)` — direct child of `<body>`, above `.app-body`. Logo (©) + "בודק זכויות יוצרים" on the far right (RTL = `.steps-bar-logo` first in DOM). `.steps-bar-spacer` (180px) balances the layout on the left. Steps display LTR (`direction: ltr`):
 
 `① הכנה → ② חיפוש → ③ עריכה → ④ סיכום`
 
