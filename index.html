@@ -1,1954 +1,2981 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="he" dir="rtl">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>בודק זכויות יוצרים</title>
-<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700&family=DM+Mono&display=swap" rel="stylesheet">
-<style>
-  :root {
-    --bg:           #f5f5f3;
-    --white:        #ffffff;
-    --border:       #e2e2de;
-    --accent:       #2d6ef6;
-    --accent-light: #eff4ff;
-    --success:      #1a9e6e;
-    --success-light:#edfaf4;
-    --warn:         #d97706;
-    --warn-light:   #fffbeb;
-    --danger:       #dc2626;
-    --danger-light: #fef2f2;
-    --text:         #1a1a1a;
-    --muted:        #6b7280;
-    --radius:       10px;
-    --mono:         'DM Mono', monospace;
-    --sans:         'Heebo', sans-serif;
-    --sidebar-w:    220px;
-    --steps-h:      80px;
-  }
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>בודק זכויות יוצרים</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700&family=DM+Mono&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg: #f5f5f3;
+        --white: #ffffff;
+        --border: #e2e2de;
+        --accent: #2d6ef6;
+        --accent-light: #eff4ff;
+        --success: #1a9e6e;
+        --success-light: #edfaf4;
+        --warn: #d97706;
+        --warn-light: #fffbeb;
+        --danger: #dc2626;
+        --danger-light: #fef2f2;
+        --text: #1a1a1a;
+        --muted: #6b7280;
+        --radius: 10px;
+        --mono: "DM Mono", monospace;
+        --sans: "Heebo", sans-serif;
+        --sidebar-w: 220px;
+        --steps-h: 80px;
+      }
 
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
 
-  html, body { height: 100%; }
+      html,
+      body {
+        height: 100%;
+      }
 
-  body {
-    font-family: var(--sans);
-    background: var(--bg);
-    color: var(--text);
-    min-height: 100vh;
-    font-size: 15px;
-    line-height: 1.6;
-  }
-  body.review-mode { overflow: hidden; }
+      body {
+        font-family: var(--sans);
+        background: var(--bg);
+        color: var(--text);
+        min-height: 100vh;
+        font-size: 15px;
+        line-height: 1.6;
+      }
+      body.review-mode {
+        overflow: hidden;
+      }
 
-  /* ══════════════════════════════════════════════════════
+      /* ══════════════════════════════════════════════════════
      SIDEBAR
   ══════════════════════════════════════════════════════ */
 
-  .sidebar {
-    position: fixed;
-    top: 0; right: 0; bottom: 0;
-    width: var(--sidebar-w);
-    background: var(--white);
-    border-left: 1px solid var(--border);
-    display: flex;
-    flex-direction: column;
-    z-index: 200;
-    overflow: hidden;
-  }
+      .sidebar {
+        position: fixed;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        width: var(--sidebar-w);
+        background: var(--white);
+        border-left: 1px solid var(--border);
+        display: flex;
+        flex-direction: column;
+        z-index: 200;
+        overflow: hidden;
+      }
 
-  .sidebar-logo {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 14px 12px 10px;
-    direction: rtl;
-    border-bottom: 1px solid var(--border);
-    flex-shrink: 0;
-  }
-  .sidebar-logo-name { font-size: 13px; font-weight: 700; color: var(--text); }
+      .sidebar-logo {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 14px 12px 10px;
+        direction: rtl;
+        border-bottom: 1px solid var(--border);
+        flex-shrink: 0;
+      }
+      .sidebar-logo-name {
+        font-size: 13px;
+        font-weight: 700;
+        color: var(--text);
+      }
 
-  .sidebar-top {
-    padding: 12px;
-    border-bottom: 1px solid var(--border);
-    flex-shrink: 0;
-    text-align: center;
-  }
+      .sidebar-top {
+        padding: 12px;
+        border-bottom: 1px solid var(--border);
+        flex-shrink: 0;
+        text-align: center;
+      }
 
-  .sidebar-bottom {
-    padding: 12px;
-    border-top: 1px solid var(--border);
-    text-align: center;
-    flex-shrink: 0;
-  }
+      .sidebar-bottom {
+        padding: 12px;
+        border-top: 1px solid var(--border);
+        text-align: center;
+        flex-shrink: 0;
+      }
 
-  .btn-new-search {
-    width: 100%;
-    background: var(--accent-light);
-    border: 1px solid var(--accent);
-    color: var(--accent);
-    font-weight: 600;
-    font-size: 13px;
-    border-radius: 7px;
-    padding: 7px 14px;
-    cursor: pointer;
-    font-family: var(--sans);
-    transition: background 0.12s;
-  }
-  .btn-new-search:hover { background: #dce9ff; }
+      .btn-new-search {
+        width: 100%;
+        background: var(--accent-light);
+        border: 1px solid var(--accent);
+        color: var(--accent);
+        font-weight: 600;
+        font-size: 13px;
+        border-radius: 7px;
+        padding: 7px 14px;
+        cursor: pointer;
+        font-family: var(--sans);
+        transition: background 0.12s;
+      }
+      .btn-new-search:hover {
+        background: #dce9ff;
+      }
 
-  .btn-danger-outline {
-    background: transparent;
-    border: 1px solid var(--danger);
-    color: var(--danger);
-    font-weight: 400;
-    font-size: 12px;
-    border-radius: 7px;
-    padding: 6px 14px;
-    cursor: pointer;
-    font-family: var(--sans);
-    transition: background 0.12s;
-    width: 100%;
-  }
-  .btn-danger-outline:hover { background: var(--danger-light); }
+      .btn-danger-outline {
+        background: transparent;
+        border: 1px solid var(--danger);
+        color: var(--danger);
+        font-weight: 400;
+        font-size: 12px;
+        border-radius: 7px;
+        padding: 6px 14px;
+        cursor: pointer;
+        font-family: var(--sans);
+        transition: background 0.12s;
+        width: 100%;
+      }
+      .btn-danger-outline:hover {
+        background: var(--danger-light);
+      }
 
-  .sidebar-runs-list {
-    flex: 1;
-    overflow-y: auto;
-    padding: 8px;
-    direction: rtl;
-  }
+      .sidebar-runs-list {
+        flex: 1;
+        overflow-y: auto;
+        padding: 8px;
+        direction: rtl;
+      }
 
-  .sidebar-empty {
-    font-size: 12px;
-    color: var(--muted);
-    text-align: center;
-    padding: 24px 8px;
-    line-height: 1.6;
-  }
+      .sidebar-empty {
+        font-size: 12px;
+        color: var(--muted);
+        text-align: center;
+        padding: 24px 8px;
+        line-height: 1.6;
+      }
 
-  .run-entry {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    padding: 9px 10px;
-    border-radius: 8px;
-    border: 1px solid var(--border);
-    margin-bottom: 7px;
-    transition: border-color 0.12s;
-    background: var(--bg);
-  }
-  .run-entry:hover { border-color: var(--accent); }
-  .run-entry.active { border-color: var(--accent); background: var(--accent-light); }
+      .run-entry {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        padding: 9px 10px;
+        border-radius: 8px;
+        border: 1px solid var(--border);
+        margin-bottom: 7px;
+        transition: border-color 0.12s;
+        background: var(--bg);
+      }
+      .run-entry:hover {
+        border-color: var(--accent);
+      }
+      .run-entry.active {
+        border-color: var(--accent);
+        background: var(--accent-light);
+      }
 
-  .run-label-click {
-    flex: 1;
-    cursor: pointer;
-    font-size: 12px;
-    color: var(--text);
-    font-weight: 500;
-    line-height: 1.4;
-  }
-  .run-label-click:hover { color: var(--accent); }
+      .run-label-click {
+        flex: 1;
+        cursor: pointer;
+        font-size: 12px;
+        color: var(--text);
+        font-weight: 500;
+        line-height: 1.4;
+      }
+      .run-label-click:hover {
+        color: var(--accent);
+      }
 
-  .run-delete-btn {
-    background: none;
-    border: none;
-    color: var(--muted);
-    font-size: 15px;
-    cursor: pointer;
-    padding: 0 4px;
-    border-radius: 4px;
-    flex-shrink: 0;
-    line-height: 1;
-    font-family: var(--sans);
-  }
-  .run-delete-btn:hover { color: var(--danger); background: var(--danger-light); }
+      .run-delete-btn {
+        background: none;
+        border: none;
+        color: var(--muted);
+        font-size: 15px;
+        cursor: pointer;
+        padding: 0 4px;
+        border-radius: 4px;
+        flex-shrink: 0;
+        line-height: 1;
+        font-family: var(--sans);
+      }
+      .run-delete-btn:hover {
+        color: var(--danger);
+        background: var(--danger-light);
+      }
 
-  .sidebar-quota-warn {
-    font-size: 11px;
-    color: var(--warn);
-    background: var(--warn-light);
-    padding: 8px 10px;
-    margin: 8px;
-    border-radius: 6px;
-    line-height: 1.5;
-    flex-shrink: 0;
-    border: 1px solid #f3d990;
-    direction: rtl;
-  }
+      .sidebar-quota-warn {
+        font-size: 11px;
+        color: var(--warn);
+        background: var(--warn-light);
+        padding: 8px 10px;
+        margin: 8px;
+        border-radius: 6px;
+        line-height: 1.5;
+        flex-shrink: 0;
+        border: 1px solid #f3d990;
+        direction: rtl;
+      }
 
-  /* ══════════════════════════════════════════════════════
+      /* ══════════════════════════════════════════════════════
      MAIN AREA
   ══════════════════════════════════════════════════════ */
 
-  .main-area {
-    margin-right: var(--sidebar-w);
-    min-height: 100vh;
-  }
+      .main-area {
+        margin-right: var(--sidebar-w);
+        min-height: 100vh;
+      }
 
-  /* ── Steps bar ── */
-  .steps-bar {
-    height: var(--steps-h);
-    background: var(--white);
-    border-bottom: 1px solid var(--border);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    position: sticky;
-    top: 0;
-    z-index: 100;
-    direction: rtl;
-  }
+      /* ── Steps bar ── */
+      .steps-bar {
+        height: var(--steps-h);
+        background: var(--white);
+        border-bottom: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        direction: rtl;
+      }
 
-  .steps-track {
-    display: flex;
-    align-items: flex-start;
-  }
+      .steps-track {
+        display: flex;
+        align-items: flex-start;
+      }
 
-  .step-item {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 6px;
-  }
+      .step-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 6px;
+      }
 
-  .step-circle {
-    width: 26px;
-    height: 26px;
-    border-radius: 50%;
-    border: 2px solid var(--border);
-    background: var(--white);
-    flex-shrink: 0;
-    transition: background 0.15s, border-color 0.15s;
-  }
+      .step-circle {
+        width: 26px;
+        height: 26px;
+        border-radius: 50%;
+        border: 2px solid var(--border);
+        background: var(--white);
+        flex-shrink: 0;
+        transition:
+          background 0.15s,
+          border-color 0.15s;
+      }
 
-  .step-connector {
-    height: 2px;
-    width: 64px;
-    background: var(--border);
-    margin-top: 12px;
-    flex-shrink: 0;
-    transition: background 0.15s;
-  }
+      .step-connector {
+        height: 2px;
+        width: 64px;
+        background: var(--border);
+        margin-top: 12px;
+        flex-shrink: 0;
+        transition: background 0.15s;
+      }
 
-  .step-label {
-    font-size: 11px;
-    color: var(--muted);
-    white-space: nowrap;
-    transition: color 0.15s;
-  }
+      .step-label {
+        font-size: 11px;
+        color: var(--muted);
+        white-space: nowrap;
+        transition: color 0.15s;
+      }
 
-  .step-item.done  .step-circle { background: var(--success); border-color: var(--success); }
-  .step-item.done  .step-label  { color: var(--success); font-weight: 600; }
-  .step-item.active .step-circle { background: var(--accent); border-color: var(--accent); }
-  .step-item.active .step-label  { color: var(--accent); font-weight: 700; }
-  .step-connector.done           { background: var(--success); }
+      .step-item.done .step-circle {
+        background: var(--success);
+        border-color: var(--success);
+      }
+      .step-item.done .step-label {
+        color: var(--success);
+        font-weight: 600;
+      }
+      .step-item.active .step-circle {
+        background: var(--accent);
+        border-color: var(--accent);
+      }
+      .step-item.active .step-label {
+        color: var(--accent);
+        font-weight: 700;
+      }
+      .step-connector.done {
+        background: var(--success);
+      }
 
-  /* ── Shell ── */
-  .shell {
-    max-width: 680px;
-    margin: 0 auto;
-    padding: 48px 24px 80px;
-  }
+      /* ── Shell ── */
+      .shell {
+        max-width: 680px;
+        margin: 0 auto;
+        padding: 24px 24px 80px;
+      }
 
-  header { margin-bottom: 40px; }
-  .compact-header header { margin-bottom: 12px; }
+      header {
+        margin-bottom: 40px;
+      }
+      .compact-header header {
+        margin-bottom: 12px;
+      }
 
-  .logo { display: flex; align-items: center; gap: 10px; margin-bottom: 4px; }
-  .logo-mark {
-    width: 32px; height: 32px;
-    background: var(--accent);
-    border-radius: 8px;
-    display: flex; align-items: center; justify-content: center;
-    color: white; font-size: 15px; font-weight: 700;
-  }
-  h1 { font-size: 20px; font-weight: 700; }
-  .subtitle { font-size: 13px; color: var(--muted); }
+      .logo {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 4px;
+      }
+      .logo-mark {
+        width: 32px;
+        height: 32px;
+        background: var(--accent);
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 15px;
+        font-weight: 700;
+      }
+      h1 {
+        font-size: 20px;
+        font-weight: 700;
+      }
+      .subtitle {
+        font-size: 13px;
+        color: var(--muted);
+      }
 
-  .screen { display: none; }
-  .screen.active { display: block; }
+      .screen {
+        display: none;
+      }
+      .screen.active {
+        display: block;
+      }
 
-  .card {
-    background: var(--white);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 24px;
-    margin-bottom: 16px;
-  }
-  .card-label {
-    font-size: 11px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.7px;
-    color: var(--muted);
-    margin-bottom: 14px;
-  }
+      .card {
+        background: var(--white);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 24px;
+        margin-bottom: 16px;
+      }
+      .card-label {
+        font-size: 11px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.7px;
+        color: var(--muted);
+        margin-bottom: 14px;
+      }
 
-  label { font-size: 14px; font-weight: 500; display: block; margin-bottom: 6px; }
-  input[type="text"] {
-    width: 100%;
-    border: 1px solid var(--border);
-    border-radius: 7px;
-    background: var(--bg);
-    color: var(--text);
-    font-family: var(--mono);
-    font-size: 13px;
-    padding: 9px 12px;
-    outline: none;
-    transition: border-color 0.15s, box-shadow 0.15s;
-    direction: ltr;
-  }
-  input[type="text"]:focus {
-    border-color: var(--accent);
-    box-shadow: 0 0 0 3px rgba(45,110,246,0.1);
-    background: white;
-  }
-  .hint { font-size: 12px; color: var(--muted); margin-top: 5px; }
+      label {
+        font-size: 14px;
+        font-weight: 500;
+        display: block;
+        margin-bottom: 6px;
+      }
+      input[type="text"] {
+        width: 100%;
+        border: 1px solid var(--border);
+        border-radius: 7px;
+        background: var(--bg);
+        color: var(--text);
+        font-family: var(--mono);
+        font-size: 13px;
+        padding: 9px 12px;
+        outline: none;
+        transition:
+          border-color 0.15s,
+          box-shadow 0.15s;
+        direction: ltr;
+      }
+      input[type="text"]:focus {
+        border-color: var(--accent);
+        box-shadow: 0 0 0 3px rgba(45, 110, 246, 0.1);
+        background: white;
+      }
+      .hint {
+        font-size: 12px;
+        color: var(--muted);
+        margin-top: 5px;
+      }
 
-  .msg {
-    font-size: 13px;
-    border-radius: 7px;
-    padding: 8px 12px;
-    margin-top: 10px;
-    display: none;
-  }
-  .msg.visible { display: block; }
-  .msg-success { background: var(--success-light); color: var(--success); }
-  .msg-error   { background: var(--danger-light);  color: var(--danger);  }
+      .msg {
+        font-size: 13px;
+        border-radius: 7px;
+        padding: 8px 12px;
+        margin-top: 10px;
+        display: none;
+      }
+      .msg.visible {
+        display: block;
+      }
+      .msg-success {
+        background: var(--success-light);
+        color: var(--success);
+      }
+      .msg-error {
+        background: var(--danger-light);
+        color: var(--danger);
+      }
 
-  /* ── Source toggles ── */
-  .sources-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 8px;
-  }
-  .source-toggle {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 10px 12px;
-    cursor: pointer;
-    transition: border-color 0.15s, background 0.15s;
-    user-select: none;
-    background: var(--bg);
-  }
-  .source-toggle:hover { border-color: var(--accent); }
-  .source-toggle.active { border-color: var(--accent); background: var(--accent-light); }
-  .source-toggle input { display: none; }
-  .check-box {
-    width: 17px; height: 17px;
-    border: 1.5px solid var(--border);
-    border-radius: 4px;
-    flex-shrink: 0;
-    display: flex; align-items: center; justify-content: center;
-    transition: all 0.15s;
-    font-size: 11px;
-    color: white;
-  }
-  .source-toggle.active .check-box { background: var(--accent); border-color: var(--accent); }
-  .check-box::after { content: ''; }
-  .source-toggle.active .check-box::after { content: '✓'; }
-  .src-name { font-size: 13px; font-weight: 500; }
-  .src-desc { font-size: 11px; color: var(--muted); }
+      /* ── Source toggles ── */
+      .sources-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+      }
+      .source-toggle {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 10px 12px;
+        cursor: pointer;
+        transition:
+          border-color 0.15s,
+          background 0.15s;
+        user-select: none;
+        background: var(--bg);
+      }
+      .source-toggle:hover {
+        border-color: var(--accent);
+      }
+      .source-toggle.active {
+        border-color: var(--accent);
+        background: var(--accent-light);
+      }
+      .source-toggle input {
+        display: none;
+      }
+      .check-box {
+        width: 17px;
+        height: 17px;
+        border: 1.5px solid var(--border);
+        border-radius: 4px;
+        flex-shrink: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.15s;
+        font-size: 11px;
+        color: white;
+      }
+      .source-toggle.active .check-box {
+        background: var(--accent);
+        border-color: var(--accent);
+      }
+      .check-box::after {
+        content: "";
+      }
+      .source-toggle.active .check-box::after {
+        content: "✓";
+      }
+      .src-name {
+        font-size: 13px;
+        font-weight: 500;
+      }
+      .src-desc {
+        font-size: 11px;
+        color: var(--muted);
+      }
 
-  #pexels-key-row { margin-top: 14px; display: none; }
-  #pexels-key-row.visible { display: block; }
+      #pexels-key-row {
+        margin-top: 14px;
+        display: none;
+      }
+      #pexels-key-row.visible {
+        display: block;
+      }
 
-  /* ── Buttons ── */
-  .btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 7px;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    font-family: var(--sans);
-    font-size: 14px;
-    font-weight: 600;
-    padding: 10px 20px;
-    transition: opacity 0.15s, transform 0.1s;
-  }
-  .btn:active { transform: scale(0.98); }
-  .btn:disabled { opacity: 0.45; cursor: not-allowed; }
-  .btn-primary {
-    background: var(--accent);
-    color: white;
-    width: 100%;
-    padding: 12px;
-    margin-top: 16px;
-    font-size: 15px;
-  }
-  .btn-primary:hover:not(:disabled) { opacity: 0.88; }
-  .btn-ghost {
-    background: transparent;
-    border: 1px solid var(--border);
-    color: var(--muted);
-  }
-  .btn-ghost:hover { border-color: var(--accent); color: var(--accent); }
-  .btn-download {
-    background: var(--success);
-    color: white;
-    padding: 10px 22px;
-    font-size: 14px;
-  }
-  .btn-download:hover { opacity: 0.88; }
-  .btn-sm {
-    font-size: 12px;
-    padding: 5px 12px;
-    border-radius: 6px;
-  }
-  .btn-warn  { background: var(--warn);    color: white; }
-  .btn-warn:hover { opacity: 0.88; }
-  .btn-success { background: var(--success); color: white; }
-  .btn-success:hover { opacity: 0.88; }
-  .btn-outline { background: transparent; border: 1.5px solid var(--accent); color: var(--accent); }
-  .btn-outline:hover:not(:disabled) { background: var(--accent-light); }
-  .btn-outline:disabled { opacity: 0.4; cursor: not-allowed; }
+      /* ── Buttons ── */
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 7px;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-family: var(--sans);
+        font-size: 14px;
+        font-weight: 600;
+        padding: 10px 20px;
+        transition:
+          opacity 0.15s,
+          transform 0.1s;
+      }
+      .btn:active {
+        transform: scale(0.98);
+      }
+      .btn:disabled {
+        opacity: 0.45;
+        cursor: not-allowed;
+      }
+      .btn-primary {
+        background: var(--accent);
+        color: white;
+        width: 100%;
+        padding: 12px;
+        margin-top: 16px;
+        font-size: 15px;
+      }
+      .btn-primary:hover:not(:disabled) {
+        opacity: 0.88;
+      }
+      .btn-ghost {
+        background: transparent;
+        border: 1px solid var(--border);
+        color: var(--muted);
+      }
+      .btn-ghost:hover {
+        border-color: var(--accent);
+        color: var(--accent);
+      }
+      .btn-download {
+        background: var(--success);
+        color: white;
+        padding: 10px 22px;
+        font-size: 14px;
+      }
+      .btn-download:hover {
+        opacity: 0.88;
+      }
+      .btn-sm {
+        font-size: 12px;
+        padding: 5px 12px;
+        border-radius: 6px;
+      }
+      .btn-warn {
+        background: var(--warn);
+        color: white;
+      }
+      .btn-warn:hover {
+        opacity: 0.88;
+      }
+      .btn-success {
+        background: var(--success);
+        color: white;
+      }
+      .btn-success:hover {
+        opacity: 0.88;
+      }
+      .btn-outline {
+        background: transparent;
+        border: 1.5px solid var(--accent);
+        color: var(--accent);
+      }
+      .btn-outline:hover:not(:disabled) {
+        background: var(--accent-light);
+      }
+      .btn-outline:disabled {
+        opacity: 0.4;
+        cursor: not-allowed;
+      }
 
-  .divider { height: 1px; background: var(--border); margin: 16px 0; }
+      .divider {
+        height: 1px;
+        background: var(--border);
+        margin: 16px 0;
+      }
 
-  /* ── Checklist ── */
-  .checklist-section { margin-top: 14px; border-top: 1px solid var(--border); padding-top: 14px; }
+      /* ── Checklist ── */
+      .checklist-section {
+        margin-top: 14px;
+        border-top: 1px solid var(--border);
+        padding-top: 14px;
+      }
 
-  .checklist-controls {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin-bottom: 8px;
-  }
-  .checklist-count {
-    font-size: 12px;
-    color: var(--muted);
-    margin-right: auto;
-  }
+      .checklist-controls {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 8px;
+      }
+      .checklist-count {
+        font-size: 12px;
+        color: var(--muted);
+        margin-right: auto;
+      }
 
-  .checklist-area {
-    border: 1px solid var(--border);
-    border-radius: 7px;
-    background: var(--bg);
-    max-height: 200px;
-    overflow-y: auto;
-    padding: 4px;
-  }
+      .checklist-area {
+        border: 1px solid var(--border);
+        border-radius: 7px;
+        background: var(--bg);
+        max-height: 200px;
+        overflow-y: auto;
+        padding: 4px;
+      }
 
-  .checklist-item {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 5px 8px;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 12px;
-    font-family: var(--mono);
-    direction: ltr;
-    text-align: left;
-    user-select: none;
-  }
-  .checklist-item:hover { background: var(--accent-light); }
-  .checklist-item input[type="checkbox"] { cursor: pointer; flex-shrink: 0; }
-  .checklist-item-name {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    flex: 1;
-    color: var(--text);
-  }
+      .checklist-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 5px 8px;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 12px;
+        font-family: var(--mono);
+        direction: ltr;
+        text-align: left;
+        user-select: none;
+      }
+      .checklist-item:hover {
+        background: var(--accent-light);
+      }
+      .checklist-item input[type="checkbox"] {
+        cursor: pointer;
+        flex-shrink: 0;
+      }
+      .checklist-item-name {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        flex: 1;
+        color: var(--text);
+      }
 
-  /* ── Manual input ── */
-  .manual-section {
-    margin-top: 14px;
-    padding-top: 14px;
-    border-top: 1px solid var(--border);
-  }
-  .manual-row {
-    display: flex;
-    gap: 8px;
-    align-items: flex-start;
-    margin-top: 6px;
-  }
-  .manual-textarea {
-    flex: 1;
-    height: 72px;
-    font-family: var(--mono);
-    font-size: 12px;
-    border: 1px solid var(--border);
-    border-radius: 7px;
-    background: var(--bg);
-    color: var(--text);
-    padding: 8px 10px;
-    resize: vertical;
-    direction: ltr;
-    outline: none;
-    transition: border-color 0.15s, box-shadow 0.15s;
-  }
-  .manual-textarea:focus {
-    border-color: var(--accent);
-    box-shadow: 0 0 0 3px rgba(45,110,246,0.1);
-    background: white;
-  }
+      /* ── Manual input ── */
+      .manual-section {
+        margin-top: 14px;
+        padding-top: 14px;
+        border-top: 1px solid var(--border);
+      }
+      .manual-row {
+        display: flex;
+        gap: 8px;
+        align-items: flex-start;
+        margin-top: 6px;
+      }
+      .manual-textarea {
+        flex: 1;
+        height: 72px;
+        font-family: var(--mono);
+        font-size: 12px;
+        border: 1px solid var(--border);
+        border-radius: 7px;
+        background: var(--bg);
+        color: var(--text);
+        padding: 8px 10px;
+        resize: vertical;
+        direction: ltr;
+        outline: none;
+        transition:
+          border-color 0.15s,
+          box-shadow 0.15s;
+      }
+      .manual-textarea:focus {
+        border-color: var(--accent);
+        box-shadow: 0 0 0 3px rgba(45, 110, 246, 0.1);
+        background: white;
+      }
 
-  /* ── File entries ── */
-  .file-entry        { display: flex; align-items: center; gap: 6px; margin-bottom: 6px; }
-  .file-entry-input  { flex: 1; font-family: var(--mono); font-size: 12px; border: 1px solid var(--border); border-radius: 6px; padding: 6px 10px; background: var(--bg); color: var(--text); outline: none; direction: ltr; }
-  .file-entry-input:focus { border-color: var(--accent); box-shadow: 0 0 0 2px rgba(45,110,246,0.1); background: white; }
-  .file-entry-remove { background: none; border: none; color: var(--muted); font-size: 15px; cursor: pointer; padding: 0 4px; line-height: 1; border-radius: 4px; }
-  .file-entry-remove:hover { color: var(--danger); background: var(--danger-light); }
+      /* ── File entries ── */
+      .file-entry {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        margin-bottom: 6px;
+      }
+      .file-entry-input {
+        flex: 1;
+        font-family: var(--mono);
+        font-size: 12px;
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        padding: 6px 10px;
+        background: var(--bg);
+        color: var(--text);
+        outline: none;
+        direction: ltr;
+      }
+      .file-entry-input:focus {
+        border-color: var(--accent);
+        box-shadow: 0 0 0 2px rgba(45, 110, 246, 0.1);
+        background: white;
+      }
+      .file-entry-remove {
+        background: none;
+        border: none;
+        color: var(--muted);
+        font-size: 15px;
+        cursor: pointer;
+        padding: 0 4px;
+        line-height: 1;
+        border-radius: 4px;
+      }
+      .file-entry-remove:hover {
+        color: var(--danger);
+        background: var(--danger-light);
+      }
 
-  /* ── Progress screen ── */
-  .progress-wrap { padding: 4px 0; }
-  .progress-header { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 10px; }
-  .progress-title  { font-size: 15px; font-weight: 600; }
-  .progress-count  { font-size: 13px; color: var(--muted); }
-  .bar-track { background: var(--bg); border-radius: 99px; height: 5px; overflow: hidden; margin-bottom: 10px; }
-  .bar-fill  { height: 100%; background: var(--accent); border-radius: 99px; transition: width 0.4s ease; width: 0%; }
-  .progress-file   { font-family: var(--mono); font-size: 12px; color: var(--text); word-break: break-all; direction: ltr; text-align: left; margin-bottom: 3px; }
-  .progress-source { font-size: 12px; color: var(--accent); min-height: 18px; margin-bottom: 14px; }
+      /* ── Progress screen ── */
+      .progress-wrap {
+        padding: 4px 0;
+      }
+      .progress-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        margin-bottom: 10px;
+      }
+      .progress-title {
+        font-size: 15px;
+        font-weight: 600;
+      }
+      .progress-count {
+        font-size: 13px;
+        color: var(--muted);
+      }
+      .bar-track {
+        background: var(--bg);
+        border-radius: 99px;
+        height: 5px;
+        overflow: hidden;
+        margin-bottom: 10px;
+      }
+      .bar-fill {
+        height: 100%;
+        background: var(--accent);
+        border-radius: 99px;
+        transition: width 0.4s ease;
+        width: 0%;
+      }
+      .progress-file {
+        font-family: var(--mono);
+        font-size: 12px;
+        color: var(--text);
+        word-break: break-all;
+        direction: ltr;
+        text-align: left;
+        margin-bottom: 3px;
+      }
+      .progress-source {
+        font-size: 12px;
+        color: var(--accent);
+        min-height: 18px;
+        margin-bottom: 14px;
+      }
 
-  .live-feed { border-top: 1px solid var(--border); padding-top: 12px; display: flex; flex-direction: column; gap: 5px; }
-  @keyframes live-item-in {
-    from { opacity: 0; transform: translateY(-8px); }
-    to   { opacity: 1; transform: translateY(0); }
-  }
-  .live-item { display: flex; align-items: baseline; gap: 8px; font-size: 12px; animation: live-item-in 0.2s ease; }
-  .live-dot  { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; margin-top: 3px; }
-  .live-fname { font-family: var(--mono); font-size: 11px; color: var(--text); flex: 1; direction: ltr; text-align: left; word-break: break-all; }
-  .live-src   { font-size: 11px; color: var(--muted); flex-shrink: 0; }
-  .live-src.not-found { color: #c47a7a; }
+      .live-feed {
+        border-top: 1px solid var(--border);
+        padding-top: 12px;
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+      }
+      @keyframes live-item-in {
+        from {
+          opacity: 0;
+          transform: translateY(-8px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      .live-item {
+        display: flex;
+        align-items: baseline;
+        gap: 8px;
+        font-size: 12px;
+        animation: live-item-in 0.2s ease;
+      }
+      .live-dot {
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        flex-shrink: 0;
+        margin-top: 3px;
+      }
+      .live-fname {
+        font-family: var(--mono);
+        font-size: 11px;
+        color: var(--text);
+        flex: 1;
+        direction: ltr;
+        text-align: left;
+        word-break: break-all;
+      }
+      .live-src {
+        font-size: 11px;
+        color: var(--muted);
+        flex-shrink: 0;
+      }
+      .live-src.not-found {
+        color: #c47a7a;
+      }
 
-  /* ══════════════════════════════════════════════════════
+      /* ══════════════════════════════════════════════════════
      REVIEW SCREEN
   ══════════════════════════════════════════════════════ */
 
-  #screen-review {
-    display: none;
-  }
-  #screen-review.active {
-    display: flex;
-    flex-direction: column;
-    position: fixed;
-    top: var(--steps-h);
-    left: 0;
-    right: var(--sidebar-w);
-    bottom: 0;
-    overflow: hidden;
-    background: var(--bg);
-  }
+      #review-backdrop {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.38);
+        z-index: 290;
+      }
+      #review-backdrop.active {
+        display: block;
+      }
 
-  .review-header {
-    background: var(--white);
-    border-bottom: 1px solid var(--border);
-    padding: 14px 24px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    flex-shrink: 0;
-    gap: 16px;
-  }
-  .review-header-title { font-size: 15px; font-weight: 700; }
-  .review-header-sub   { font-size: 12px; color: var(--muted); }
+      #screen-review {
+        display: none;
+      }
+      #screen-review.active {
+        display: flex;
+        flex-direction: column;
+        position: fixed;
+        top: 20px;
+        left: 20px;
+        right: calc(var(--sidebar-w) + 20px);
+        bottom: 20px;
+        border-radius: 12px;
+        box-shadow: 0 16px 48px rgba(0, 0, 0, 0.28);
+        overflow: hidden;
+        background: var(--bg);
+        z-index: 300;
+      }
 
-  .review-body {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-    padding-bottom: 64px;
-  }
+      .review-header {
+        background: var(--white);
+        border-bottom: 1px solid var(--border);
+        padding: 14px 24px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-shrink: 0;
+        gap: 16px;
+      }
+      .review-header-title {
+        font-size: 15px;
+        font-weight: 700;
+      }
+      .review-header-sub {
+        font-size: 12px;
+        color: var(--muted);
+      }
 
-  /* Issues panel */
-  .issues-panel {
-    background: var(--white);
-    border-bottom: 1px solid var(--border);
-    flex-shrink: 0;
-    overflow-y: auto;
-    max-height: 38vh;
-    padding: 12px 24px;
-  }
+      .review-body {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        overflow: hidden;
+      }
 
-  .issue-card { border: 1px solid var(--border); border-radius: 8px; margin-bottom: 8px; overflow: hidden; }
-  .issue-card:last-child { margin-bottom: 0; }
+      /* Issues panel — unified: fills all space, all sections live here */
+      .issues-panel {
+        flex: 1;
+        overflow-y: auto;
+        padding: 12px 24px;
+        background: var(--bg);
+      }
 
-  .issue-card-header {
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 9px 14px; cursor: pointer; user-select: none;
-    font-size: 13px; font-weight: 600; gap: 10px;
-    transition: background 0.12s;
-  }
-  .issue-card-header:hover { filter: brightness(0.97); }
-  .issue-card-header.danger  { background: var(--danger-light);  color: var(--danger);  }
-  .issue-card-header.warn    { background: var(--warn-light);    color: var(--warn);    }
-  .issue-card-header.muted   { background: var(--bg);            color: var(--muted);   }
-  .issue-card-header.success { background: var(--success-light); color: var(--success); }
+      .issue-card {
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        margin-bottom: 8px;
+        overflow: hidden;
+      }
+      .issue-card:last-child {
+        margin-bottom: 0;
+      }
 
-  .issue-card-header-left { display: flex; align-items: center; gap: 8px; flex: 1; }
-  .issue-badge { font-size: 10px; font-weight: 700; padding: 1px 7px; border-radius: 99px; background: rgba(0,0,0,0.12); }
-  .issue-chevron { font-size: 11px; transition: transform 0.2s; flex-shrink: 0; }
-  .issue-card.open .issue-chevron { transform: rotate(180deg); }
+      .issue-card-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 9px 14px;
+        cursor: pointer;
+        user-select: none;
+        font-size: 13px;
+        font-weight: 600;
+        gap: 10px;
+        transition: background 0.12s;
+      }
+      .issue-card-header:hover {
+        filter: brightness(0.97);
+      }
+      .issue-card-header.danger {
+        background: var(--danger-light);
+        color: var(--danger);
+      }
+      .issue-card-header.warn {
+        background: var(--warn-light);
+        color: var(--warn);
+      }
+      .issue-card-header.muted {
+        background: var(--bg);
+        color: var(--muted);
+      }
+      .issue-card-header.success {
+        background: var(--success-light);
+        color: var(--success);
+      }
 
-  .issue-card-body { display: none; padding: 8px 14px 12px; border-top: 1px solid var(--border); background: var(--white); }
-  .issue-card.open .issue-card-body { display: block; }
+      .issue-card-header-left {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex: 1;
+      }
+      .issue-badge {
+        font-size: 10px;
+        font-weight: 700;
+        padding: 1px 7px;
+        border-radius: 99px;
+        background: rgba(0, 0, 0, 0.12);
+      }
+      .issue-chevron {
+        font-size: 11px;
+        transition: transform 0.2s;
+        flex-shrink: 0;
+      }
+      .issue-card.open .issue-chevron {
+        transform: rotate(180deg);
+      }
 
-  .issue-item {
-    display: flex; align-items: center; gap: 10px;
-    padding: 5px 8px; border-radius: 6px; cursor: pointer;
-    font-size: 12px; transition: background 0.1s; margin-bottom: 3px;
-  }
-  .issue-item:hover { background: var(--bg); }
-  .issue-item-fname { font-family: var(--mono); font-size: 11px; direction: ltr; flex: 1; word-break: break-all; color: var(--text); }
-  .issue-item-meta  { font-size: 11px; color: var(--muted); flex-shrink: 0; }
+      .issue-card-body {
+        display: none;
+        padding: 0;
+        border-top: 1px solid var(--border);
+        background: var(--white);
+        overflow-x: auto;
+      }
+      .issue-card.open .issue-card-body {
+        display: block;
+      }
+      /* Dupe-group padding when inside issue-card-body */
+      .issue-card-body .dupe-group { margin: 10px 14px 0; }
+      .issue-card-body .dupe-group:last-of-type { margin-bottom: 10px; }
 
-  .btn-noted {
-    font-size: 11px; padding: 2px 10px; border-radius: 5px;
-    border: 1px solid var(--border); background: var(--bg);
-    cursor: pointer; color: var(--muted); font-family: var(--sans);
-    transition: background 0.12s; flex-shrink: 0;
-  }
-  .btn-noted:hover { background: var(--success-light); color: var(--success); border-color: var(--success); }
+      .issue-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 5px 8px;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 12px;
+        transition: background 0.1s;
+        margin-bottom: 3px;
+      }
+      .issue-item:hover {
+        background: var(--bg);
+      }
+      .issue-item-fname {
+        font-family: var(--mono);
+        font-size: 11px;
+        direction: ltr;
+        flex: 1;
+        word-break: break-all;
+        color: var(--text);
+      }
+      .issue-item-meta {
+        font-size: 11px;
+        color: var(--muted);
+        flex-shrink: 0;
+      }
 
-  .dupe-group {
-    background: var(--warn-light);
-    border: 1px solid #f3d990;
-    border-radius: 8px;
-    padding: 10px 12px;
-    margin-bottom: 8px;
-  }
-  .dupe-group:last-child { margin-bottom: 0; }
-  .dupe-group-files { margin-bottom: 8px; display: flex; flex-direction: column; gap: 4px; }
-  .dupe-fname { font-family: var(--mono); font-size: 11px; direction: ltr; color: var(--text); }
-  .dupe-checkbox-row { display: flex; align-items: center; gap: 8px; font-size: 12px; }
-  .dupe-group-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+      .btn-noted {
+        font-size: 11px;
+        padding: 2px 10px;
+        border-radius: 5px;
+        border: 1px solid var(--border);
+        background: var(--bg);
+        cursor: pointer;
+        color: var(--muted);
+        font-family: var(--sans);
+        transition: background 0.12s;
+        flex-shrink: 0;
+      }
+      .btn-noted:hover {
+        background: var(--success-light);
+        color: var(--success);
+        border-color: var(--success);
+      }
 
-  .issues-divider { height: 1px; background: var(--border); margin: 8px 0; }
+      .dupe-group {
+        background: var(--warn-light);
+        border: 1px solid #f3d990;
+        border-radius: 8px;
+        padding: 10px 12px;
+        margin-bottom: 8px;
+      }
+      .dupe-group:last-child {
+        margin-bottom: 0;
+      }
+      .dupe-group-files {
+        margin-bottom: 8px;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+      }
+      .dupe-fname {
+        font-family: var(--mono);
+        font-size: 11px;
+        direction: ltr;
+        color: var(--text);
+      }
+      .dupe-checkbox-row {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 12px;
+      }
+      .dupe-group-actions {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
 
-  /* ── Table area ── */
-  .table-area { flex: 1; overflow-y: auto; padding: 0; }
+      .issues-divider {
+        height: 1px;
+        background: var(--border);
+        margin: 8px 0;
+      }
 
-  .review-table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 12px;
-    table-layout: fixed;
-  }
-  .review-table th {
-    position: sticky; top: 0;
-    background: var(--bg);
-    border-bottom: 2px solid var(--border);
-    padding: 8px 10px;
-    font-size: 11px; font-weight: 600; color: var(--muted);
-    text-align: right; white-space: nowrap; z-index: 10;
-  }
-  .review-table td {
-    border-bottom: 1px solid var(--border);
-    padding: 6px 10px;
-    vertical-align: middle;
-    max-width: 0;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-  .review-table tr.row-separator td {
-    background: var(--bg); color: var(--muted);
-    font-size: 11px; text-align: center; padding: 4px;
-    border-bottom: 1px solid var(--border);
-    border-top: 1px solid var(--border);
-  }
-  .review-table tr.row-issue  { border-right: 3px solid var(--warn); }
-  .review-table tr.row-danger { border-right: 3px solid var(--danger); }
-  .review-table tr.row-ok     { border-right: none; }
+      /* ── Table area — fills modal body ── */
+      .table-area { display: block; flex: 1; overflow: auto; }
 
-  .review-table tr.row-highlight td { animation: row-pulse 0.8s ease; }
-  @keyframes row-pulse {
-    0%   { background: #fffbeb; }
-    60%  { background: #fffbeb; }
-    100% { background: transparent; }
-  }
+      .review-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 12px;
+        table-layout: fixed;
+      }
+      .review-table th {
+        background: var(--bg);
+        border-bottom: 2px solid var(--border);
+        padding: 8px 10px;
+        font-size: 11px;
+        font-weight: 600;
+        color: var(--muted);
+        text-align: right;
+        white-space: nowrap;
+      }
+      .review-table td {
+        border-bottom: 1px solid var(--border);
+        padding: 6px 10px;
+        vertical-align: middle;
+        max-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+      .review-table tr.row-separator td {
+        background: var(--bg);
+        color: var(--muted);
+        font-size: 11px;
+        text-align: center;
+        padding: 4px;
+        border-bottom: 1px solid var(--border);
+        border-top: 1px solid var(--border);
+      }
+      .review-table tr.row-issue {
+        border-right: 3px solid var(--warn);
+      }
+      .review-table tr.row-danger {
+        border-right: 3px solid var(--danger);
+      }
+      .review-table tr.row-ok {
+        border-right: none;
+      }
 
-  /* Column widths */
-  .col-thumb  { width: 70px; }
-  .col-item   { width: 160px; }
-  .col-file   { width: 180px; }
-  .col-source { width: 110px; }
-  .col-link   { width: 70px; }
-  .col-lic    { width: 120px; }
-  .col-credit { width: 50px; }
-  .col-how    { width: 200px; }
-  .col-com    { width: 60px; }
-  .col-ext    { width: 60px; }
-  .col-extra  { width: 140px; }
+      .review-table tr.row-highlight td {
+        animation: row-pulse 0.8s ease;
+      }
+      @keyframes row-pulse {
+        0% {
+          background: #fffbeb;
+        }
+        60% {
+          background: #fffbeb;
+        }
+        100% {
+          background: transparent;
+        }
+      }
 
-  .cell-thumb img {
-    height: 48px; width: auto; max-width: 64px;
-    border-radius: 4px; object-fit: cover; display: block;
-  }
-  .cell-thumb-placeholder {
-    width: 48px; height: 48px;
-    background: var(--bg);
-    border: 1px solid var(--border);
-    border-radius: 4px;
-    display: flex; align-items: center; justify-content: center;
-    color: var(--muted); font-size: 16px;
-  }
+      /* Column widths */
+      .col-thumb {
+        width: 70px;
+      }
+      .col-item {
+        width: 160px;
+      }
+      .col-file {
+        width: 180px;
+      }
+      .col-source {
+        width: 110px;
+      }
+      .col-link {
+        width: 70px;
+      }
+      .col-lic {
+        width: 120px;
+      }
+      .col-credit {
+        width: 50px;
+      }
+      .col-how {
+        width: 200px;
+      }
+      .col-com {
+        width: 60px;
+      }
+      .col-ext {
+        width: 60px;
+      }
+      .col-extra {
+        width: 140px;
+      }
+      .col-resolved {
+        width: 72px;
+        text-align: center;
+      }
+      .btn-resolved {
+        font-size: 11px;
+        padding: 3px 8px;
+        white-space: nowrap;
+        color: var(--accent);
+        border: 1px solid var(--accent);
+        border-radius: 4px;
+      }
+      .btn-resolved:hover {
+        background: var(--accent);
+        color: #fff;
+      }
 
-  .cell-fname-wrap { display: flex; align-items: center; gap: 5px; direction: ltr; }
-  .cell-fname-text { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1; font-family: var(--mono); font-size: 11px; direction: ltr; }
-  .icon-search { cursor: pointer; font-size: 13px; color: var(--muted); flex-shrink: 0; text-decoration: none; line-height: 1; }
-  .icon-search:hover { color: var(--accent); }
+      .row-notes-sub td {
+        background: #f9f6ff;
+        border-bottom: 1px solid var(--border);
+        padding: 6px 12px 6px 48px;
+        font-size: 12px;
+        color: var(--muted);
+        direction: rtl;
+      }
+      .notes-sub-label {
+        font-weight: 600;
+        margin-left: 6px;
+        color: var(--text);
+      }
+      .note-pill {
+        display: inline-block;
+        background: #ede9ff;
+        color: #5b3fc8;
+        border-radius: 4px;
+        padding: 1px 7px;
+        margin-left: 4px;
+        font-size: 11px;
+      }
 
-  .cell-link a { color: var(--accent); text-decoration: none; font-size: 11px; white-space: nowrap; }
-  .cell-link a:hover { text-decoration: underline; }
+      /* ── Queue ────────────────────────────────────────────────────────────── */
+      .queue-section-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; }
+      .queue-nav { display:flex; align-items:center; gap:6px; direction:ltr; }
+      .queue-counter { font-size:12px; color:var(--muted); min-width:54px; text-align:center; }
+      .queue-item { padding:4px 0 8px; }
+      .queue-item-header { display:flex; align-items:center; gap:12px; margin-bottom:16px; direction:rtl; }
+      .queue-item-thumb { width:64px; height:64px; object-fit:cover; border-radius:6px; flex-shrink:0; background:var(--bg); border:1px solid var(--border); }
+      .queue-item-meta { flex:1; }
+      .queue-item-title { font-size:13px; font-weight:700; color:var(--text); margin-top:4px; }
+      .queue-item-fname { font-size:11px; color:var(--muted); font-family:var(--mono); margin-top:3px; word-break:break-all; }
+      .queue-field-row { display:flex; align-items:center; gap:10px; margin-bottom:10px; direction:rtl; }
+      .queue-field-label { font-size:12px; color:var(--muted); flex-shrink:0; width:96px; text-align:right; }
+      .queue-field-input { flex:1; font-size:13px; padding:6px 10px; border:1px solid var(--border); border-radius:6px; background:var(--white); font-family:var(--sans); direction:rtl; }
+      .queue-field-input:focus { border-color:var(--accent); outline:none; box-shadow:0 0 0 2px var(--accent-light); }
+      .queue-resolve-row { display:flex; justify-content:center; margin-top:18px; padding-top:14px; border-top:1px solid var(--border); }
+      .queue-empty { text-align:center; padding:28px 0 16px; color:var(--muted); font-size:14px; }
+      .queue-empty-icon { font-size:32px; margin-bottom:8px; }
+      .queue-notes-list { margin:10px 0; padding:10px 14px; background:var(--bg); border-radius:8px; direction:rtl; }
+      .queue-note-item { font-size:12px; color:var(--muted); padding:3px 0; }
+      .queue-status-badge { display:inline-block; font-size:11px; font-weight:700; padding:2px 9px; border-radius:10px; margin-bottom:4px; }
+      .queue-status-badge.danger { background:var(--danger-light); color:var(--danger); }
+      .queue-status-badge.warn { background:var(--warn-light); color:var(--warn); }
+      .queue-status-badge.muted { background:var(--bg); color:var(--muted); border:1px solid var(--border); }
 
-  .editable-cell { cursor: text; position: relative; min-height: 28px; }
-  .editable-cell:hover { background: var(--accent-light); }
-  .editable-cell .cell-display { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 100%; }
-  .editable-cell input,
-  .editable-cell textarea,
-  .editable-cell select {
-    width: 100%;
-    font-family: var(--sans);
-    font-size: 12px;
-    border: 1px solid var(--accent);
-    border-radius: 4px;
-    padding: 3px 6px;
-    outline: none;
-    box-shadow: 0 0 0 2px rgba(45,110,246,0.15);
-    background: white;
-    color: var(--text);
-    resize: vertical;
-  }
+      .cell-thumb img {
+        height: 48px;
+        width: auto;
+        max-width: 64px;
+        border-radius: 4px;
+        object-fit: cover;
+        display: block;
+      }
+      .cell-thumb-placeholder {
+        width: 48px;
+        height: 48px;
+        background: var(--bg);
+        border: 1px solid var(--border);
+        border-radius: 4px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--muted);
+        font-size: 16px;
+      }
 
-  /* ── Fixed actions bar ── */
-  .review-actions-bar {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: var(--sidebar-w);
-    background: var(--white);
-    border-top: 1px solid var(--border);
-    padding: 10px 24px;
-    display: none;
-    flex-direction: column;
-    gap: 0;
-    z-index: 100;
-  }
-  .review-actions-bar.visible { display: flex; }
+      .cell-fname-wrap {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        direction: ltr;
+      }
+      .cell-fname-text {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        flex: 1;
+        font-family: var(--mono);
+        font-size: 11px;
+        direction: ltr;
+      }
+      .icon-search {
+        cursor: pointer;
+        font-size: 13px;
+        color: var(--muted);
+        flex-shrink: 0;
+        text-decoration: none;
+        line-height: 1;
+      }
+      .icon-search:hover {
+        color: var(--accent);
+      }
 
-  .review-actions-row { display: flex; align-items: center; gap: 12px; }
+      .cell-link a {
+        color: var(--accent);
+        text-decoration: none;
+        font-size: 11px;
+        white-space: nowrap;
+      }
+      .cell-link a:hover {
+        text-decoration: underline;
+      }
 
-  .monday-accordion { overflow: hidden; max-height: 0; transition: max-height 0.3s ease; }
-  .monday-accordion.open { max-height: 40vh; overflow-y: auto; }
+      .editable-cell {
+        cursor: text;
+        position: relative;
+        min-height: 28px;
+      }
+      .editable-cell:hover {
+        background: var(--accent-light);
+      }
+      .editable-cell .cell-display {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        max-width: 100%;
+      }
+      .editable-cell input,
+      .editable-cell textarea,
+      .editable-cell select {
+        width: 100%;
+        font-family: var(--sans);
+        font-size: 12px;
+        border: 1px solid var(--accent);
+        border-radius: 4px;
+        padding: 3px 6px;
+        outline: none;
+        box-shadow: 0 0 0 2px rgba(45, 110, 246, 0.15);
+        background: white;
+        color: var(--text);
+        resize: vertical;
+      }
 
-  .monday-toggle-btn {
-    background: none; border: none; color: var(--muted);
-    font-size: 12px; cursor: pointer; padding: 4px 0;
-    display: flex; align-items: center; gap: 5px;
-    font-family: var(--sans); margin-top: 4px;
-  }
-  .monday-toggle-btn:hover { color: var(--accent); }
-  .monday-arrow { display: inline-block; transition: transform 0.2s; font-size: 11px; }
-  .monday-toggle-btn.open .monday-arrow { transform: rotate(180deg); }
+      /* ── Actions bar — flex child at bottom of modal ── */
+      .review-actions-bar {
+        flex-shrink: 0;
+        background: var(--white);
+        border-top: 1px solid var(--border);
+        padding: 12px 24px;
+        display: flex;
+        justify-content: center;
+      }
 
-  .monday-content {
-    background: var(--bg); border: 1px solid var(--border);
-    border-radius: 8px; padding: 14px 16px;
-    font-size: 13px; line-height: 1.7; color: var(--text);
-    margin-bottom: 8px; direction: rtl;
-  }
-  .monday-content ol { padding-right: 20px; margin: 8px 0; }
-  .monday-content li { margin-bottom: 6px; }
-  .monday-content .tip {
-    background: var(--accent-light); border-right: 3px solid var(--accent);
-    padding: 6px 10px; border-radius: 4px; font-size: 12px;
-    margin-top: 10px; color: var(--accent);
-  }
+      .review-actions-row {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+      }
 
-  /* ══════════════════════════════════════════════════════
+      .monday-accordion {
+        overflow: hidden;
+        max-height: 0;
+        transition: max-height 0.3s ease;
+      }
+      .monday-accordion.open {
+        max-height: 40vh;
+        overflow-y: auto;
+      }
+
+      .monday-toggle-btn {
+        background: none;
+        border: none;
+        color: var(--muted);
+        font-size: 12px;
+        cursor: pointer;
+        padding: 4px 0;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        font-family: var(--sans);
+        margin-top: 4px;
+      }
+      .monday-toggle-btn:hover {
+        color: var(--accent);
+      }
+      .monday-arrow {
+        display: inline-block;
+        transition: transform 0.2s;
+        font-size: 11px;
+      }
+      .monday-toggle-btn.open .monday-arrow {
+        transform: rotate(180deg);
+      }
+
+      .monday-content {
+        background: var(--bg);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 14px 16px;
+        font-size: 13px;
+        line-height: 1.7;
+        color: var(--text);
+        margin-bottom: 8px;
+        direction: rtl;
+      }
+      .monday-content ol {
+        padding-right: 20px;
+        margin: 8px 0;
+      }
+      .monday-content li {
+        margin-bottom: 6px;
+      }
+      .monday-content .tip {
+        background: var(--accent-light);
+        border-right: 3px solid var(--accent);
+        padding: 6px 10px;
+        border-radius: 4px;
+        font-size: 12px;
+        margin-top: 10px;
+        color: var(--accent);
+      }
+
+      /* ══════════════════════════════════════════════════════
      SUMMARY SCREEN
   ══════════════════════════════════════════════════════ */
 
-  .stat-row { display: flex; gap: 12px; margin-bottom: 16px; }
-  .stat-box { flex: 1; background: var(--white); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; text-align: center; }
-  .stat-num { font-size: 32px; font-weight: 700; line-height: 1; }
-  .stat-label { font-size: 12px; color: var(--muted); margin-top: 4px; }
-  .stat-total .stat-num { color: var(--accent); }
-  .stat-found .stat-num { color: var(--success); }
-  .stat-nf    .stat-num { color: var(--warn); }
+      .stat-row {
+        display: flex;
+        gap: 12px;
+        margin-bottom: 16px;
+      }
+      .stat-box {
+        flex: 1;
+        background: var(--white);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 16px;
+        text-align: center;
+      }
+      .stat-num {
+        font-size: 32px;
+        font-weight: 700;
+        line-height: 1;
+      }
+      .stat-label {
+        font-size: 12px;
+        color: var(--muted);
+        margin-top: 4px;
+      }
+      .stat-total .stat-num {
+        color: var(--accent);
+      }
+      .stat-found .stat-num {
+        color: var(--success);
+      }
+      .stat-nf .stat-num {
+        color: var(--warn);
+      }
 
-  .source-row { display: flex; align-items: center; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid var(--border); font-size: 13px; }
-  .source-row:last-child { border-bottom: none; }
-  .source-pill { background: var(--accent-light); color: var(--accent); border-radius: 99px; font-size: 12px; font-weight: 600; padding: 2px 10px; }
-  .source-pill.muted { background: var(--bg); color: var(--muted); }
+      .source-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 6px 0;
+        border-bottom: 1px solid var(--border);
+        font-size: 13px;
+      }
+      .source-row:last-child {
+        border-bottom: none;
+      }
+      .source-pill {
+        background: var(--accent-light);
+        color: var(--accent);
+        border-radius: 99px;
+        font-size: 12px;
+        font-weight: 600;
+        padding: 2px 10px;
+      }
+      .source-pill.muted {
+        background: var(--bg);
+        color: var(--muted);
+      }
 
-  .issue-sum-row { display: flex; align-items: center; justify-content: space-between; padding: 5px 0; border-bottom: 1px dashed var(--border); font-size: 13px; }
-  .issue-sum-row:last-child { border-bottom: none; }
-  .issue-sum-badge { font-size: 11px; font-weight: 700; padding: 2px 9px; border-radius: 99px; background: var(--warn-light); color: var(--warn); }
-  .issue-sum-badge.danger { background: var(--danger-light); color: var(--danger); }
+      .issue-sum-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 5px 0;
+        border-bottom: 1px dashed var(--border);
+        font-size: 13px;
+      }
+      .issue-sum-row:last-child {
+        border-bottom: none;
+      }
+      .issue-sum-badge {
+        font-size: 11px;
+        font-weight: 700;
+        padding: 2px 9px;
+        border-radius: 99px;
+        background: var(--warn-light);
+        color: var(--warn);
+      }
+      .issue-sum-badge.danger {
+        background: var(--danger-light);
+        color: var(--danger);
+      }
 
-  /* Credits box */
-  .credits-textarea {
-    width: 100%;
-    max-height: 180px;
-    font-family: var(--mono);
-    font-size: 12px;
-    border: 1px solid var(--border);
-    border-radius: 7px;
-    background: var(--bg);
-    color: var(--text);
-    padding: 10px 12px;
-    resize: none;
-    direction: ltr;
-    line-height: 1.7;
-    outline: none;
-  }
-  .credits-copy-row {
-    display: flex;
-    justify-content: flex-start;
-    margin-top: 8px;
-  }
+      /* Credits box */
+      .credits-textarea {
+        width: 100%;
+        max-height: 180px;
+        font-family: var(--mono);
+        font-size: 12px;
+        border: 1px solid var(--border);
+        border-radius: 7px;
+        background: var(--bg);
+        color: var(--text);
+        padding: 10px 12px;
+        resize: none;
+        direction: ltr;
+        line-height: 1.7;
+        outline: none;
+      }
+      .credits-copy-row {
+        display: flex;
+        justify-content: flex-start;
+        margin-top: 8px;
+      }
 
-  .empty { font-size: 13px; color: var(--muted); text-align: center; padding: 12px; }
-</style>
-</head>
-<body>
-
-<!-- ════════════════════════════════════════════════
+      .empty {
+        font-size: 13px;
+        color: var(--muted);
+        text-align: center;
+        padding: 12px;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- ════════════════════════════════════════════════
      SIDEBAR (fixed, right edge)
 ════════════════════════════════════════════════ -->
-<aside class="sidebar">
-  <div class="sidebar-logo">
-    <div class="logo-mark">©</div>
-    <span class="sidebar-logo-name">בודק זכויות יוצרים</span>
-  </div>
-  <div class="sidebar-top">
-    <button class="btn-new-search" id="btn-new-search">+ חיפוש חדש</button>
-  </div>
-  <div class="sidebar-runs-list" id="sidebar-runs-list">
-    <div class="sidebar-empty">עדיין אין הרצות שמורות</div>
-  </div>
-  <div class="sidebar-quota-warn" id="sidebar-quota-warn" style="display:none">
-    נגמר מקום האחסון המקומי — מחק הרצות ישנות כדי לפנות מקום
-  </div>
-  <div class="sidebar-bottom">
-    <button class="btn-danger-outline" id="btn-clear-all-runs">מחק הכל</button>
-  </div>
-</aside>
-
-<!-- ════════════════════════════════════════════════
-     MAIN AREA
-════════════════════════════════════════════════ -->
-<div class="main-area">
-
-  <!-- STEPS BAR -->
-  <div class="steps-bar" id="steps-bar">
-    <div class="steps-track">
-      <div class="step-item active" id="step-1">
-        <div class="step-circle"></div>
-        <div class="step-label">הכנה</div>
+    <aside class="sidebar">
+      <div class="sidebar-logo">
+        <div class="logo-mark">©</div>
+        <span class="sidebar-logo-name">בודק זכויות יוצרים</span>
       </div>
-      <div class="step-connector" id="conn-1"></div>
-      <div class="step-item" id="step-2">
-        <div class="step-circle"></div>
-        <div class="step-label">חיפוש</div>
+      <div class="sidebar-top">
+        <button class="btn-new-search" id="btn-new-search">+ חיפוש חדש</button>
       </div>
-      <div class="step-connector" id="conn-2"></div>
-      <div class="step-item" id="step-3">
-        <div class="step-circle"></div>
-        <div class="step-label">תוצאות</div>
+      <div class="sidebar-runs-list" id="sidebar-runs-list">
+        <div class="sidebar-empty">עדיין אין הרצות שמורות</div>
       </div>
-    </div>
-  </div>
-
-  <!-- SHELL: header + screens 1 & 2 -->
-  <div class="shell" id="main-shell">
-
-    <!-- SCREEN 1: Setup -->
-    <div id="screen-setup" class="screen active">
-
-      <div class="card">
-        <div class="card-label">כותרת</div>
-        <input type="text" id="run-title" placeholder='לדוגמה: מהי גזענות — שיעור 2'
-               style="font-family:var(--sans); direction:rtl; text-align:right;">
+      <div
+        class="sidebar-quota-warn"
+        id="sidebar-quota-warn"
+        style="display: none"
+      >
+        נגמר מקום האחסון המקומי — מחק הרצות ישנות כדי לפנות מקום
       </div>
-
-      <div class="card">
-        <div class="card-label">מה לחפש?</div>
-
-        <div id="file-entries-list"></div>
-        <div style="display:flex; gap:8px; margin-top:10px;">
-          <button class="btn btn-ghost btn-sm" id="btn-add-field" style="flex:1; height:40px; white-space:normal; text-align:center;">+ הוספת שם קובץ</button>
-          <label class="btn btn-ghost btn-sm" for="folder-input" style="flex:1; height:40px; display:flex; align-items:center; justify-content:center; cursor:pointer; white-space:normal; text-align:center;">📁 חילוץ שמות קבצים מתיקייה</label>
-          <input type="file" id="folder-input" webkitdirectory multiple style="display:none;">
-        </div>
-
-        <p class="hint" style="margin-top:6px; direction:rtl;">שמות קבצי התמונה שנבחרו יופיעו ברשימה למעלה</p>
-
-        <div class="msg msg-success" id="msg-ok"></div>
-        <div class="msg msg-error"   id="msg-err"></div>
-      </div>
-
-      <div class="card">
-        <div class="card-label">איפה לחפש?</div>
-        <div class="sources-grid">
-
-          <label class="source-toggle active" id="toggle-wikimedia">
-            <input type="checkbox" checked data-source="wikimedia">
-            <div class="check-box"></div>
-            <div><div class="src-name">Wikimedia Commons</div><div class="src-desc">API ציבורי</div></div>
-          </label>
-
-          <label class="source-toggle active" id="toggle-loc">
-            <input type="checkbox" checked data-source="loc">
-            <div class="check-box"></div>
-            <div><div class="src-name">Library of Congress</div><div class="src-desc">API ציבורי</div></div>
-          </label>
-
-          <label class="source-toggle active" id="toggle-pexels">
-            <input type="checkbox" checked data-source="pexels">
-            <div class="check-box"></div>
-            <div><div class="src-name">Pexels</div><div class="src-desc">זיהוי לפי שם קובץ</div></div>
-          </label>
-
-          <label class="source-toggle active" id="toggle-shutterstock">
-            <input type="checkbox" checked data-source="shutterstock">
-            <div class="check-box"></div>
-            <div><div class="src-name">Shutterstock</div><div class="src-desc">זיהוי לפי שם קובץ</div></div>
-          </label>
-
-        </div>
-
-        <div id="pexels-key-row">
-          <div class="divider"></div>
-          <label for="pexels-key">Pexels API Key <span style="color:var(--muted);font-weight:400">(אופציונלי)</span></label>
-          <input type="text" id="pexels-key" placeholder="לקישורים מדויקים יותר" dir="ltr">
-          <p class="hint">הרשמה חינמית ב-pexels.com/api</p>
-        </div>
-      </div>
-
-      <button class="btn btn-primary" id="btn-search" disabled>חפש זכויות יוצרים</button>
-
-    </div><!-- /screen-setup -->
-
-    <!-- SCREEN 2: Progress -->
-    <div id="screen-progress" class="screen">
-      <div class="card">
-        <div class="progress-wrap">
-          <div class="progress-header">
-            <span class="progress-title">מחפש זכויות יוצרים</span>
-            <span class="progress-count" id="progress-count">0 / 0</span>
-          </div>
-          <div class="bar-track"><div class="bar-fill" id="bar-fill"></div></div>
-          <div class="progress-file"   id="progress-file">מכין...</div>
-          <div class="progress-source" id="progress-source"></div>
-          <div class="live-feed" id="live-feed"></div>
-        </div>
-      </div>
-    </div><!-- /screen-progress -->
-
-  </div><!-- /main-shell -->
-
-  <!-- SCREEN 3: Review (fixed-positioned when active) -->
-  <div id="screen-review" class="screen">
-    <div class="review-header">
-      <div>
-        <div class="review-header-title">סקירה ועריכה</div>
-        <div class="review-header-sub" id="review-header-sub">טוען...</div>
-      </div>
-    </div>
-
-    <div class="review-body">
-      <div class="issues-panel" id="issues-panel"></div>
-      <div class="table-area" id="table-area">
-        <table class="review-table" id="review-table">
-          <thead>
-            <tr>
-              <th class="col-thumb"></th>
-              <th class="col-item">שם פריט</th>
-              <th class="col-file">שם קובץ</th>
-              <th class="col-source">מקור</th>
-              <th class="col-link">קישור</th>
-              <th class="col-lic">סוג זכויות</th>
-              <th class="col-credit">קרדיט?</th>
-              <th class="col-how">איך לרשום</th>
-              <th class="col-com">מסחרי?</th>
-              <th class="col-ext">חיצוני?</th>
-              <th class="col-extra">קבצים נוספים</th>
-            </tr>
-          </thead>
-          <tbody id="review-tbody"></tbody>
-        </table>
-      </div>
-    </div>
-
-    <!-- Fixed actions bar -->
-    <div class="review-actions-bar" id="review-actions-bar">
-      <div class="monday-accordion" id="monday-accordion">
-        <div class="monday-content">
-          <strong>איך מייבאים את ה-CSV למאנדיי</strong>
-          <ol>
-            <li>פתח את הבורד הרלוונטי ב-Monday.com</li>
-            <li>לחץ על תפריט הבורד (שלוש נקודות ⋯ בפינה השמאלית העליונה)
-                ← בחר "Import data" ← "Excel / CSV"</li>
-            <li>גרור את קובץ ה-CSV לחלון שנפתח, או לחץ "Browse" ובחר אותו</li>
-            <li>Monday תציג תצוגה מקדימה של העמודות —
-                וודא שהעמודות ממופות נכון:
-                <br>• "שם פריט" → Name (עמודת השם)
-                <br>• שאר העמודות → עמודות טקסט רגילות</li>
-            <li>לחץ "Import" — הפריטים ייכנסו לבורד</li>
-          </ol>
-          <div class="tip">טיפ: אם הטקסט בעברית מוצג הפוך — ודא שהקובץ נפתח עם קידוד UTF-8. Monday בדרך כלל מזהה זאת אוטומטית.</div>
-        </div>
-      </div>
-      <div class="review-actions-row">
-        <button class="btn btn-download" id="btn-review-download">הורד CSV ↓</button>
-        <button class="btn btn-primary" id="btn-go-summary" style="width:auto;margin-top:0;padding:10px 20px;">סיים ←</button>
-        <div style="flex:1;"></div>
-        <button class="monday-toggle-btn" id="btn-monday-toggle">
-          <span class="monday-arrow" id="monday-arrow">▲</span>
-          ← איך להעלות ל-Monday.com
+      <div class="sidebar-bottom">
+        <button class="btn-danger-outline" id="btn-clear-all-runs">
+          מחק הכל
         </button>
       </div>
-    </div>
-  </div><!-- /screen-review -->
+    </aside>
 
-  <!-- SCREEN 4: Summary -->
-  <div id="screen-summary" class="screen">
-  <div class="shell">
-
-    <div class="stat-row">
-      <div class="stat-box stat-total">
-        <div class="stat-num" id="stat-total">0</div>
-        <div class="stat-label">סה"כ קבצים</div>
+    <!-- ════════════════════════════════════════════════
+     MAIN AREA
+════════════════════════════════════════════════ -->
+    <div class="main-area">
+      <!-- STEPS BAR -->
+      <div class="steps-bar" id="steps-bar">
+        <div class="steps-track">
+          <div class="step-item active" id="step-1">
+            <div class="step-circle"></div>
+            <div class="step-label">הכנה</div>
+          </div>
+          <div class="step-connector" id="conn-1"></div>
+          <div class="step-item" id="step-2">
+            <div class="step-circle"></div>
+            <div class="step-label">חיפוש</div>
+          </div>
+          <div class="step-connector" id="conn-2"></div>
+          <div class="step-item" id="step-3">
+            <div class="step-circle"></div>
+            <div class="step-label">תוצאות</div>
+          </div>
+        </div>
       </div>
-      <div class="stat-box stat-found">
-        <div class="stat-num" id="stat-found">0</div>
-        <div class="stat-label">נמצאו</div>
+
+      <!-- SHELL: header + screens 1 & 2 -->
+      <div class="shell" id="main-shell">
+        <!-- SCREEN 1: Setup -->
+        <div id="screen-setup" class="screen active">
+          <div class="card">
+            <div class="card-label">כותרת</div>
+            <input
+              type="text"
+              id="run-title"
+              placeholder="לדוגמה: מהי גזענות — שיעור 2"
+              style="
+                font-family: var(--sans);
+                direction: rtl;
+                text-align: right;
+              "
+            />
+          </div>
+
+          <div class="card">
+            <div class="card-label">מה לחפש?</div>
+
+            <div id="file-entries-list"></div>
+            <div style="display: flex; gap: 8px; margin-top: 10px">
+              <button
+                class="btn btn-ghost btn-sm"
+                id="btn-add-field"
+                style="
+                  flex: 1;
+                  height: 40px;
+                  white-space: normal;
+                  text-align: center;
+                "
+              >
+                + הוספת שם קובץ
+              </button>
+              <label
+                class="btn btn-ghost btn-sm"
+                for="folder-input"
+                style="
+                  flex: 1;
+                  height: 40px;
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                  cursor: pointer;
+                  white-space: normal;
+                  text-align: center;
+                "
+                >📁 חילוץ שמות קבצים מתיקייה</label
+              >
+              <input
+                type="file"
+                id="folder-input"
+                webkitdirectory
+                multiple
+                style="display: none"
+              />
+            </div>
+
+            <p class="hint" style="margin-top: 6px; direction: rtl">
+              שמות קבצי התמונה שנבחרו יופיעו ברשימה למעלה
+            </p>
+
+            <div class="msg msg-success" id="msg-ok"></div>
+            <div class="msg msg-error" id="msg-err"></div>
+          </div>
+
+          <div class="card">
+            <div class="card-label">איפה לחפש?</div>
+            <div class="sources-grid">
+              <label class="source-toggle active" id="toggle-wikimedia">
+                <input type="checkbox" checked data-source="wikimedia" />
+                <div class="check-box"></div>
+                <div>
+                  <div class="src-name">Wikimedia Commons</div>
+                  <div class="src-desc">API ציבורי</div>
+                </div>
+              </label>
+
+              <label class="source-toggle active" id="toggle-loc">
+                <input type="checkbox" checked data-source="loc" />
+                <div class="check-box"></div>
+                <div>
+                  <div class="src-name">Library of Congress</div>
+                  <div class="src-desc">API ציבורי</div>
+                </div>
+              </label>
+
+              <label class="source-toggle active" id="toggle-pexels">
+                <input type="checkbox" checked data-source="pexels" />
+                <div class="check-box"></div>
+                <div>
+                  <div class="src-name">Pexels</div>
+                  <div class="src-desc">זיהוי לפי שם קובץ</div>
+                </div>
+              </label>
+
+              <label class="source-toggle active" id="toggle-shutterstock">
+                <input type="checkbox" checked data-source="shutterstock" />
+                <div class="check-box"></div>
+                <div>
+                  <div class="src-name">Shutterstock</div>
+                  <div class="src-desc">זיהוי לפי שם קובץ</div>
+                </div>
+              </label>
+            </div>
+
+            <div id="pexels-key-row">
+              <div class="divider"></div>
+              <label for="pexels-key"
+                >Pexels API Key
+                <span style="color: var(--muted); font-weight: 400"
+                  >(אופציונלי)</span
+                ></label
+              >
+              <input
+                type="text"
+                id="pexels-key"
+                placeholder="לקישורים מדויקים יותר"
+                dir="ltr"
+              />
+              <p class="hint">הרשמה חינמית ב-pexels.com/api</p>
+            </div>
+          </div>
+
+          <button class="btn btn-primary" id="btn-search" disabled>
+            חפש זכויות יוצרים
+          </button>
+        </div>
+        <!-- /screen-setup -->
+
+        <!-- SCREEN 2: Progress -->
+        <div id="screen-progress" class="screen">
+          <div class="card">
+            <div class="progress-wrap">
+              <div class="progress-header">
+                <span class="progress-title">מחפש זכויות יוצרים</span>
+                <span class="progress-count" id="progress-count">0 / 0</span>
+              </div>
+              <div class="bar-track">
+                <div class="bar-fill" id="bar-fill"></div>
+              </div>
+              <div class="progress-file" id="progress-file">מכין...</div>
+              <div class="progress-source" id="progress-source"></div>
+              <div class="live-feed" id="live-feed"></div>
+            </div>
+          </div>
+        </div>
+        <!-- /screen-progress -->
       </div>
-      <div class="stat-box stat-nf">
-        <div class="stat-num" id="stat-not-found">0</div>
-        <div class="stat-label">לא נמצאו</div>
+      <!-- /main-shell -->
+
+      <!-- Backdrop for review modal -->
+      <div id="review-backdrop"></div>
+
+      <!-- SCREEN 3: Review (fixed-positioned when active) -->
+      <div id="screen-review" class="screen">
+        <div class="review-header">
+          <div>
+            <div class="review-header-title">סקירה ועריכת טבלה</div>
+            <div class="review-header-sub" id="review-header-sub">טוען...</div>
+          </div>
+        </div>
+
+        <div class="review-body">
+          <div class="table-area" id="table-area">
+            <table class="review-table" id="review-table">
+              <thead>
+                <tr>
+                  <th class="col-thumb"></th>
+                  <th class="col-item">שם פריט</th>
+                  <th class="col-file">שם קובץ</th>
+                  <th class="col-source">מקור</th>
+                  <th class="col-link">קישור</th>
+                  <th class="col-lic">סוג זכויות</th>
+                  <th class="col-credit">קרדיט?</th>
+                  <th class="col-how">איך לרשום</th>
+                  <th class="col-com">מסחרי?</th>
+                  <th class="col-ext">חיצוני?</th>
+                  <th class="col-extra">קבצים נוספים</th>
+                </tr>
+              </thead>
+              <tbody id="review-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Actions bar -->
+        <div class="review-actions-bar" id="review-actions-bar">
+          <div class="review-actions-row">
+            <button class="btn btn-ghost" id="btn-review-cancel"
+              style="width:auto;margin-top:0;padding:10px 22px;">
+              ביטול
+            </button>
+            <button class="btn btn-primary" id="btn-go-summary"
+              style="width:auto;margin-top:0;padding:10px 28px;">
+              שמירה וחזרה לתוצאות
+            </button>
+          </div>
+        </div>
       </div>
-    </div>
+      <!-- /screen-review -->
 
-    <div class="card" id="issues-summary-card" style="display:none">
-      <div class="card-label">פריטים הדורשים תיקון</div>
-      <div id="issues-summary-list"></div>
-      <button class="btn btn-outline" id="btn-go-review" style="margin-top:12px;width:100%;">עריכת פריטים ←</button>
-    </div>
+      <!-- SCREEN 4: Summary -->
+      <div id="screen-summary" class="screen">
+        <div class="shell">
+          <div class="stat-row">
+            <div class="stat-box stat-total">
+              <div class="stat-num" id="stat-total">0</div>
+              <div class="stat-label">סה"כ קבצים</div>
+            </div>
+            <div class="stat-box stat-found">
+              <div class="stat-num" id="stat-found">0</div>
+              <div class="stat-label">נמצאו</div>
+            </div>
+            <div class="stat-box stat-nf">
+              <div class="stat-num" id="stat-not-found">0</div>
+              <div class="stat-label">לא נמצאו</div>
+            </div>
+          </div>
 
-    <!-- Credits box (Fix 5) — always shown -->
-    <div class="card" id="credits-card">
-      <div class="card-label">קרדיטים להעתקה</div>
-      <div id="credits-content">
-        <p class="hint" style="text-align:center;padding:8px 0;">כל התמונות בהרצה זו אינן דורשות קרדיט</p>
+          <!-- Queue section -->
+          <div class="card" id="queue-section">
+            <div class="queue-section-header">
+              <span class="card-label" style="margin:0;">תיקון בעיות</span>
+              <div class="queue-nav" id="queue-nav">
+                <button class="btn btn-ghost btn-sm" id="queue-prev">→</button>
+                <span class="queue-counter" id="queue-counter"></span>
+                <button class="btn btn-ghost btn-sm" id="queue-next">←</button>
+              </div>
+            </div>
+            <div id="queue-card"></div>
+          </div>
+
+          <button class="btn btn-outline" id="btn-open-table"
+            style="width:100%;margin-top:8px;">צפייה ועריכת טבלה ←</button>
+
+          <!-- Credits -->
+          <div class="card" id="credits-card" style="margin-top:16px;">
+            <div class="card-label">קרדיטים להעתקה</div>
+            <div id="credits-content">
+              <p class="hint" style="text-align: center; padding: 8px 0">
+                כל התמונות בהרצה זו אינן דורשות קרדיט
+              </p>
+            </div>
+          </div>
+
+          <!-- Download + Monday -->
+          <div class="card" style="margin-top:16px;">
+            <button class="btn btn-download" id="btn-summary-download"
+              style="width:100%;padding:12px;font-size:15px;">הורד CSV ↓</button>
+            <hr style="border:none;border-top:1px solid var(--border);margin:14px 0 10px;">
+            <div class="card-label" style="margin-bottom:8px;">איך מייבאים ל-Monday.com</div>
+            <div class="monday-content" style="border:none;padding:0;background:transparent;margin:0;">
+              <ol>
+                <li>פתח את הבורד הרלוונטי</li>
+                <li>לחץ על תפריט הבורד (שלוש נקודות ⋯ בפינה השמאלית העליונה) ← בחר "Import data" ← "Excel / CSV"</li>
+                <li>גרור את קובץ ה-CSV לחלון שנפתח, או לחץ "Browse" ובחר אותו</li>
+                <li>Monday תציג תצוגה מקדימה של העמודות — וודא שהעמודות ממופות נכון:<br/>• "שם פריט" → Name (עמודת השם)<br/>• שאר העמודות → עמודות טקסט רגילות</li>
+                <li>לחץ "Import" — הפריטים ייכנסו לבורד</li>
+              </ol>
+              <div class="tip">טיפ: אם הטקסט בעברית מוצג הפוך — ודא שהקובץ נפתח עם קידוד UTF-8. Monday בדרך כלל מזהה זאת אוטומטית.</div>
+            </div>
+          </div>
+        </div>
       </div>
+      <!-- /screen-summary -->
     </div>
+    <!-- /main-area -->
 
-    <button class="btn btn-download" id="btn-summary-download"
-      style="width:100%;margin-top:8px;padding:12px;font-size:15px;">הורד CSV ↓</button>
+    <script type="module">
+      import { processFilenames, IMAGE_EXTENSIONS } from "./lookup.js";
 
-  </div>
-  </div><!-- /screen-summary -->
+      // ════════════════════════════════════════════════════════════
+      //  UTILITIES
+      // ════════════════════════════════════════════════════════════
+      let fileObjectMap = {}; // filename → File object (from folder picker)
+      let runTitle = ""; // user-supplied title for the run (from "כותרת" field)
+      const thumbnailUrls = {}; // filename → cached blob URL
 
-</div><!-- /main-area -->
+      function showScreen(id) {
+        document.querySelectorAll(".screen").forEach((s) => s.classList.remove("active"));
+        document.getElementById(id).classList.add("active");
+        const shell = document.getElementById("main-shell");
+        shell.classList.toggle("compact-header", id === "screen-summary");
+        updateStepsBar(id);
+      }
 
-<script type="module">
-import { processFilenames, IMAGE_EXTENSIONS } from './lookup.js';
+      let _reviewSnapshot = null;
 
-// ════════════════════════════════════════════════════════════
-//  UTILITIES
-// ════════════════════════════════════════════════════════════
-let fileObjectMap = {};   // filename → File object (from folder picker)
-let runTitle = '';        // user-supplied title for the run (from "כותרת" field)
-const thumbnailUrls = {}; // filename → cached blob URL
+      function _snapshotReviewState() {
+        return {
+          rows: JSON.parse(JSON.stringify(reviewState.rows)),
+          dupeGroups: JSON.parse(JSON.stringify(reviewState.dupeGroups)),
+          notedItems: [...reviewState.notedItems],
+          rawStems: { ...reviewState.rawStems },
+        };
+      }
 
-function showScreen(id) {
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
+      function _showReviewUI() {
+        document.getElementById("screen-review").classList.add("active");
+        document.getElementById("review-backdrop").classList.add("active");
+      }
 
-  const shell = document.getElementById('main-shell');
-  shell.classList.toggle('compact-header', id === 'screen-summary');
+      function _hideReviewUI() {
+        document.getElementById("screen-review").classList.remove("active");
+        document.getElementById("review-backdrop").classList.remove("active");
+      }
 
-  const actionsBar = document.getElementById('review-actions-bar');
-  if (id === 'screen-review') {
-    shell.style.display = 'none';
-    actionsBar.classList.add('visible');
-    document.body.classList.add('review-mode');
-  } else {
-    shell.style.display = '';
-    actionsBar.classList.remove('visible');
-    document.body.classList.remove('review-mode');
-  }
+      function openTableModal() {
+        _reviewSnapshot = _snapshotReviewState();
+        renderTableOnly();
+        _showReviewUI();
+      }
 
-  updateStepsBar(id);
-}
+      function saveTableModal() {
+        _hideReviewUI();
+        buildSummaryFromReview();
+      }
 
-function escHtml(s) {
-  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-}
-function encodeURIComponentSafe(s) {
-  try { return encodeURIComponent(s); } catch(e) { return s; }
-}
-function showMsg(el, txt) { el.textContent = txt; el.classList.add('visible'); }
-function hideMsg(el) { el.classList.remove('visible'); }
+      function cancelTableModal() {
+        if (_reviewSnapshot) {
+          reviewState.rows = _reviewSnapshot.rows;
+          reviewState.dupeGroups = _reviewSnapshot.dupeGroups;
+          reviewState.notedItems = new Set(_reviewSnapshot.notedItems);
+          reviewState.rawStems = _reviewSnapshot.rawStems;
+        }
+        _hideReviewUI();
+      }
 
-// ════════════════════════════════════════════════════════════
-//  STEPS BAR (Fix 4)
-// ════════════════════════════════════════════════════════════
-const SCREEN_TO_STEP = {
-  'screen-setup':    1,
-  'screen-progress': 2,
-  'screen-review':   3,
-  'screen-summary':  3,
-};
+      function escHtml(s) {
+        return String(s)
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;");
+      }
+      function encodeURIComponentSafe(s) {
+        try {
+          return encodeURIComponent(s);
+        } catch (e) {
+          return s;
+        }
+      }
+      function showMsg(el, txt) {
+        el.textContent = txt;
+        el.classList.add("visible");
+      }
+      function hideMsg(el) {
+        el.classList.remove("visible");
+      }
 
-function updateStepsBar(screenId) {
-  const active = SCREEN_TO_STEP[screenId] || 1;
-  for (let i = 1; i <= 3; i++) {
-    const el = document.getElementById('step-' + i);
-    if (!el) continue;
-    el.classList.remove('active', 'done');
-    if (i < active) el.classList.add('done');
-    else if (i === active) el.classList.add('active');
-  }
-  for (let i = 1; i <= 2; i++) {
-    const conn = document.getElementById('conn-' + i);
-    if (conn) conn.classList.toggle('done', i < active);
-  }
-}
+      // ════════════════════════════════════════════════════════════
+      //  STEPS BAR (Fix 4)
+      // ════════════════════════════════════════════════════════════
+      const SCREEN_TO_STEP = {
+        "screen-setup": 1,
+        "screen-progress": 2,
+        "screen-review": 3,
+        "screen-summary": 3,
+      };
 
-// ════════════════════════════════════════════════════════════
-//  SIDEBAR / LOCALSTORAGE (Fix 3)
-// ════════════════════════════════════════════════════════════
-const STORAGE_KEY = 'copyright_tool_runs';
-let activeRunId = null;
+      function updateStepsBar(screenId) {
+        const active = SCREEN_TO_STEP[screenId] || 1;
+        for (let i = 1; i <= 3; i++) {
+          const el = document.getElementById("step-" + i);
+          if (!el) continue;
+          el.classList.remove("active", "done");
+          if (i < active) el.classList.add("done");
+          else if (i === active) el.classList.add("active");
+        }
+        for (let i = 1; i <= 2; i++) {
+          const conn = document.getElementById("conn-" + i);
+          if (conn) conn.classList.toggle("done", i < active);
+        }
+      }
 
-function loadRuns() {
-  try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'); } catch { return []; }
-}
+      // ════════════════════════════════════════════════════════════
+      //  SIDEBAR / LOCALSTORAGE (Fix 3)
+      // ════════════════════════════════════════════════════════════
+      const STORAGE_KEY = "copyright_tool_runs";
+      let activeRunId = null;
 
-function saveRun(state) {
-  const runs = loadRuns();
-  const now = new Date();
-  const dd = String(now.getDate()).padStart(2, '0');
-  const mm = String(now.getMonth() + 1).padStart(2, '0');
-  const yyyy = now.getFullYear();
-  const label = runTitle
-    ? runTitle
-    : `${dd}/${mm}/${yyyy} — ${state.rows.length} תמונות`;
+      function loadRuns() {
+        try {
+          return JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
+        } catch {
+          return [];
+        }
+      }
 
-  const serializedRows = state.rows.map(row => {
-    const r = Object.assign({}, row);
-    if (r._thumbnailUrl && r._thumbnailUrl.startsWith('blob:')) r._thumbnailUrl = '';
-    return r;
-  });
+      function saveRun(state) {
+        const runs = loadRuns();
+        const now = new Date();
+        const dd = String(now.getDate()).padStart(2, "0");
+        const mm = String(now.getMonth() + 1).padStart(2, "0");
+        const yyyy = now.getFullYear();
+        const label = runTitle
+          ? runTitle
+          : `${dd}/${mm}/${yyyy} — ${state.rows.length} תמונות`;
 
-  const run = {
-    id: Date.now(),
-    label,
-    state: {
-      rows:        serializedRows,
-      dupeGroups:  state.dupeGroups.map(g => ({ files: g.files, resolved: g.resolved })),
-      notedItems:  [...state.notedItems],
-      rawStems:    state.rawStems,
-    },
-  };
+        const serializedRows = state.rows.map((row) => {
+          const r = Object.assign({}, row);
+          if (r._thumbnailUrl && r._thumbnailUrl.startsWith("blob:"))
+            r._thumbnailUrl = "";
+          return r;
+        });
 
-  runs.push(run);
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(runs));
-    document.getElementById('sidebar-quota-warn').style.display = 'none';
-  } catch (e) {
-    if (e.name === 'QuotaExceededError' || e.code === 22 || e.code === 1014) {
-      document.getElementById('sidebar-quota-warn').style.display = '';
-    }
-  }
+        const run = {
+          id: Date.now(),
+          label,
+          state: {
+            rows: serializedRows,
+            dupeGroups: state.dupeGroups.map((g) => ({
+              files: g.files,
+              resolved: g.resolved,
+            })),
+            notedItems: [...state.notedItems],
+            rawStems: state.rawStems,
+          },
+        };
 
-  activeRunId = run.id;
-  renderSidebar();
-  return run.id;
-}
+        runs.push(run);
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(runs));
+          document.getElementById("sidebar-quota-warn").style.display = "none";
+        } catch (e) {
+          if (
+            e.name === "QuotaExceededError" ||
+            e.code === 22 ||
+            e.code === 1014
+          ) {
+            document.getElementById("sidebar-quota-warn").style.display = "";
+          }
+        }
 
-function deleteRun(id) {
-  const runs = loadRuns().filter(r => r.id !== id);
-  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(runs)); } catch {}
-  if (activeRunId === id) activeRunId = null;
-  renderSidebar();
-}
+        activeRunId = run.id;
+        renderSidebar();
+        return run.id;
+      }
 
-function clearAllRuns() {
-  try { localStorage.removeItem(STORAGE_KEY); } catch {}
-  activeRunId = null;
-  renderSidebar();
-}
+      function deleteRun(id) {
+        const runs = loadRuns().filter((r) => r.id !== id);
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(runs));
+        } catch {}
+        if (activeRunId === id) activeRunId = null;
+        renderSidebar();
+      }
 
-function loadRunById(id) {
-  const run = loadRuns().find(r => r.id === id);
-  if (!run) return;
-  activeRunId = id;
+      function clearAllRuns() {
+        try {
+          localStorage.removeItem(STORAGE_KEY);
+        } catch {}
+        activeRunId = null;
+        renderSidebar();
+      }
 
-  const s = run.state;
-  reviewState.rows       = s.rows || [];
-  reviewState.dupeGroups = (s.dupeGroups || []).map(g => ({ files: g.files, resolved: g.resolved }));
-  reviewState.notedItems = new Set(s.notedItems || []);
-  reviewState.rawStems   = s.rawStems || {};
+      function loadRunById(id) {
+        const run = loadRuns().find((r) => r.id === id);
+        if (!run) return;
+        activeRunId = id;
 
-  recomputeAllStatuses();
-  document.getElementById('review-header-sub').textContent = `${reviewState.rows.length} קבצים`;
-  renderReview();
-  showScreen('screen-review');
-  renderSidebar();
-}
+        const s = run.state;
+        reviewState.rows = s.rows || [];
+        reviewState.dupeGroups = (s.dupeGroups || []).map((g) => ({
+          files: g.files,
+          resolved: g.resolved,
+        }));
+        reviewState.notedItems = new Set(s.notedItems || []);
+        reviewState.rawStems = s.rawStems || {};
 
-function renderSidebar() {
-  const list = document.getElementById('sidebar-runs-list');
-  const runs = loadRuns();
+        recomputeAllStatuses();
+        document.getElementById("review-header-sub").textContent =
+          `${reviewState.rows.length} קבצים`;
+        buildSummaryFromReview();
+        showScreen("screen-summary");
+        renderSidebar();
+      }
 
-  if (!runs.length) {
-    list.innerHTML = '<div class="sidebar-empty">עדיין אין הרצות שמורות</div>';
-    return;
-  }
+      function renderSidebar() {
+        const list = document.getElementById("sidebar-runs-list");
+        const runs = loadRuns();
 
-  list.innerHTML = runs.slice().reverse().map(run => `
-    <div class="run-entry ${run.id === activeRunId ? 'active' : ''}" data-id="${run.id}">
+        if (!runs.length) {
+          list.innerHTML =
+            '<div class="sidebar-empty">עדיין אין הרצות שמורות</div>';
+          return;
+        }
+
+        list.innerHTML = runs
+          .slice()
+          .reverse()
+          .map(
+            (run) => `
+    <div class="run-entry ${run.id === activeRunId ? "active" : ""}" data-id="${run.id}">
       <div class="run-label-click" data-id="${run.id}">${escHtml(run.label)}</div>
       <button class="run-delete-btn" data-id="${run.id}" title="מחק">×</button>
-    </div>`).join('');
+    </div>`,
+          )
+          .join("");
 
-  list.querySelectorAll('.run-label-click').forEach(lbl => {
-    lbl.addEventListener('click', () => loadRunById(Number(lbl.dataset.id)));
-  });
-  list.querySelectorAll('.run-delete-btn').forEach(btn => {
-    btn.addEventListener('click', e => {
-      e.stopPropagation();
-      if (confirm('למחוק הרצה זו?')) deleteRun(Number(btn.dataset.id));
-    });
-  });
-}
+        list.querySelectorAll(".run-label-click").forEach((lbl) => {
+          lbl.addEventListener("click", () =>
+            loadRunById(Number(lbl.dataset.id)),
+          );
+        });
+        list.querySelectorAll(".run-delete-btn").forEach((btn) => {
+          btn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            if (confirm("למחוק הרצה זו?")) deleteRun(Number(btn.dataset.id));
+          });
+        });
+      }
 
-document.getElementById('btn-clear-all-runs').addEventListener('click', () => {
-  if (confirm('למחוק את כל ההרצות השמורות?')) clearAllRuns();
-});
+      document
+        .getElementById("btn-clear-all-runs")
+        .addEventListener("click", () => {
+          if (confirm("למחוק את כל ההרצות השמורות?")) clearAllRuns();
+        });
 
-// Initialize sidebar on load
-renderSidebar();
+      // Initialize sidebar on load
+      renderSidebar();
 
-// ════════════════════════════════════════════════════════════
-//  SCREEN 1 — SETUP (file entries)
-// ════════════════════════════════════════════════════════════
+      // ════════════════════════════════════════════════════════════
+      //  SCREEN 1 — SETUP (file entries)
+      // ════════════════════════════════════════════════════════════
 
-let fileEntries = []; // [{id, name, file}]
-let nextEntryId = 0;
+      let fileEntries = []; // [{id, name, file}]
+      let nextEntryId = 0;
 
-function addFileEntry(name = '', file = null) {
-  fileEntries.push({ id: nextEntryId++, name, file });
-}
+      function addFileEntry(name = "", file = null) {
+        fileEntries.push({ id: nextEntryId++, name, file });
+      }
 
-function removeFileEntry(id) {
-  fileEntries = fileEntries.filter(e => e.id !== id);
-  renderFileEntries();
-  updateSearchButton();
-}
+      function removeFileEntry(id) {
+        fileEntries = fileEntries.filter((e) => e.id !== id);
+        renderFileEntries();
+        updateSearchButton();
+      }
 
-function getSearchFilenames() {
-  return fileEntries.map(e => e.name.trim()).filter(n =>
-    n && IMAGE_EXTENSIONS.includes(n.split('.').pop().toLowerCase()));
-}
+      function getSearchFilenames() {
+        return fileEntries
+          .map((e) => e.name.trim())
+          .filter(
+            (n) =>
+              n && IMAGE_EXTENSIONS.includes(n.split(".").pop().toLowerCase()),
+          );
+      }
 
-function renderFileEntries() {
-  const list = document.getElementById('file-entries-list');
-  if (!fileEntries.length) { list.innerHTML = ''; updateSearchButton(); return; }
-  list.innerHTML = fileEntries.map(e => `
+      function renderFileEntries() {
+        const list = document.getElementById("file-entries-list");
+        if (!fileEntries.length) {
+          list.innerHTML = "";
+          updateSearchButton();
+          return;
+        }
+        list.innerHTML = fileEntries
+          .map(
+            (e) => `
     <div class="file-entry" data-id="${e.id}">
       <input class="file-entry-input" type="text" value="${escHtml(e.name)}"
              dir="ltr" placeholder="שם_קובץ.jpg">
       <button class="file-entry-remove" data-id="${e.id}" title="הסר">×</button>
-    </div>`).join('');
-  list.querySelectorAll('.file-entry-input').forEach(inp => {
-    inp.addEventListener('input', () => {
-      const id = Number(inp.closest('.file-entry').dataset.id);
-      const entry = fileEntries.find(e => e.id === id);
-      if (entry) entry.name = inp.value;
-      updateSearchButton();
-    });
-  });
-  list.querySelectorAll('.file-entry-remove').forEach(btn => {
-    btn.addEventListener('click', () => removeFileEntry(Number(btn.dataset.id)));
-  });
-  updateSearchButton();
-}
-
-function updateSearchButton() {
-  document.getElementById('btn-search').disabled = !getSearchFilenames().length;
-}
-
-// Run title field
-document.getElementById('run-title').addEventListener('input', e => { runTitle = e.target.value.trim(); });
-
-// Add empty entry button
-document.getElementById('btn-add-field').addEventListener('click', () => {
-  addFileEntry('');
-  renderFileEntries();
-  // Focus the new input
-  const inputs = document.querySelectorAll('.file-entry-input');
-  if (inputs.length) inputs[inputs.length - 1].focus();
-});
-
-// Source toggles
-document.querySelectorAll('.source-toggle').forEach(toggle => {
-  toggle.addEventListener('click', () => {
-    const cb = toggle.querySelector('input');
-    cb.checked = !cb.checked;
-    toggle.classList.toggle('active', cb.checked);
-    document.getElementById('pexels-key-row').classList.toggle(
-      'visible', document.querySelector('[data-source="pexels"]').checked);
-  });
-});
-
-// Sidebar new-search button
-document.getElementById('btn-new-search').addEventListener('click', () => location.reload());
-
-// Folder picker
-const folderInput = document.getElementById('folder-input');
-const msgOk  = document.getElementById('msg-ok');
-const msgErr = document.getElementById('msg-err');
-
-folderInput.addEventListener('change', () => {
-  hideMsg(msgOk); hideMsg(msgErr);
-  const imageFiles = Array.from(folderInput.files || [])
-    .filter(f => IMAGE_EXTENSIONS.includes(f.name.split('.').pop().toLowerCase()));
-
-  const existingNames = new Set(fileEntries.map(e => e.name));
-  let added = 0;
-  for (const f of imageFiles) {
-    if (!existingNames.has(f.name)) {
-      fileObjectMap[f.name] = f;
-      addFileEntry(f.name, f);
-      added++;
-    }
-  }
-  renderFileEntries();
-
-  if (imageFiles.length === 0) showMsg(msgErr, 'לא נמצאו קבצי תמונה בתיקייה');
-});
-
-// Search
-document.getElementById('btn-search').addEventListener('click', async () => {
-  const filenames = getSearchFilenames();
-
-  if (!filenames.length) {
-    showMsg(msgErr, 'יש להוסיף לפחות קובץ תמונה אחד');
-    return;
-  }
-
-  // Rebuild fileObjectMap from entries
-  fileObjectMap = {};
-  for (const e of fileEntries) { if (e.file) fileObjectMap[e.name] = e.file; }
-
-  const enabled = Array.from(document.querySelectorAll('[data-source]'))
-    .filter(cb => cb.checked).map(cb => cb.dataset.source);
-
-  const btnSearch = document.getElementById('btn-search');
-  btnSearch.disabled = true;
-  btnSearch.textContent = 'מחפש...';
-
-  document.getElementById('live-feed').innerHTML = '';
-  document.getElementById('bar-fill').style.width = '0%';
-  document.getElementById('progress-count').textContent = '0 / ' + filenames.length;
-  document.getElementById('progress-file').textContent = 'מכין...';
-  document.getElementById('progress-source').textContent = '';
-  showScreen('screen-progress');
-
-  try {
-    const { results, summary } = await processFilenames(filenames, enabled, (current, total, filename, result) => {
-      const pct = total > 0 ? (current / total * 100) : 0;
-      document.getElementById('bar-fill').style.width = pct + '%';
-      document.getElementById('progress-count').textContent = `${current} / ${total}`;
-      document.getElementById('progress-file').textContent = filename || '';
-
-      if (result) {
-        const feed = document.getElementById('live-feed');
-        const found = result._found;
-        const item = document.createElement('div');
-        item.className = 'live-item';
-        item.innerHTML = `
-          <div class="live-dot" style="background:${found ? 'var(--success)' : 'var(--danger)'}"></div>
-          <span class="live-fname">${escHtml(filename)}</span>
-          <span class="live-src ${found ? '' : 'not-found'}">${found ? escHtml(result._source) : 'לא נמצא'}</span>`;
-        feed.insertBefore(item, feed.firstChild);
+    </div>`,
+          )
+          .join("");
+        list.querySelectorAll(".file-entry-input").forEach((inp) => {
+          inp.addEventListener("input", () => {
+            const id = Number(inp.closest(".file-entry").dataset.id);
+            const entry = fileEntries.find((e) => e.id === id);
+            if (entry) entry.name = inp.value;
+            updateSearchButton();
+          });
+        });
+        list.querySelectorAll(".file-entry-remove").forEach((btn) => {
+          btn.addEventListener("click", () =>
+            removeFileEntry(Number(btn.dataset.id)),
+          );
+        });
+        updateSearchButton();
       }
-    });
 
-    initReview(results, summary.potentialDuplicates, summary);
-    saveRun(reviewState);
-    buildSummaryFromReview();
-    showScreen('screen-summary');
-  } catch(e) {
-    alert('שגיאה: ' + (e.message || e));
-    showScreen('screen-setup');
-    btnSearch.disabled = false;
-    btnSearch.textContent = 'חפש זכויות יוצרים';
-  }
-});
+      function updateSearchButton() {
+        document.getElementById("btn-search").disabled =
+          !getSearchFilenames().length;
+      }
 
-// ════════════════════════════════════════════════════════════
-//  SCREEN 3 — REVIEW
-// ════════════════════════════════════════════════════════════
+      // Run title field
+      document.getElementById("run-title").addEventListener("input", (e) => {
+        runTitle = e.target.value.trim();
+      });
 
-const STATUS_ORDER = ['לא זוהה', 'נדרש שם פריט', 'כפילויות אפשריות', 'רישיון לא מזוהה', 'הערות', 'תקין'];
+      // Add empty entry button
+      document.getElementById("btn-add-field").addEventListener("click", () => {
+        addFileEntry("");
+        renderFileEntries();
+        // Focus the new input
+        const inputs = document.querySelectorAll(".file-entry-input");
+        if (inputs.length) inputs[inputs.length - 1].focus();
+      });
 
-const TRIVIAL_NOTE_SUBSTRINGS = ['נמצא בהתאמה מדויקת', 'נמצא בספריית הקונגרס'];
-function filterMeaningfulNotes(notes) {
-  return (notes || []).filter(n => !TRIVIAL_NOTE_SUBSTRINGS.some(t => n.includes(t)));
-}
+      // Source toggles
+      document.querySelectorAll(".source-toggle").forEach((toggle) => {
+        toggle.addEventListener("click", () => {
+          const cb = toggle.querySelector("input");
+          cb.checked = !cb.checked;
+          toggle.classList.toggle("active", cb.checked);
+          document
+            .getElementById("pexels-key-row")
+            .classList.toggle(
+              "visible",
+              document.querySelector('[data-source="pexels"]').checked,
+            );
+        });
+      });
 
-const reviewState = {
-  rows:       [],
-  dupeGroups: [],
-  notedItems: new Set(),
-  rawStems:   {},
-};
+      // Sidebar new-search button
+      document
+        .getElementById("btn-new-search")
+        .addEventListener("click", () => location.reload());
 
-function computeStatus(row, dupeGroups, notedItems) {
-  if (!row['מקור'] || !row['סוג זכויות היוצרים']) return 'לא זוהה';
-  if (row._isRawFilename) return 'נדרש שם פריט';
-  if (dupeGroups.some(g => !g.resolved && g.files.includes(row['שם קובץ']))) return 'כפילויות אפשריות';
-  if (row._unknownLicense) return 'רישיון לא מזוהה';
-  if ((row._notes || []).length > 0 && !notedItems.has(row['שם קובץ'])) return 'הערות';
-  return 'תקין';
-}
+      // Folder picker
+      const folderInput = document.getElementById("folder-input");
+      const msgOk = document.getElementById("msg-ok");
+      const msgErr = document.getElementById("msg-err");
 
-function recomputeAllStatuses() {
-  for (const row of reviewState.rows) {
-    row._status = computeStatus(row, reviewState.dupeGroups, reviewState.notedItems);
-  }
-}
+      folderInput.addEventListener("change", () => {
+        hideMsg(msgOk);
+        hideMsg(msgErr);
+        const imageFiles = Array.from(folderInput.files || []).filter((f) =>
+          IMAGE_EXTENSIONS.includes(f.name.split(".").pop().toLowerCase()),
+        );
 
-function initReview(results, potentialDupes, summary) {
-  reviewState.rows = (results || []).map(r => ({
-    'שם פריט':              r['שם פריט'] || '',
-    'שם קובץ':              r['שם קובץ'] || '',
-    'מקור':                 r['מקור'] || '',
-    'קישור למדיה במקור':   r['קישור למדיה במקור'] || '',
-    'סוג זכויות היוצרים':  r['סוג זכויות היוצרים'] || '',
-    'יש צורך במתן קרדיט?': r['יש צורך במתן קרדיט?'] || '',
-    'איך לרשום את הקרדיט?':r['איך לרשום את הקרדיט?'] || '',
-    'מותר לשימוש מסחרי?':  r['מותר לשימוש מסחרי?'] || '',
-    'מותר לשימוש חיצוני?': r['מותר לשימוש חיצוני?'] || '',
-    'קבצים נוספים':         r['קבצים נוספים'] || '',
-    _isRawFilename:  !!r._isRawFilename,
-    _unknownLicense: !!r._unknownLicense,
-    _notes:          filterMeaningfulNotes(r._notes),
-    _found:          !!r._found,
-    _status:         'תקין',
-    _thumbnailUrl:   r._thumbnailUrl || '',
-  }));
+        const existingNames = new Set(fileEntries.map((e) => e.name));
+        let added = 0;
+        for (const f of imageFiles) {
+          if (!existingNames.has(f.name)) {
+            fileObjectMap[f.name] = f;
+            addFileEntry(f.name, f);
+            added++;
+          }
+        }
+        renderFileEntries();
 
-  reviewState.rawStems = {};
-  for (const row of reviewState.rows) {
-    if (row._isRawFilename) reviewState.rawStems[row['שם קובץ']] = row['שם פריט'];
-  }
+        if (imageFiles.length === 0)
+          showMsg(msgErr, "לא נמצאו קבצי תמונה בתיקייה");
+      });
 
-  reviewState.dupeGroups = (potentialDupes || []).map(files => ({ files, resolved: false }));
-  reviewState.notedItems = new Set();
+      // Search
+      document
+        .getElementById("btn-search")
+        .addEventListener("click", async () => {
+          const filenames = getSearchFilenames();
 
-  recomputeAllStatuses();
-  document.getElementById('review-header-sub').textContent = `${reviewState.rows.length} קבצים`;
-  renderReview();
-}
+          if (!filenames.length) {
+            showMsg(msgErr, "יש להוסיף לפחות קובץ תמונה אחד");
+            return;
+          }
 
-function renderReview() {
-  recomputeAllStatuses();
-  renderIssuesPanel();
-  renderTable();
-}
+          // Rebuild fileObjectMap from entries
+          fileObjectMap = {};
+          for (const e of fileEntries) {
+            if (e.file) fileObjectMap[e.name] = e.file;
+          }
 
-// ── Issues panel ──────────────────────────────────────────────────────────────
+          const enabled = Array.from(document.querySelectorAll("[data-source]"))
+            .filter((cb) => cb.checked)
+            .map((cb) => cb.dataset.source);
 
-function renderIssuesPanel() {
-  const panel = document.getElementById('issues-panel');
-  const categories = {
-    'לא זוהה':           { cls: 'danger',  items: [] },
-    'נדרש שם פריט':      { cls: 'warn',    items: [] },
-    'כפילויות אפשריות':  { cls: 'warn',    items: [] },
-    'רישיון לא מזוהה':   { cls: 'danger',  items: [] },
-    'הערות':             { cls: 'muted',   items: [] },
-    'תקין':              { cls: 'success', items: [] },
-  };
+          const btnSearch = document.getElementById("btn-search");
+          btnSearch.disabled = true;
+          btnSearch.textContent = "מחפש...";
 
-  for (const row of reviewState.rows) {
-    const s = row._status;
-    if (categories[s]) categories[s].items.push(row);
-  }
+          document.getElementById("live-feed").innerHTML = "";
+          document.getElementById("bar-fill").style.width = "0%";
+          document.getElementById("progress-count").textContent =
+            "0 / " + filenames.length;
+          document.getElementById("progress-file").textContent = "מכין...";
+          document.getElementById("progress-source").textContent = "";
+          showScreen("screen-progress");
 
-  let html = '';
-  for (const cat of STATUS_ORDER.slice(0, -1)) {
-    const { cls, items } = categories[cat];
-    if (!items.length) continue;
-    html += renderIssueCard(cat, cls, items, true);
-  }
-  html += '<div class="issues-divider"></div>';
-  html += renderIssueCard('תקין', 'success', categories['תקין'].items, false);
+          try {
+            const { results, summary } = await processFilenames(
+              filenames,
+              enabled,
+              (current, total, filename, result) => {
+                const pct = total > 0 ? (current / total) * 100 : 0;
+                document.getElementById("bar-fill").style.width = pct + "%";
+                document.getElementById("progress-count").textContent =
+                  `${current} / ${total}`;
+                document.getElementById("progress-file").textContent =
+                  filename || "";
 
-  panel.innerHTML = html;
+                if (result) {
+                  const feed = document.getElementById("live-feed");
+                  const found = result._found;
+                  const item = document.createElement("div");
+                  item.className = "live-item";
+                  item.innerHTML = `
+          <div class="live-dot" style="background:${found ? "var(--success)" : "var(--danger)"}"></div>
+          <span class="live-fname">${escHtml(filename)}</span>
+          <span class="live-src ${found ? "" : "not-found"}">${found ? escHtml(result._source) : "לא נמצא"}</span>`;
+                  feed.insertBefore(item, feed.firstChild);
+                }
+              },
+            );
 
-  panel.querySelectorAll('.issue-card-header').forEach(hdr => {
-    hdr.addEventListener('click', () => hdr.closest('.issue-card').classList.toggle('open'));
-  });
-  panel.querySelectorAll('.btn-noted').forEach(btn => {
-    btn.addEventListener('click', e => {
-      e.stopPropagation();
-      reviewState.notedItems.add(btn.dataset.fname);
-      renderReview();
-    });
-  });
-  panel.querySelectorAll('.issue-item[data-fname]').forEach(item => {
-    item.addEventListener('click', () => scrollToRow(item.dataset.fname));
-  });
-  panel.querySelectorAll('.btn-dupe-merge').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const gIdx = parseInt(btn.dataset.gidx);
-      const group = reviewState.dupeGroups[gIdx];
-      if (!group) return;
-      let toMerge = group.files;
-      const checked = btn.closest('.dupe-group').querySelectorAll('input[type=checkbox]:checked');
-      if (checked.length) toMerge = Array.from(checked).map(cb => cb.value);
-      if (toMerge.length < 2) { alert('יש לסמן לפחות שני קבצים למיזוג'); return; }
-      mergeRows(toMerge);
-      group.resolved = true;
-      renderReview();
-    });
-  });
-  panel.querySelectorAll('.btn-dupe-keep').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const gIdx = parseInt(btn.dataset.gidx);
-      if (reviewState.dupeGroups[gIdx]) { reviewState.dupeGroups[gIdx].resolved = true; renderReview(); }
-    });
-  });
-}
+            initReview(results, summary.potentialDuplicates, summary);
+            saveRun(reviewState);
+            buildSummaryFromReview();
+            showScreen("screen-summary");
+          } catch (e) {
+            alert("שגיאה: " + (e.message || e));
+            showScreen("screen-setup");
+            btnSearch.disabled = false;
+            btnSearch.textContent = "חפש זכויות יוצרים";
+          }
+        });
 
-function renderIssueCard(cat, cls, items, startOpen) {
-  const openClass = startOpen ? ' open' : '';
-  const count = items.length;
-  let bodyHtml = '';
+      // ════════════════════════════════════════════════════════════
+      //  SCREEN 3 — REVIEW
+      // ════════════════════════════════════════════════════════════
 
-  if (cat === 'כפילויות אפשריות') {
-    const unresolved = reviewState.dupeGroups.map((g, i) => ({ ...g, idx: i })).filter(g => !g.resolved);
-    bodyHtml = unresolved.length
-      ? unresolved.map(g => renderDupeGroup(g)).join('')
-      : '<div class="empty">אין כפילויות</div>';
-  } else if (cat === 'הערות') {
-    bodyHtml = items.map(row => `
-      <div class="issue-item" data-fname="${escHtml(row['שם קובץ'])}">
-        <span class="issue-item-fname">${escHtml(row['שם קובץ'])}</span>
-        <span class="issue-item-meta">${escHtml((row._notes || [])[0] || '')}</span>
-        <button class="btn-noted" data-fname="${escHtml(row['שם קובץ'])}">הבנתי</button>
-      </div>`).join('');
-  } else if (cat === 'נדרש שם פריט') {
-    bodyHtml = items.map(row => `
-      <div class="issue-item" data-fname="${escHtml(row['שם קובץ'])}">
-        <span class="issue-item-fname">${escHtml(row['שם קובץ'])}</span>
-        <span class="issue-item-meta">שם אוטומטי: ${escHtml(row['שם פריט'])}</span>
-      </div>`).join('');
-  } else {
-    bodyHtml = items.map(row => `
-      <div class="issue-item" data-fname="${escHtml(row['שם קובץ'])}">
-        <span class="issue-item-fname">${escHtml(row['שם קובץ'])}</span>
-        <span class="issue-item-meta">${escHtml(row['מקור'] || '')}</span>
-      </div>`).join('');
-  }
+      const STATUS_ORDER = [
+        "לא זוהה",
+        "נדרש שם פריט",
+        "כפילויות אפשריות",
+        "רישיון לא מזוהה",
+        "הערות",
+        "תקין",
+      ];
 
-  return `
-    <div class="issue-card${openClass}">
-      <div class="issue-card-header ${cls}">
-        <div class="issue-card-header-left">
-          <span>${escHtml(cat)}</span>
-          <span class="issue-badge">${count}</span>
-        </div>
-        <span class="issue-chevron">▼</span>
-      </div>
-      <div class="issue-card-body">${bodyHtml}</div>
-    </div>`;
-}
+      const TRIVIAL_NOTE_SUBSTRINGS = [
+        "נמצא בהתאמה מדויקת",
+        "נמצא בספריית הקונגרס",
+      ];
+      function filterMeaningfulNotes(notes) {
+        return (notes || []).filter(
+          (n) => !TRIVIAL_NOTE_SUBSTRINGS.some((t) => n.includes(t)),
+        );
+      }
 
-function renderDupeGroup(g) {
-  const isMulti = g.files.length > 2;
-  const filesHtml = g.files.map(fn => isMulti
-    ? `<div class="dupe-checkbox-row">
+      const reviewState = {
+        rows: [],
+        dupeGroups: [],
+        notedItems: new Set(),
+        rawStems: {},
+      };
+
+      function computeStatus(row, dupeGroups, notedItems) {
+        if (!row["מקור"] || !row["סוג זכויות היוצרים"]) return "לא זוהה";
+        if (row._isRawFilename) return "נדרש שם פריט";
+        if (
+          dupeGroups.some(
+            (g) => !g.resolved && g.files.includes(row["שם קובץ"]),
+          )
+        )
+          return "כפילויות אפשריות";
+        if (row._unknownLicense) return "רישיון לא מזוהה";
+        if ((row._notes || []).length > 0 && !notedItems.has(row["שם קובץ"]))
+          return "הערות";
+        return "תקין";
+      }
+
+      function recomputeAllStatuses() {
+        for (const row of reviewState.rows) {
+          row._status = computeStatus(
+            row,
+            reviewState.dupeGroups,
+            reviewState.notedItems,
+          );
+        }
+      }
+
+      function initReview(results, potentialDupes, summary) {
+        reviewState.rows = (results || []).map((r) => ({
+          "שם פריט": r["שם פריט"] || "",
+          "שם קובץ": r["שם קובץ"] || "",
+          מקור: r["מקור"] || "",
+          "קישור למדיה במקור": r["קישור למדיה במקור"] || "",
+          "סוג זכויות היוצרים": r["סוג זכויות היוצרים"] || "",
+          "יש צורך במתן קרדיט?": r["יש צורך במתן קרדיט?"] || "",
+          "איך לרשום את הקרדיט?": r["איך לרשום את הקרדיט?"] || "",
+          "מותר לשימוש מסחרי?": r["מותר לשימוש מסחרי?"] || "",
+          "מותר לשימוש חיצוני?": r["מותר לשימוש חיצוני?"] || "",
+          "קבצים נוספים": r["קבצים נוספים"] || "",
+          _isRawFilename: !!r._isRawFilename,
+          _unknownLicense: !!r._unknownLicense,
+          _notes: filterMeaningfulNotes(r._notes),
+          _found: !!r._found,
+          _status: "תקין",
+          _thumbnailUrl: r._thumbnailUrl || "",
+        }));
+
+        reviewState.rawStems = {};
+        for (const row of reviewState.rows) {
+          if (row._isRawFilename)
+            reviewState.rawStems[row["שם קובץ"]] = row["שם פריט"];
+        }
+
+        reviewState.dupeGroups = (potentialDupes || []).map((files) => ({
+          files,
+          resolved: false,
+        }));
+        reviewState.notedItems = new Set();
+
+        recomputeAllStatuses();
+        document.getElementById("review-header-sub").textContent =
+          `${reviewState.rows.length} קבצים`;
+      }
+
+      // ── Table-only modal renderer ─────────────────────────────────────────────
+
+      function renderTableOnly() {
+        recomputeAllStatuses();
+        const tbody = document.getElementById("review-tbody");
+        document.getElementById("review-header-sub").textContent =
+          `${reviewState.rows.length} קבצים`;
+
+        const ordered = [...reviewState.rows].sort(
+          (a, b) => STATUS_ORDER.indexOf(a._status) - STATUS_ORDER.indexOf(b._status),
+        );
+        tbody.innerHTML = ordered.map((row) => renderTableRow(row)).join("");
+
+        const tableArea = document.getElementById("table-area");
+        tableArea.querySelectorAll(".editable-cell").forEach((cell) => {
+          cell.addEventListener("click", () => {
+            if (cell.querySelector("input, textarea, select")) return;
+            startEdit(cell);
+          });
+        });
+        tableArea.querySelectorAll(".cell-link").forEach((cell) => {
+          cell.addEventListener("dblclick", () => {
+            const fname = cell.dataset.fname;
+            const row = reviewState.rows.find((r) => r["שם קובץ"] === fname);
+            if (!row) return;
+            const newVal = prompt("ערוך קישור:", row["קישור למדיה במקור"]);
+            if (newVal !== null) {
+              row["קישור למדיה במקור"] = newVal.trim();
+              renderTableOnly();
+            }
+          });
+        });
+      }
+
+      // ── Queue ─────────────────────────────────────────────────────────────────
+
+      let queueItems = [];
+      let queueIndex = 0;
+
+      const STATUS_CLS = {
+        "לא זוהה":          "danger",
+        "נדרש שם פריט":     "warn",
+        "כפילויות אפשריות": "warn",
+        "רישיון לא מזוהה": "danger",
+        "הערות":            "muted",
+      };
+
+      function buildQueue() {
+        queueItems = [];
+        for (const status of STATUS_ORDER) {
+          if (status === "תקין") continue;
+          if (status === "כפילויות אפשריות") {
+            reviewState.dupeGroups.forEach((g, i) => {
+              if (!g.resolved)
+                queueItems.push({ type: status, groupIdx: i, files: g.files });
+            });
+          } else {
+            for (const row of reviewState.rows) {
+              if (row._status === status) queueItems.push({ type: status, row });
+            }
+          }
+        }
+        queueIndex = Math.min(queueIndex, Math.max(0, queueItems.length - 1));
+      }
+
+      function renderQueue() {
+        const card    = document.getElementById("queue-card");
+        const counter = document.getElementById("queue-counter");
+        const nav     = document.getElementById("queue-nav");
+        const section = document.getElementById("queue-section");
+        if (!card) return;
+
+        if (!queueItems.length) {
+          section.style.display = "none";
+          return;
+        }
+
+        section.style.display = "";
+
+        nav.style.visibility = "";
+        counter.textContent = `${queueIndex + 1} / ${queueItems.length}`;
+        const item = queueItems[queueIndex];
+        card.innerHTML = renderQueueItem(item);
+        attachQueueListeners(item);
+      }
+
+      function renderQueueItem(item) {
+        const cls = STATUS_CLS[item.type] || "muted";
+        const badge = `<span class="queue-status-badge ${cls}">${escHtml(item.type)}</span>`;
+
+        if (item.type === "כפילויות אפשריות") {
+          const g = reviewState.dupeGroups[item.groupIdx];
+          if (!g) return "";
+          return `<div class="queue-item">
+            ${badge}
+            <div style="margin-top:12px;">${renderDupeGroup({ ...g, idx: item.groupIdx })}</div>
+          </div>`;
+        }
+
+        const row = item.row;
+        const fname = row["שם קובץ"];
+        const thumbUrl = getThumbnailUrl(fname) || row._thumbnailUrl || "";
+        const thumbEl = thumbUrl
+          ? `<img class="queue-item-thumb" src="${escHtml(thumbUrl)}" onerror="this.style.display='none'">`
+          : `<div class="queue-item-thumb"></div>`;
+
+        let fieldsHtml = "";
+        const inp = (id, label, value, type = "text") =>
+          `<div class="queue-field-row">
+            <label class="queue-field-label" for="${id}">${escHtml(label)}</label>
+            <input class="queue-field-input" id="${id}" type="${type}" value="${escHtml(value || "")}">
+          </div>`;
+        const sel = (id, label, value, options) =>
+          `<div class="queue-field-row">
+            <label class="queue-field-label" for="${id}">${escHtml(label)}</label>
+            <select class="queue-field-input" id="${id}">
+              ${options.map(o => `<option value="${escHtml(o)}"${o === value ? " selected" : ""}>${escHtml(o)}</option>`).join("")}
+            </select>
+          </div>`;
+
+        let resolveLabel = "✓ סיים פריט";
+
+        if (item.type === "לא זוהה") {
+          fieldsHtml =
+            inp("qf-source", "מקור", row["מקור"]) +
+            inp("qf-link", "קישור (אופציונלי)", row["קישור למדיה במקור"]) +
+            sel("qf-lic", "סוג זכויות", row["סוג זכויות היוצרים"], ["", ...RECOGNIZED_LICENSES]);
+
+        } else if (item.type === "נדרש שם פריט") {
+          fieldsHtml = `<div class="queue-field-row" style="flex-direction:column;align-items:flex-end;gap:4px;">
+              <span class="queue-field-label" style="width:auto;">שם אוטומטי: <em>${escHtml(reviewState.rawStems[fname] || row["שם פריט"])}</em></span>
+            </div>` +
+            inp("qf-item-name", "שם פריט", row["שם פריט"]);
+
+        } else if (item.type === "רישיון לא מזוהה") {
+          fieldsHtml = `<div class="queue-field-row">
+              <span class="queue-field-label">ערך נוכחי</span>
+              <span style="font-family:var(--mono);font-size:12px;color:var(--danger);">${escHtml(row["סוג זכויות היוצרים"])}</span>
+            </div>` +
+            sel("qf-lic", "סוג זכויות", "", RECOGNIZED_LICENSES);
+
+        } else if (item.type === "הערות") {
+          const notes = (row._notes || []).filter(Boolean);
+          fieldsHtml = `<div class="queue-notes-list">
+            ${notes.map(n => `<div class="queue-note-item">• ${escHtml(n)}</div>`).join("") || "<div class='queue-note-item'>—</div>"}
+          </div>`;
+          resolveLabel = "הבנתי ✓";
+        }
+
+        return `<div class="queue-item">
+          <div class="queue-item-header">
+            ${thumbEl}
+            <div class="queue-item-meta">
+              ${badge}
+              <div class="queue-item-title">${escHtml(row["שם פריט"] || fname)}</div>
+              <div class="queue-item-fname">${escHtml(fname)}</div>
+            </div>
+          </div>
+          ${fieldsHtml}
+          <div class="queue-resolve-row">
+            <button class="btn btn-primary" id="queue-resolve-btn">${resolveLabel}</button>
+          </div>
+        </div>`;
+      }
+
+      function attachQueueListeners(item) {
+        document.getElementById("queue-prev")?.addEventListener("click", () => {
+          queueIndex = (queueIndex - 1 + queueItems.length) % queueItems.length;
+          renderQueue();
+        });
+        document.getElementById("queue-next")?.addEventListener("click", () => {
+          queueIndex = (queueIndex + 1) % queueItems.length;
+          renderQueue();
+        });
+
+        if (item.type === "כפילויות אפשריות") {
+          const card = document.getElementById("queue-card");
+          card.querySelector(".btn-dupe-merge")?.addEventListener("click", () => {
+            const g = reviewState.dupeGroups[item.groupIdx];
+            if (!g) return;
+            let toMerge = g.files;
+            const checked = card.querySelectorAll("input[type=checkbox]:checked");
+            if (checked.length) toMerge = Array.from(checked).map(cb => cb.value);
+            if (toMerge.length < 2) { alert("יש לסמן לפחות שני קבצים למיזוג"); return; }
+            mergeRows(toMerge);
+            g.resolved = true;
+            resolveQueueItem(item);
+          });
+          card.querySelector(".btn-dupe-keep")?.addEventListener("click", () => {
+            reviewState.dupeGroups[item.groupIdx].resolved = true;
+            resolveQueueItem(item);
+          });
+          return;
+        }
+
+        document.getElementById("queue-resolve-btn")?.addEventListener("click", () => {
+          const row = item.row;
+          if (item.type === "לא זוהה") {
+            const src = document.getElementById("qf-source")?.value.trim();
+            const lnk = document.getElementById("qf-link")?.value.trim();
+            const lic = document.getElementById("qf-lic")?.value;
+            if (src) { row["מקור"] = src; row._found = true; }
+            if (lnk) row["קישור למדיה במקור"] = lnk;
+            if (lic) { row["סוג זכויות היוצרים"] = lic; row._unknownLicense = !RECOGNIZED_LICENSES.includes(lic); }
+          } else if (item.type === "נדרש שם פריט") {
+            const name = document.getElementById("qf-item-name")?.value.trim();
+            if (name) {
+              row["שם פריט"] = name;
+              const orig = reviewState.rawStems[row["שם קובץ"]];
+              row._isRawFilename = name === orig;
+            }
+          } else if (item.type === "רישיון לא מזוהה") {
+            const lic = document.getElementById("qf-lic")?.value;
+            if (lic) { row["סוג זכויות היוצרים"] = lic; row._unknownLicense = false; }
+          } else if (item.type === "הערות") {
+            reviewState.notedItems.add(row["שם קובץ"]);
+          }
+          resolveQueueItem(item);
+        });
+      }
+
+      function resolveQueueItem(item) {
+        recomputeAllStatuses();
+        buildSummaryFromReview();
+      }
+
+      function renderDupeGroup(g) {
+        const isMulti = g.files.length > 2;
+        const filesHtml = g.files
+          .map((fn) =>
+            isMulti
+              ? `<div class="dupe-checkbox-row">
          <input type="checkbox" value="${escHtml(fn)}" checked>
          <span class="dupe-fname">${escHtml(fn)}</span>
        </div>`
-    : `<div class="dupe-fname">${escHtml(fn)}</div>`
-  ).join('');
+              : `<div class="dupe-fname">${escHtml(fn)}</div>`,
+          )
+          .join("");
 
-  return `
+        return `
     <div class="dupe-group">
       <div class="dupe-group-files">${filesHtml}</div>
       <div class="dupe-group-actions">
-        <button class="btn btn-sm btn-warn btn-dupe-merge" data-gidx="${g.idx}">${isMulti ? 'מיזוג מסומנים' : 'מיזוג'}</button>
-        <button class="btn btn-sm btn-ghost btn-dupe-keep" data-gidx="${g.idx}">${isMulti ? 'השאר נפרד לכולם' : 'השאר נפרד'}</button>
+        <button class="btn btn-sm btn-warn btn-dupe-merge" data-gidx="${g.idx}">${isMulti ? "מיזוג מסומנים" : "מיזוג"}</button>
+        <button class="btn btn-sm btn-ghost btn-dupe-keep" data-gidx="${g.idx}">${isMulti ? "השאר נפרד לכולם" : "השאר נפרד"}</button>
       </div>
     </div>`;
-}
+      }
 
-function mergeRows(filenames) {
-  if (filenames.length < 2) return;
-  const primary = filenames[0];
-  const rest = filenames.slice(1);
-  const primaryRow = reviewState.rows.find(r => r['שם קובץ'] === primary);
-  if (!primaryRow) return;
-  const existing = primaryRow['קבצים נוספים'] ? primaryRow['קבצים נוספים'].split(', ').filter(Boolean) : [];
-  primaryRow['קבצים נוספים'] = Array.from(new Set([...existing, ...rest])).join(', ');
-  reviewState.rows = reviewState.rows.filter(r => !rest.includes(r['שם קובץ']));
-}
+      function mergeRows(filenames) {
+        if (filenames.length < 2) return;
+        const primary = filenames[0];
+        const rest = filenames.slice(1);
+        const primaryRow = reviewState.rows.find(
+          (r) => r["שם קובץ"] === primary,
+        );
+        if (!primaryRow) return;
+        const existing = primaryRow["קבצים נוספים"]
+          ? primaryRow["קבצים נוספים"].split(", ").filter(Boolean)
+          : [];
+        primaryRow["קבצים נוספים"] = Array.from(
+          new Set([...existing, ...rest]),
+        ).join(", ");
+        reviewState.rows = reviewState.rows.filter(
+          (r) => !rest.includes(r["שם קובץ"]),
+        );
+      }
 
-// ── Thumbnail ─────────────────────────────────────────────────────────────────
+      // ── Thumbnail ─────────────────────────────────────────────────────────────────
 
-function getThumbnailUrl(fname) {
-  if (!thumbnailUrls[fname] && fileObjectMap[fname]) {
-    thumbnailUrls[fname] = URL.createObjectURL(fileObjectMap[fname]);
-  }
-  return thumbnailUrls[fname] || null;
-}
+      function getThumbnailUrl(fname) {
+        if (!thumbnailUrls[fname] && fileObjectMap[fname]) {
+          thumbnailUrls[fname] = URL.createObjectURL(fileObjectMap[fname]);
+        }
+        return thumbnailUrls[fname] || null;
+      }
 
-// ── Table ─────────────────────────────────────────────────────────────────────
+      // ── Row renderer ──────────────────────────────────────────────────────────────
 
-function renderTable() {
-  const tbody = document.getElementById('review-tbody');
-  const ordered = [...reviewState.rows].sort((a, b) =>
-    STATUS_ORDER.indexOf(a._status) - STATUS_ORDER.indexOf(b._status));
+      function renderTableRow(row, showResolved = false, showNotes = false, colCount = 11) {
+        const fname = row["שם קובץ"];
+        const status = row._status;
+        let rowClass = "row-ok";
+        if (status === "לא זוהה" || status === "רישיון לא מזוהה")
+          rowClass = "row-danger";
+        else if (status !== "תקין") rowClass = "row-issue";
 
-  let separatorInserted = false;
-  let html = '';
-  for (const row of ordered) {
-    if (!separatorInserted && row._status === 'תקין') {
-      html += `<tr class="row-separator"><td colspan="11">— תקינים —</td></tr>`;
-      separatorInserted = true;
-    }
-    html += renderTableRow(row);
-  }
-
-  tbody.innerHTML = html;
-
-  tbody.querySelectorAll('.editable-cell').forEach(cell => {
-    cell.addEventListener('click', () => {
-      if (cell.querySelector('input, textarea, select')) return;
-      startEdit(cell);
-    });
-  });
-
-  tbody.querySelectorAll('.cell-link').forEach(cell => {
-    cell.addEventListener('dblclick', () => {
-      const fname = cell.dataset.fname;
-      const row = reviewState.rows.find(r => r['שם קובץ'] === fname);
-      if (!row) return;
-      const newVal = prompt('ערוך קישור:', row['קישור למדיה במקור']);
-      if (newVal !== null) { row['קישור למדיה במקור'] = newVal.trim(); renderReview(); }
-    });
-  });
-}
-
-function renderTableRow(row) {
-  const fname  = row['שם קובץ'];
-  const status = row._status;
-  let rowClass = 'row-ok';
-  if (status === 'לא זוהה' || status === 'רישיון לא מזוהה') rowClass = 'row-danger';
-  else if (status !== 'תקין') rowClass = 'row-issue';
-
-  // Fix 2 thumbnail: local blob first, then API URL, then placeholder
-  const thumbUrl = getThumbnailUrl(fname) || row._thumbnailUrl || null;
-  const thumb = `<td class="cell-thumb col-thumb">
-    ${thumbUrl
-      ? `<img src="${escHtml(thumbUrl)}" loading="lazy"
+        // Thumbnail: local blob first, then API URL, then empty placeholder
+        const thumbUrl = getThumbnailUrl(fname) || row._thumbnailUrl || null;
+        const thumb = `<td class="cell-thumb col-thumb">
+    ${
+      thumbUrl
+        ? `<img src="${escHtml(thumbUrl)}" loading="lazy"
              style="height:48px;width:auto;max-width:64px;border-radius:4px;object-fit:cover;"
-             onerror="this.parentElement.innerHTML='<div class=\\"cell-thumb-placeholder\\">🖼</div>'">`
-      : '<div class="cell-thumb-placeholder">🖼</div>'}
+             onerror="this.style.display='none'">`
+        : '<div class="cell-thumb-placeholder"></div>'
+    }
   </td>`;
 
-  const stemForSearch = fname.replace(/\.[^.]+$/, '').replace(/[_\-]/g, ' ');
-  const searchUrl = `https://www.google.com/search?tbm=isch&q=${encodeURIComponentSafe(stemForSearch)}`;
+        const stemForSearch = fname
+          .replace(/\.[^.]+$/, "")
+          .replace(/[_\-]/g, " ");
+        const searchUrl = `https://www.google.com/search?tbm=isch&q=${encodeURIComponentSafe(stemForSearch)}`;
 
-  const fileCell = `<td class="col-file">
+        const fileCell = `<td class="col-file">
     <div class="cell-fname-wrap">
       <span class="cell-fname-text" title="${escHtml(fname)}">${escHtml(fname)}</span>
       <a class="icon-search" href="${escHtml(searchUrl)}" target="_blank" title="חפש בגוגל תמונות">🔍</a>
     </div>
   </td>`;
 
-  const url = row['קישור למדיה במקור'];
-  const linkCell = `<td class="cell-link col-link" data-fname="${escHtml(fname)}" title="לחץ פעמיים לעריכה">
+        const url = row["קישור למדיה במקור"];
+        const linkCell = `<td class="cell-link col-link" data-fname="${escHtml(fname)}" title="לחץ פעמיים לעריכה">
     ${url ? `<a href="${escHtml(url)}" target="_blank">פתח ↗</a>` : '<span style="color:var(--muted);font-size:11px;">—</span>'}
   </td>`;
 
-  const itemCell = makeEditableCell('col-item',   fname, 'שם פריט',              row['שם פריט']);
-  const srcCell  = makeEditableCell('col-source', fname, 'מקור',                  row['מקור']);
-  const licCell  = makeEditableCell('col-lic',    fname, 'סוג זכויות היוצרים',   row['סוג זכויות היוצרים']);
-  const credCell = makeEditableCell('col-credit', fname, 'יש צורך במתן קרדיט?',  row['יש צורך במתן קרדיט?']);
-  const howCell  = `<td class="col-how editable-cell" data-fname="${escHtml(fname)}" data-field="איך לרשום את הקרדיט?">
-    <div class="cell-display" title="${escHtml(row['איך לרשום את הקרדיט?'])}">${escHtml(row['איך לרשום את הקרדיט?'])}</div>
+        const itemCell = makeEditableCell(
+          "col-item",
+          fname,
+          "שם פריט",
+          row["שם פריט"],
+        );
+        const srcCell = makeEditableCell(
+          "col-source",
+          fname,
+          "מקור",
+          row["מקור"],
+        );
+        const licCell = makeEditableCell(
+          "col-lic",
+          fname,
+          "סוג זכויות היוצרים",
+          row["סוג זכויות היוצרים"],
+        );
+        const credCell = makeEditableCell(
+          "col-credit",
+          fname,
+          "יש צורך במתן קרדיט?",
+          row["יש צורך במתן קרדיט?"],
+        );
+        const howCell = `<td class="col-how editable-cell" data-fname="${escHtml(fname)}" data-field="איך לרשום את הקרדיט?">
+    <div class="cell-display" title="${escHtml(row["איך לרשום את הקרדיט?"])}">${escHtml(row["איך לרשום את הקרדיט?"])}</div>
   </td>`;
-  const comCell  = makeEditableCell('col-com',    fname, 'מותר לשימוש מסחרי?',   row['מותר לשימוש מסחרי?']);
-  const extCell  = makeEditableCell('col-ext',    fname, 'מותר לשימוש חיצוני?',  row['מותר לשימוש חיצוני?']);
-  const extraCell= `<td class="col-extra editable-cell" data-fname="${escHtml(fname)}" data-field="קבצים נוספים">
-    <div class="cell-display" title="${escHtml(row['קבצים נוספים'])}">${escHtml(row['קבצים נוספים'])}</div>
+        const comCell = makeEditableCell(
+          "col-com",
+          fname,
+          "מותר לשימוש מסחרי?",
+          row["מותר לשימוש מסחרי?"],
+        );
+        const extCell = makeEditableCell(
+          "col-ext",
+          fname,
+          "מותר לשימוש חיצוני?",
+          row["מותר לשימוש חיצוני?"],
+        );
+        const extraCell = `<td class="col-extra editable-cell" data-fname="${escHtml(fname)}" data-field="קבצים נוספים">
+    <div class="cell-display" title="${escHtml(row["קבצים נוספים"])}">${escHtml(row["קבצים נוספים"])}</div>
   </td>`;
 
-  return `<tr class="${rowClass}" data-fname="${escHtml(fname)}" id="row-${escRowId(fname)}">
-    ${thumb}${itemCell}${fileCell}${srcCell}${linkCell}${licCell}${credCell}${howCell}${comCell}${extCell}${extraCell}
-  </tr>`;
-}
+        const resolvedCell = showResolved
+          ? `<td class="col-resolved"><button class="btn-resolved btn btn-sm btn-ghost" data-fname="${escHtml(fname)}" data-isnotes="${showNotes ? '1' : '0'}">✓ סיים</button></td>`
+          : "";
 
-function makeEditableCell(cls, fname, field, value) {
-  return `<td class="${cls} editable-cell" data-fname="${escHtml(fname)}" data-field="${escHtml(field)}">
+        const notesSubRow = showNotes && (row._notes || []).length
+          ? `<tr class="row-notes-sub" data-fname="${escHtml(fname)}">
+    <td colspan="${colCount}" class="notes-sub-cell">
+      <span class="notes-sub-label">הערות:</span>
+      ${(row._notes || []).map(n => `<span class="note-pill">${escHtml(n)}</span>`).join("")}
+    </td>
+  </tr>`
+          : "";
+
+        return `<tr class="${rowClass}" data-fname="${escHtml(fname)}" id="row-${escRowId(fname)}">
+    ${thumb}${itemCell}${fileCell}${srcCell}${linkCell}${licCell}${credCell}${howCell}${comCell}${extCell}${extraCell}${resolvedCell}
+  </tr>${notesSubRow}`;
+      }
+
+      function makeEditableCell(cls, fname, field, value) {
+        return `<td class="${cls} editable-cell" data-fname="${escHtml(fname)}" data-field="${escHtml(field)}">
     <div class="cell-display">${escHtml(value)}</div>
   </td>`;
-}
-
-function escRowId(fname) {
-  return fname.replace(/[^a-zA-Z0-9\u0590-\u05ff]/g, '_');
-}
-
-// ── Inline editing (Fix 1: dropdowns for constrained fields) ─────────────────
-
-const SELECT_FIELDS = {
-  'סוג זכויות היוצרים':  ['Public Domain', 'No known copyright restrictions', 'CC BY', 'CC-BY-SA', 'Royalty free', 'C'],
-  'יש צורך במתן קרדיט?': ['כן', 'לא'],
-  'מותר לשימוש מסחרי?':  ['מותר', 'אסור'],
-  'מותר לשימוש חיצוני?': ['מותר', 'אסור'],
-};
-
-const RECOGNIZED_LICENSES = ['Public Domain', 'No known copyright restrictions', 'CC BY', 'CC-BY-SA', 'Royalty free', 'C'];
-
-function applyFieldSideEffects(field, newVal, row, fname) {
-  if (field === 'שם פריט') {
-    const orig = reviewState.rawStems[fname];
-    if (orig !== undefined) row._isRawFilename = (newVal === orig);
-  }
-  if (field === 'סוג זכויות היוצרים') {
-    row._unknownLicense = newVal !== '' && !RECOGNIZED_LICENSES.includes(newVal);
-  }
-  if (field === 'מקור' && newVal) row._found = true;
-}
-
-function startEdit(cell) {
-  const fname = cell.dataset.fname;
-  const field = cell.dataset.field;
-  const row   = reviewState.rows.find(r => r['שם קובץ'] === fname);
-  if (!row) return;
-
-  const val = row[field] || '';
-  cell.innerHTML = '';
-
-  const selectOptions = SELECT_FIELDS[field];
-
-  if (selectOptions) {
-    const select = document.createElement('select');
-    if (!val || !selectOptions.includes(val)) {
-      const emptyOpt = document.createElement('option');
-      emptyOpt.value = val;
-      emptyOpt.textContent = val || '—';
-      emptyOpt.selected = true;
-      select.appendChild(emptyOpt);
-    }
-    for (const opt of selectOptions) {
-      const o = document.createElement('option');
-      o.value = opt;
-      o.textContent = opt;
-      if (opt === val) o.selected = true;
-      select.appendChild(o);
-    }
-    cell.appendChild(select);
-    select.focus();
-
-    let committed = false;
-    const commit = () => {
-      if (committed) return;
-      committed = true;
-      row[field] = select.value;
-      applyFieldSideEffects(field, select.value, row, fname);
-      renderReview();
-    };
-    select.addEventListener('change', commit);
-    select.addEventListener('blur',   commit);
-    select.addEventListener('keydown', e => {
-      if (e.key === 'Escape') {
-        committed = true;
-        row[field] = val;
-        renderReview();
       }
-    });
-    return;
-  }
 
-  const isTextarea = field === 'איך לרשום את הקרדיט?';
-  const input = document.createElement(isTextarea ? 'textarea' : 'input');
-  input.value = val;
-  if (!isTextarea) input.type = 'text';
-  cell.appendChild(input);
-  input.focus();
-  if (input.select) input.select();
+      function escRowId(fname) {
+        return fname.replace(/[^a-zA-Z0-9\u0590-\u05ff]/g, "_");
+      }
 
-  const commit = () => {
-    const newVal = input.value;
-    row[field] = newVal;
-    applyFieldSideEffects(field, newVal, row, fname);
-    renderReview();
-  };
-  input.addEventListener('blur', commit);
-  input.addEventListener('keydown', e => {
-    if (e.key === 'Enter' && !isTextarea) { e.preventDefault(); input.blur(); }
-    if (e.key === 'Escape') { input.value = val; input.blur(); }
-  });
-}
+      // ── Inline editing (Fix 1: dropdowns for constrained fields) ─────────────────
 
-// ── Scroll to row ─────────────────────────────────────────────────────────────
+      const SELECT_FIELDS = {
+        "סוג זכויות היוצרים": [
+          "Public Domain",
+          "No known copyright restrictions",
+          "CC BY",
+          "CC-BY-SA",
+          "Royalty free",
+          "C",
+        ],
+        "יש צורך במתן קרדיט?": ["כן", "לא"],
+        "מותר לשימוש מסחרי?": ["מותר", "אסור"],
+        "מותר לשימוש חיצוני?": ["מותר", "אסור"],
+      };
 
-function scrollToRow(fname) {
-  const row = document.getElementById('row-' + escRowId(fname));
-  if (!row) return;
-  row.scrollIntoView({ behavior: 'smooth', block: 'center' });
-  row.classList.add('row-highlight');
-  row.querySelectorAll('td').forEach(td => { td.style.animation = 'none'; td.offsetHeight; td.style.animation = ''; });
-  setTimeout(() => row.classList.remove('row-highlight'), 1000);
-}
+      const RECOGNIZED_LICENSES = [
+        "Public Domain",
+        "No known copyright restrictions",
+        "CC BY",
+        "CC-BY-SA",
+        "Royalty free",
+        "C",
+      ];
 
-// ── Actions bar ───────────────────────────────────────────────────────────────
+      function applyFieldSideEffects(field, newVal, row, fname) {
+        if (field === "שם פריט") {
+          const orig = reviewState.rawStems[fname];
+          if (orig !== undefined) row._isRawFilename = newVal === orig;
+        }
+        if (field === "סוג זכויות היוצרים") {
+          row._unknownLicense =
+            newVal !== "" && !RECOGNIZED_LICENSES.includes(newVal);
+        }
+        if (field === "מקור" && newVal) row._found = true;
+      }
 
-document.getElementById('btn-monday-toggle').addEventListener('click', function() {
-  const accordion = document.getElementById('monday-accordion');
-  const isOpen = accordion.classList.toggle('open');
-  this.classList.toggle('open', isOpen);
-});
+      function startEdit(cell) {
+        const fname = cell.dataset.fname;
+        const field = cell.dataset.field;
+        const row = reviewState.rows.find((r) => r["שם קובץ"] === fname);
+        if (!row) return;
 
-document.getElementById('btn-review-download').addEventListener('click', () => {
-  downloadBlob(buildCSV(), 'copyright_report.csv');
-});
+        const val = row[field] || "";
+        cell.innerHTML = "";
 
-document.getElementById('btn-go-summary').addEventListener('click', () => {
-  buildSummaryFromReview();
-  showScreen('screen-summary');
-});
+        const selectOptions = SELECT_FIELDS[field];
 
-// ── CSV ───────────────────────────────────────────────────────────────────────
+        if (selectOptions) {
+          const select = document.createElement("select");
+          if (!val || !selectOptions.includes(val)) {
+            const emptyOpt = document.createElement("option");
+            emptyOpt.value = val;
+            emptyOpt.textContent = val || "—";
+            emptyOpt.selected = true;
+            select.appendChild(emptyOpt);
+          }
+          for (const opt of selectOptions) {
+            const o = document.createElement("option");
+            o.value = opt;
+            o.textContent = opt;
+            if (opt === val) o.selected = true;
+            select.appendChild(o);
+          }
+          cell.appendChild(select);
+          select.focus();
 
-const CSV_COLUMNS = ['שם פריט','מקור','קישור למדיה במקור','סוג זכויות היוצרים',
-  'יש צורך במתן קרדיט?','איך לרשום את הקרדיט?','מותר לשימוש מסחרי?','מותר לשימוש חיצוני?'];
+          let committed = false;
+          const commit = () => {
+            if (committed) return;
+            committed = true;
+            row[field] = select.value;
+            applyFieldSideEffects(field, select.value, row, fname);
+            renderTableOnly();
+          };
+          select.addEventListener("change", commit);
+          select.addEventListener("blur", commit);
+          select.addEventListener("keydown", (e) => {
+            if (e.key === "Escape") {
+              committed = true;
+              row[field] = val;
+              renderTableOnly();
+            }
+          });
+          return;
+        }
 
-function csvEscape(val) {
-  const s = String(val || '');
-  if (s.includes(',') || s.includes('"') || s.includes('\n') || s.includes('\r')) {
-    return '"' + s.replace(/"/g, '""') + '"';
-  }
-  return s;
-}
+        const isTextarea = field === "איך לרשום את הקרדיט?";
+        const input = document.createElement(isTextarea ? "textarea" : "input");
+        input.value = val;
+        if (!isTextarea) input.type = "text";
+        cell.appendChild(input);
+        input.focus();
+        if (input.select) input.select();
 
-function buildCSV() {
-  const lines = [CSV_COLUMNS.join(',')];
-  for (const row of reviewState.rows) lines.push(CSV_COLUMNS.map(c => csvEscape(row[c] || '')).join(','));
-  return '\ufeff' + lines.join('\r\n');
-}
+        const commit = () => {
+          const newVal = input.value;
+          row[field] = newVal;
+          applyFieldSideEffects(field, newVal, row, fname);
+          renderTableOnly();
+        };
+        input.addEventListener("blur", commit);
+        input.addEventListener("keydown", (e) => {
+          if (e.key === "Enter" && !isTextarea) {
+            e.preventDefault();
+            input.blur();
+          }
+          if (e.key === "Escape") {
+            input.value = val;
+            input.blur();
+          }
+        });
+      }
 
-function downloadBlob(text, filename) {
-  const blob = new Blob([text], { type: 'text/csv;charset=utf-8;' });
-  const url  = URL.createObjectURL(blob);
-  const a    = document.createElement('a');
-  a.href = url; a.download = filename;
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(url);
-}
+      // ── Scroll to row ─────────────────────────────────────────────────────────────
 
-// ════════════════════════════════════════════════════════════
-//  SCREEN 4 — SUMMARY
-// ════════════════════════════════════════════════════════════
+      function scrollToRow(fname) {
+        const row = document.getElementById("row-" + escRowId(fname));
+        if (!row) return;
+        row.scrollIntoView({ behavior: "smooth", block: "center" });
+        row.classList.add("row-highlight");
+        row.querySelectorAll("td").forEach((td) => {
+          td.style.animation = "none";
+          td.offsetHeight;
+          td.style.animation = "";
+        });
+        setTimeout(() => row.classList.remove("row-highlight"), 1000);
+      }
 
-function buildSummaryFromReview() {
-  recomputeAllStatuses();
-  const rows    = reviewState.rows;
-  const total   = rows.length;
-  const found   = rows.filter(r => r._found || r['מקור']).length;
-  const notFound= total - found;
+      // ── Table modal actions ───────────────────────────────────────────────────────
 
-  const bySource = {};
-  for (const r of rows) { const s = r['מקור']; if (s) bySource[s] = (bySource[s] || 0) + 1; }
+      document
+        .getElementById("btn-go-summary")
+        .addEventListener("click", () => saveTableModal());
+      document
+        .getElementById("btn-review-cancel")
+        .addEventListener("click", () => cancelTableModal());
 
-  const issueCounts = {};
-  for (const r of rows) {
-    if (r._status !== 'תקין') issueCounts[r._status] = (issueCounts[r._status] || 0) + 1;
-  }
+      // ── CSV ───────────────────────────────────────────────────────────────────────
 
-  buildSummary({ total, found, notFound, bySource, issueCounts });
-  renderCreditsCard();
-}
+      const CSV_COLUMNS = [
+        "שם פריט",
+        "מקור",
+        "קישור למדיה במקור",
+        "סוג זכויות היוצרים",
+        "יש צורך במתן קרדיט?",
+        "איך לרשום את הקרדיט?",
+        "מותר לשימוש מסחרי?",
+        "מותר לשימוש חיצוני?",
+      ];
 
-function buildSummary({ total, found, notFound, bySource, issueCounts }) {
-  document.getElementById('stat-total').textContent     = total;
-  document.getElementById('stat-found').textContent     = found;
-  document.getElementById('stat-not-found').textContent = notFound;
+      function csvEscape(val) {
+        const s = String(val || "");
+        if (
+          s.includes(",") ||
+          s.includes('"') ||
+          s.includes("\n") ||
+          s.includes("\r")
+        ) {
+          return '"' + s.replace(/"/g, '""') + '"';
+        }
+        return s;
+      }
 
-  const ISSUE_STATUSES  = ['לא זוהה', 'נדרש שם פריט', 'כפילויות אפשריות', 'רישיון לא מזוהה', 'הערות'];
-  const DANGER_STATUSES = new Set(['לא זוהה', 'רישיון לא מזוהה']);
-  const issueCard = document.getElementById('issues-summary-card');
-  const issueList = document.getElementById('issues-summary-list');
-  const hasIssues = ISSUE_STATUSES.some(s => (issueCounts[s] || 0) > 0);
+      function buildCSV() {
+        const lines = [CSV_COLUMNS.join(",")];
+        for (const row of reviewState.rows)
+          lines.push(CSV_COLUMNS.map((c) => csvEscape(row[c] || "")).join(","));
+        return "\ufeff" + lines.join("\r\n");
+      }
 
-  if (hasIssues) {
-    issueCard.style.display = '';
-    issueList.innerHTML = ISSUE_STATUSES
-      .filter(s => (issueCounts[s] || 0) > 0)
-      .map(s => `
-        <div class="issue-sum-row">
-          <span>${escHtml(s)}</span>
-          <span class="issue-sum-badge${DANGER_STATUSES.has(s) ? ' danger' : ''}">${issueCounts[s]}</span>
-        </div>`).join('');
-  } else {
-    issueCard.style.display = 'none';
-  }
+      function downloadBlob(text, filename) {
+        const blob = new Blob([text], { type: "text/csv;charset=utf-8;" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      }
 
-  const btnReview = document.getElementById('btn-go-review');
-  btnReview.disabled = !hasIssues;
-}
+      // ════════════════════════════════════════════════════════════
+      //  SCREEN 4 — SUMMARY
+      // ════════════════════════════════════════════════════════════
 
-// Fix 5: Credits box
-function renderCreditsCard() {
-  const creditRows = reviewState.rows.filter(r => r['יש צורך במתן קרדיט?'] === 'כן');
-  const content = document.getElementById('credits-content');
+      function buildSummaryFromReview() {
+        recomputeAllStatuses();
+        const rows = reviewState.rows;
+        const total = rows.length;
+        const found = rows.filter((r) => r._found || r["מקור"]).length;
+        buildSummary({ total, found, notFound: total - found });
+        buildQueue();
+        renderQueue();
+        renderCreditsCard();
+      }
 
-  if (!creditRows.length) {
-    content.innerHTML = '<p class="hint" style="text-align:center;padding:8px 0;">כל התמונות בהרצה זו אינן דורשות קרדיט</p>';
-    return;
-  }
+      function buildSummary({ total, found, notFound }) {
+        document.getElementById("stat-total").textContent = total;
+        document.getElementById("stat-found").textContent = found;
+        document.getElementById("stat-not-found").textContent = notFound;
+      }
 
-  const text = creditRows.map(r => r['איך לרשום את הקרדיט?']).filter(Boolean).join('\n');
-  const rows = Math.min(creditRows.length + 1, 8);
+      // Fix 5: Credits box
+      function renderCreditsCard() {
+        const creditRows = reviewState.rows.filter(
+          (r) => r["יש צורך במתן קרדיט?"] === "כן",
+        );
+        const content = document.getElementById("credits-content");
 
-  content.innerHTML = `
-    <textarea class="credits-textarea" readonly rows="${rows}">${escHtml(text)}</textarea>
+        if (!creditRows.length) {
+          content.innerHTML =
+            '<p class="hint" style="text-align:center;padding:8px 0;">כל התמונות בהרצה זו אינן דורשות קרדיט</p>';
+          return;
+        }
+
+        const text = creditRows
+          .map((r) => r["איך לרשום את הקרדיט?"])
+          .filter(Boolean)
+          .join(" | ");
+
+        content.innerHTML = `
+    <textarea class="credits-textarea" readonly rows="3" style="resize:none;">${escHtml(text)}</textarea>
     <div class="credits-copy-row">
       <button class="btn btn-ghost btn-sm" id="btn-copy-credits">העתק הכל</button>
     </div>`;
 
-  document.getElementById('btn-copy-credits').addEventListener('click', async function() {
-    try {
-      await navigator.clipboard.writeText(text);
-      this.textContent = '✓ הועתק';
-      setTimeout(() => { this.textContent = 'העתק הכל'; }, 2000);
-    } catch {
-      this.textContent = 'העתק הכל';
-    }
-  });
-}
+        document
+          .getElementById("btn-copy-credits")
+          .addEventListener("click", async function () {
+            try {
+              await navigator.clipboard.writeText(text);
+              this.textContent = "✓ הועתק";
+              setTimeout(() => {
+                this.textContent = "העתק הכל";
+              }, 2000);
+            } catch {
+              this.textContent = "העתק הכל";
+            }
+          });
+      }
 
-document.getElementById('btn-summary-download').addEventListener('click', () => {
-  downloadBlob(buildCSV(), 'copyright_report.csv');
-});
-document.getElementById('btn-go-review').addEventListener('click', () => {
-  showScreen('screen-review');
-});
-
-</script>
-</body>
+      document
+        .getElementById("btn-summary-download")
+        .addEventListener("click", () => {
+          downloadBlob(buildCSV(), "copyright_report.csv");
+        });
+      document.getElementById("btn-open-table").addEventListener("click", () => {
+        openTableModal();
+      });
+    </script>
+  </body>
 </html>
