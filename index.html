@@ -1842,16 +1842,10 @@
       }
 
       function createDraftRun() {
-        const runs = loadRuns();
-        const run = {
-          id: Date.now(),
-          label: "",
-          isDraft: true,
-          state: { rows: [], dupeGroups: [], notedItems: [], rawStems: {} },
-        };
-        runs.push(run);
-        try { localStorage.setItem(STORAGE_KEY, JSON.stringify(runs)); } catch {}
-        activeRunId = run.id;
+        // Don't persist to localStorage yet — only save once the run has content
+        // (title typed or search completes). This prevents empty runs from
+        // cluttering history.
+        activeRunId = Date.now();
         _saveState = "saved";
         renderSidebar();
       }
@@ -1909,8 +1903,9 @@
           }
         }
 
-        // Create new run
-        const run = { id: Date.now(), label, isDraft: false, state: runState };
+        // Create new run, reusing activeRunId so in-memory draft id stays consistent
+        const newId = activeRunId || Date.now();
+        const run = { id: newId, label, isDraft: false, state: runState };
         runs.push(run);
         return persistRun(run.id);
       }
@@ -1990,13 +1985,20 @@
         const list = document.getElementById("sidebar-runs-list");
         const runs = loadRuns();
 
-        if (!runs.length) {
+        // If the active run hasn't been persisted yet (no content), show it as a
+        // virtual in-memory entry so the user sees they're on a new run.
+        const activeInStorage = activeRunId && runs.some((r) => r.id === activeRunId);
+        const allRuns = activeRunId && !activeInStorage
+          ? [...runs, { id: activeRunId, label: "", isDraft: true, state: { rows: [] } }]
+          : runs;
+
+        if (!allRuns.length) {
           list.innerHTML =
             '<div class="sidebar-empty">עדיין אין הרצות שמורות</div>';
           return;
         }
 
-        list.innerHTML = runs
+        list.innerHTML = allRuns
           .slice()
           .reverse()
           .map((run) => {
@@ -2218,8 +2220,17 @@
           if (run) {
             run.label = runTitle;
             try { localStorage.setItem(STORAGE_KEY, JSON.stringify(runs)); } catch {}
-            renderSidebar();
+          } else if (runTitle) {
+            // First content typed — persist the draft now
+            runs.push({
+              id: activeRunId,
+              label: runTitle,
+              isDraft: true,
+              state: { rows: [], dupeGroups: [], notedItems: [], rawStems: {} },
+            });
+            try { localStorage.setItem(STORAGE_KEY, JSON.stringify(runs)); } catch {}
           }
+          renderSidebar();
         }
         triggerSaveAnimation();
       });
