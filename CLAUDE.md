@@ -1,5 +1,8 @@
 # Copyright Lookup Tool — Project Briefing
 
+## Git workflow
+**Commit and push all changes directly to `main`** unless explicitly asked to use a different branch. Do not create feature branches or pull requests by default.
+
 ## What this is
 A fully static single-page application that accepts a list of image filenames, looks up their copyright information from online archives, and generates a CSV ready to import into Monday.com.
 
@@ -281,9 +284,10 @@ Horizontal segmented bar (found/not-found), source breakdown, flagged item count
 - Labels below: `לא זוהו N` (red, left) and `נמצאו N` (green, right); total count centered above
 - Driven by `buildSummary()` which sets `seg-bar-found`, `seg-bar-nf`, `seg-label-found`, `seg-label-nf`, `seg-bar-total`
 
-- **"פריטים הדורשים תיקון" card** — shown only when issues exist; contains the issue count list and the "עריכת פריטים" button (`btn-go-review`) which navigates back to the review screen. Button is disabled (and card hidden) when there are no issues.
+- **Sticky header bar**: always visible at top of summary screen; shows issue count ("X פריטים הדורשים תיקון") or "הכל תקין ✓" (green) on the left; "עריכת פריטים ←" button on the right (disabled when no issues). Mirrors the review screen's queue-header pattern.
 - **"קרדיטים להעתקה" card** — always shown. Collects rows where `'יש צורך במתן קרדיט?' === 'כן'` and displays their attribution strings in a `<textarea readonly>` with an "העתק הכל" button (uses `navigator.clipboard.writeText`, changes label to "✓ הועתק" for 2s). If no rows require credit, shows a muted message instead.
 - **"הורד CSV"** — full-width green button below the cards; generates CSV from current `reviewState`.
+- **Monday.com import instructions** — shown below the CSV button; brief numbered steps for importing the CSV into a Monday board.
 
 ---
 
