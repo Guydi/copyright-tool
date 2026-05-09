@@ -1301,7 +1301,31 @@
   ══════════════════════════════════════════════════════ */
 
       #screen-summary .shell {
-        padding-top: 40px;
+        padding-top: 20px;
+      }
+
+      .monday-hint {
+        margin-top: 12px;
+        padding: 12px 16px;
+        background: var(--ink-light);
+        border-radius: 8px;
+        font-size: 13px;
+        color: var(--text);
+        direction: rtl;
+      }
+      .monday-hint-title {
+        font-weight: 600;
+        margin-bottom: 6px;
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        color: var(--muted);
+      }
+      .monday-hint ol {
+        margin: 0;
+        padding-right: 18px;
+        padding-left: 0;
+        line-height: 1.7;
       }
 
       .seg-bar-wrap {
@@ -1384,30 +1408,6 @@
       .source-pill.muted {
         background: var(--bg);
         color: var(--muted);
-      }
-
-      .issue-sum-row {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 5px 0;
-        border-bottom: 1px dashed var(--border);
-        font-size: 13px;
-      }
-      .issue-sum-row:last-child {
-        border-bottom: none;
-      }
-      .issue-sum-badge {
-        font-size: 11px;
-        font-weight: 700;
-        padding: 2px 9px;
-        border-radius: 99px;
-        background: var(--warn-light);
-        color: var(--warn);
-      }
-      .issue-sum-badge.danger {
-        background: var(--danger-light);
-        color: var(--danger);
       }
 
       /* Credits box */
@@ -1688,6 +1688,10 @@
 
       <!-- SCREEN 4: Summary -->
       <div id="screen-summary" class="screen">
+        <div class="queue-header" id="summary-header">
+          <span class="queue-header-counter" id="summary-header-counter"></span>
+          <button class="btn-queue-action" id="btn-go-review" disabled>עריכת פריטים ←</button>
+        </div>
         <div class="shell">
           <div class="seg-bar-wrap">
             <div class="seg-bar-total" id="seg-bar-total">0 קבצים</div>
@@ -1705,19 +1709,7 @@
             </div>
           </div>
 
-          <div class="card" id="issues-summary-card" style="display: none">
-            <div class="card-label">פריטים הדורשים תיקון</div>
-            <div id="issues-summary-list"></div>
-            <button
-              class="btn btn-outline"
-              id="btn-go-review"
-              style="margin-top: 12px; width: 100%"
-            >
-              עריכת פריטים ←
-            </button>
-          </div>
-
-          <!-- Credits box (Fix 5) — always shown -->
+          <!-- Credits box — always shown -->
           <div class="card" id="credits-card">
             <div class="card-label">קרדיטים להעתקה</div>
             <div id="credits-content">
@@ -1734,6 +1726,15 @@
           >
             הורד CSV ↓
           </button>
+
+          <div class="monday-hint">
+            <div class="monday-hint-title">ייבוא ל-Monday.com</div>
+            <ol>
+              <li>פתחו את הלוח המתאים ב-Monday.com</li>
+              <li>לחצו על "הוסף פריטים" ← "ייבוא פריטים"</li>
+              <li>העלו את קובץ ה-CSV שהורדתם — Monday תזהה את העמודות אוטומטית</li>
+            </ol>
+          </div>
         </div>
       </div>
       <!-- /screen-summary -->
@@ -2944,26 +2945,16 @@
           "רישיון לא מזוהה",
           "הערות",
         ];
-        const DANGER_STATUSES = new Set(["לא זוהה", "רישיון לא מזוהה"]);
-        const issueCard = document.getElementById("issues-summary-card");
-        const issueList = document.getElementById("issues-summary-list");
         const hasIssues = ISSUE_STATUSES.some((s) => (issueCounts[s] || 0) > 0);
+        const totalIssues = ISSUE_STATUSES.reduce((sum, s) => sum + (issueCounts[s] || 0), 0);
 
+        const counter = document.getElementById("summary-header-counter");
         if (hasIssues) {
-          issueCard.style.display = "";
-          issueList.innerHTML = ISSUE_STATUSES.filter(
-            (s) => (issueCounts[s] || 0) > 0,
-          )
-            .map(
-              (s) => `
-        <div class="issue-sum-row">
-          <span>${escHtml(s)}</span>
-          <span class="issue-sum-badge${DANGER_STATUSES.has(s) ? " danger" : ""}">${issueCounts[s]}</span>
-        </div>`,
-            )
-            .join("");
+          counter.textContent = totalIssues + " פריטים הדורשים תיקון";
+          counter.className = "queue-header-counter";
         } else {
-          issueCard.style.display = "none";
+          counter.textContent = "הכל תקין ✓";
+          counter.className = "queue-header-counter all-ok";
         }
 
         const btnReview = document.getElementById("btn-go-review");
