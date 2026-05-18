@@ -79,7 +79,8 @@ import {
   findPotentialDuplicates,// confirmed + potential dupe groups
   normalizeLicense,       // raw license string → label + flags
   lookupImage,            // single image lookup (async)
-  IMAGE_EXTENSIONS,       // array of supported extensions
+  IMAGE_EXTENSIONS,       // array of supported extensions: jpg jpeg png gif tif tiff webp svg avif heic heif bmp eps
+                          // heic, heif, eps are accepted but not browser-renderable — source column shows placeholder instead of blob URL
   stripHtml,              // HTML tag/entity stripper
   formatAttribution,      // build attribution string
   makeItemName,           // choose display name for an item

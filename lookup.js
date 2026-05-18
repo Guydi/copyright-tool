@@ -14,7 +14,10 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
 
 // ── Constants ─────────────────────────────────────────────────────────────────
 
-const IMAGE_EXTENSIONS = ['jpg', 'jpeg', 'png', 'gif', 'tif', 'tiff', 'webp', 'svg'];
+const IMAGE_EXTENSIONS = [
+  'jpg', 'jpeg', 'png', 'gif', 'tif', 'tiff',
+  'webp', 'svg', 'avif', 'heic', 'heif', 'bmp', 'eps'
+];
 
 const SOURCE_PREFIXES = {
   'loc_':          'loc',
@@ -568,39 +571,32 @@ async function lookupImage(filename, enabledSources) {
     };
   }
 
-  // Normalize license
-  const { label, requiresCredit, commercialOk, externalOk, isUnknown } = normalizeLicense(resultRaw._licenseRaw);
+  return buildRow(resultRaw, stem, notes, filename);
+}
 
-  // Build attribution string
+// ── Row builder (shared by lookupImage and URL fetchers) ──────────────────────
+
+function buildRow(resultRaw, stem, notes, filename = '') {
+  const { label, requiresCredit, isUnknown } = normalizeLicense(resultRaw._licenseRaw);
   const attribution = requiresCredit
     ? formatAttribution(resultRaw._title, resultRaw._author, resultRaw._licenseRaw, resultRaw._sourceName)
     : '';
-
-  if (isUnknown) {
-    notes.push(`רישיון לא מזוהה: '${resultRaw._licenseRaw}' — נדרשת בדיקה ידנית`);
-  }
-
-  // Generate item name based on source
-  let itemName, isRawStem;
+  if (isUnknown) notes.push(`רישיון לא מזוהה: '${resultRaw._licenseRaw}' — נדרשת בדיקה ידנית`);
   const sourceName = resultRaw._sourceName;
   const rawTitle   = resultRaw._title || '';
-
+  let itemName, isRawStem;
   if (sourceName === 'Wikimedia Commons') {
-    const objectName = resultRaw._objectName || rawTitle;
-    ({ itemName, isRawStem } = makeItemName(objectName, stem));
+    ({ itemName, isRawStem } = makeItemName(resultRaw._objectName || rawTitle, stem));
   } else if (sourceName === 'Library of Congress') {
     ({ itemName, isRawStem } = makeItemName(rawTitle, stem));
   } else if (sourceName === 'Pexels') {
     ({ itemName, isRawStem } = makeItemName('', stem));
   } else if (sourceName === 'Shutterstock') {
-    const ssTitle = titleFromShutterstockStem(stem);
-    ({ itemName, isRawStem } = makeItemName(ssTitle, stem));
+    ({ itemName, isRawStem } = makeItemName(titleFromShutterstockStem(stem), stem));
   } else {
     ({ itemName, isRawStem } = makeItemName(rawTitle, stem));
   }
-
   const isRestricted = (label === 'C');
-
   return {
     'שם פריט':              itemName,
     'שם קובץ':              filename,
@@ -619,6 +615,85 @@ async function lookupImage(filename, enabledSources) {
     _isRawFilename:  isRawStem,
     _thumbnailUrl:   resultRaw._thumbnailUrl || '',
   };
+}
+
+// ── URL-based fetchers ────────────────────────────────────────────────────────
+
+async function fetchFromWikimediaUrl(url) {
+  let title = null;
+  const wikiMatch    = url.match(/\/wiki\/(File:[^?#]+)/i);
+  const filePathMatch = url.match(/Special:FilePath\/([^?#]+)/i);
+  if (wikiMatch)      title = decodeURIComponent(wikiMatch[1]);
+  else if (filePathMatch) title = 'File:' + decodeURIComponent(filePathMatch[1]);
+  if (!title) throw new Error('unrecognized_url');
+  const params = new URLSearchParams({
+    action: 'query', titles: title, prop: 'imageinfo',
+    iiprop: 'url|extmetadata', iiurlwidth: '300', format: 'json', origin: '*',
+  });
+  const res  = await fetch(`${WIKIMEDIA_API}?${params}`);
+  const data = await res.json();
+  const page = Object.values(data?.query?.pages ?? {})[0];
+  if (!page || page.pageid === -1) throw new Error('not_found');
+  const info = (page.imageinfo ?? [{}])[0];
+  const meta = info.extmetadata ?? {};
+  if (!meta.LicenseShortName && !meta.UsageTerms) throw new Error('no_license');
+  const stem = title.replace(/^File:/i, '').replace(/\.[^.]+$/, '');
+  return buildRow(parseWikimediaMeta(info, meta), stem, []);
+}
+
+async function fetchFromLOCUrl(url) {
+  const idMatch = url.match(/\/item\/([^/?#]+)/);
+  if (!idMatch) throw new Error('unrecognized_url');
+  const id   = idMatch[1];
+  const res  = await fetch(`https://www.loc.gov/item/${id}/?fo=json`);
+  const data = await res.json();
+  const item = data.item;
+  if (!item) throw new Error('not_found');
+  const title = shortenTitle(item.title ?? '');
+  let rights = item.rights || item.rights_advisory || '';
+  if (Array.isArray(rights)) rights = rights.join(' ');
+  if (!rights) rights = 'No known copyright restrictions';
+  let contributor = item.contributor || item.creator || '';
+  if (Array.isArray(contributor)) contributor = contributor.join(', ');
+  const thumbRaw     = item.image_url || item.thumbnail || '';
+  const thumbnailUrl = Array.isArray(thumbRaw) ? (thumbRaw[0] || '') : (thumbRaw || '');
+  const resultRaw = {
+    _sourceName: 'Library of Congress', _title: title, _author: contributor,
+    _licenseRaw: rights, _url: `https://www.loc.gov/item/${id}/`, _thumbnailUrl: thumbnailUrl,
+  };
+  return buildRow(resultRaw, title || id, []);
+}
+
+function fetchFromPexelsUrl(url) {
+  const idMatch = url.match(/\/photo\/[^/]*?-(\d+)\/?$/);
+  const photoId = idMatch ? idMatch[1] : null;
+  if (!photoId) throw new Error('unrecognized_url');
+  const resultRaw = {
+    _sourceName: 'Pexels', _title: '', _author: '',
+    _licenseRaw: 'Pexels License',
+    _url: `https://www.pexels.com/photo/${photoId}/`, _thumbnailUrl: '',
+  };
+  return buildRow(resultRaw, `pexels-photo-${photoId}`, ['Pexels — זוהה לפי קישור, ללא API key']);
+}
+
+function fetchFromShutterstockUrl(url) {
+  const idMatch = url.match(/(\d{7,})/);
+  if (!idMatch) throw new Error('unrecognized_url');
+  const photoId   = idMatch[1];
+  const resultRaw = {
+    _sourceName: 'Shutterstock', _title: '', _author: '',
+    _licenseRaw: 'Royalty free',
+    _url: `https://www.shutterstock.com/image/${photoId}`, _thumbnailUrl: '',
+  };
+  return buildRow(resultRaw, `shutterstock_${photoId}`, ['Shutterstock — זוהה לפי קישור, יש לאמת ידנית']);
+}
+
+async function fetchFromUrl(url) {
+  if (url.includes('commons.wikimedia.org')) return fetchFromWikimediaUrl(url);
+  if (url.includes('loc.gov'))               return fetchFromLOCUrl(url);
+  if (url.includes('pexels.com'))            return fetchFromPexelsUrl(url);
+  if (url.includes('shutterstock.com'))      return fetchFromShutterstockUrl(url);
+  throw new Error('unrecognized_source');
 }
 
 // ── Batch processor ───────────────────────────────────────────────────────────
@@ -734,6 +809,7 @@ export {
   findPotentialDuplicates,
   normalizeLicense,
   lookupImage,
+  fetchFromUrl,
   // Also export lower-level helpers that the UI may need
   IMAGE_EXTENSIONS,
   stripHtml,
