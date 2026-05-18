@@ -988,15 +988,18 @@
         display: flex;
         flex-direction: column;
         padding: 12px 0 0;
-        max-width: 780px;
-        margin: 0 auto;
-        width: 100%;
+        flex: 1;
+        min-width: 0;
       }
       .rq-stage-wrap {
         display: flex;
         align-items: center;
         gap: 12px;
         padding: 0 8px;
+        max-width: 860px;
+        margin: 0 auto;
+        width: 100%;
+        direction: ltr;
       }
 
       .rq-card {
@@ -1005,6 +1008,7 @@
         display: flex;
         flex-direction: column;
         background: #fff;
+        direction: rtl;
         border: 1px solid #e5e5e3;
         border-radius: var(--radius);
         position: relative;
@@ -1229,17 +1233,17 @@
       /* Edit button (read mode תקן) */
       .btn-rq-edit {
         flex: 1;
-        background: none;
-        border: 1px solid #d1d1cf;
+        background: #f5c518;
+        border: 1px solid #f5c518;
         border-radius: var(--radius);
         padding: 8px 0;
         font-size: 13px;
-        font-weight: 400;
-        color: #555;
+        font-weight: 500;
+        color: #111;
         cursor: pointer;
         font-family: var(--sans);
       }
-      .btn-rq-edit:hover { border-color: var(--ink); color: var(--ink); }
+      .btn-rq-edit:hover { background: #e6b800; border-color: #e6b800; }
 
       /* Delete button (read mode מחק) */
       .btn-rq-delete {
@@ -1258,18 +1262,17 @@
 
       /* Save button (edit mode שמור) */
       .btn-rq-save {
-        flex: 1;
-        background: var(--success);
-        color: #fff;
-        border: none;
+        background: none;
+        color: var(--success);
+        border: 1.5px solid var(--success);
         border-radius: var(--radius);
-        padding: 8px 0;
+        padding: 5px 20px;
         font-size: 13px;
-        font-weight: 600;
+        font-weight: 500;
         cursor: pointer;
         font-family: var(--sans);
       }
-      .btn-rq-save:hover { opacity: 0.9; }
+      .btn-rq-save:hover { background: var(--success); color: #fff; }
 
       /* Link paste row (edit mode) */
       .rq-link-paste-row {
@@ -1347,7 +1350,7 @@
         flex-shrink: 0;
         margin-top: auto;
       }
-      .rq-save-bar .btn-rq-save { width: 100%; }
+      .rq-save-bar { text-align: center; }
 
       .rq-stamp {
         position: absolute;
@@ -1378,8 +1381,8 @@
         direction: ltr;
       }
       .rq-arrow {
-        background: none;
-        border: 1px solid #d1d1cf;
+        background: var(--ink);
+        border: 2px solid var(--ink);
         border-radius: 50%;
         width: 34px;
         height: 34px;
@@ -1388,12 +1391,12 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        color: var(--ink);
-        transition: border-color 0.15s;
+        color: #fff;
+        transition: opacity 0.15s;
         flex-shrink: 0;
       }
-      .rq-arrow:hover:not(:disabled) { border-color: var(--ink); }
-      .rq-arrow:disabled { opacity: 0.3; cursor: default; }
+      .rq-arrow:hover:not(:disabled) { opacity: 0.75; }
+      .rq-arrow:disabled { opacity: 0.2; cursor: default; }
 
       .rq-dots {
         display: flex;
@@ -1845,7 +1848,7 @@
       <div id="screen-summary" class="screen">
         <div class="queue-header" id="summary-header">
           <span class="queue-header-counter" id="summary-header-counter"></span>
-          <button class="btn-queue-action" id="btn-go-review" disabled>עריכת פריטים →</button>
+          <button class="btn-queue-action" id="btn-go-review" disabled>→ עריכת פריטים</button>
         </div>
         <div class="shell">
           <div class="seg-bar-wrap">
@@ -2919,8 +2922,8 @@
         const prevBtn = document.getElementById("rq-arrow-prev");
         const nextBtn = document.getElementById("rq-arrow-next");
 
-        prevBtn?.addEventListener("click", () => navigateToCard(currentCardIdx - 1));
-        nextBtn?.addEventListener("click", () => navigateToCard(currentCardIdx + 1));
+        if (prevBtn) prevBtn.onclick = () => navigateToCard(currentCardIdx - 1);
+        if (nextBtn) nextBtn.onclick = () => navigateToCard(currentCardIdx + 1);
 
         dotsEl?.querySelectorAll(".rq-dot").forEach((dot) => {
           dot.addEventListener("click", () => navigateToCard(Number(dot.dataset.cidx)));
