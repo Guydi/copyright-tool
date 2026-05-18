@@ -984,13 +984,19 @@
 
       /* ── Carousel layout ── */
       #screen-review .queue-stage {
-        height: calc(100vh - var(--steps-h) - 52px - 60px);
+        height: calc(100vh - var(--steps-h) - 52px - 40px);
         display: flex;
         flex-direction: column;
-        padding: 12px 24px 0;
+        padding: 12px 0 0;
         max-width: 780px;
         margin: 0 auto;
         width: 100%;
+      }
+      .rq-stage-wrap {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 0 8px;
       }
 
       .rq-card {
@@ -1015,7 +1021,7 @@
       }
 
       .rq-col-source {
-        flex: 0 0 38%;
+        flex: 1;
         min-width: 0;
         background: var(--ink-light);
         padding: 14px 12px;
@@ -1046,7 +1052,7 @@
         justify-content: center;
         flex-shrink: 0;
       }
-      .rq-thumb-source img { width: 100%; height: 100%; object-fit: cover; }
+      .rq-thumb-source img { width: 100%; height: 100%; object-fit: contain; }
 
       .rq-thumb-placeholder {
         display: flex;
@@ -1093,7 +1099,7 @@
 
       .rq-thumb-api {
         width: 100%;
-        aspect-ratio: 16/9;
+        aspect-ratio: 4/3;
         background: #e5e5e3;
         border-radius: 6px;
         overflow: hidden;
@@ -1102,7 +1108,7 @@
         justify-content: center;
         flex-shrink: 0;
       }
-      .rq-thumb-api img { width: 100%; height: 100%; object-fit: cover; }
+      .rq-thumb-api img { width: 100%; height: 100%; object-fit: contain; }
       .rq-thumb-api-link { font-size: 12px; color: #888; text-decoration: none; }
       .rq-thumb-api-link:hover { color: var(--ink); }
 
@@ -1195,6 +1201,154 @@
       }
       .btn-rq-reset:hover { border-color: var(--ink); color: var(--ink); }
 
+      /* ── Read/edit mode ─────────────────────────────────────────────────── */
+      .rq-col-result.is-read-mode .rq-field input,
+      .rq-col-result.is-read-mode .rq-field select,
+      .rq-col-result.is-read-mode .rq-field textarea {
+        pointer-events: none;
+        background: #f7f7f7;
+        border-color: transparent;
+        user-select: none;
+      }
+
+      /* Confirm button (read mode אשר) */
+      .btn-rq-confirm {
+        flex: 1;
+        background: var(--success);
+        color: #fff;
+        border: none;
+        border-radius: var(--radius);
+        padding: 8px 0;
+        font-size: 13px;
+        font-weight: 600;
+        cursor: pointer;
+        font-family: var(--sans);
+      }
+      .btn-rq-confirm:hover { opacity: 0.9; }
+
+      /* Edit button (read mode תקן) */
+      .btn-rq-edit {
+        flex: 1;
+        background: none;
+        border: 1px solid #d1d1cf;
+        border-radius: var(--radius);
+        padding: 8px 0;
+        font-size: 13px;
+        font-weight: 400;
+        color: #555;
+        cursor: pointer;
+        font-family: var(--sans);
+      }
+      .btn-rq-edit:hover { border-color: var(--ink); color: var(--ink); }
+
+      /* Delete button (read mode מחק) */
+      .btn-rq-delete {
+        font-size: 12px;
+        padding: 8px 10px;
+        background: none;
+        border: none;
+        color: var(--danger);
+        cursor: pointer;
+        font-family: var(--sans);
+        font-weight: 400;
+        opacity: 0.7;
+        flex-shrink: 0;
+      }
+      .btn-rq-delete:hover { opacity: 1; }
+
+      /* Save button (edit mode שמור) */
+      .btn-rq-save {
+        flex: 1;
+        background: var(--success);
+        color: #fff;
+        border: none;
+        border-radius: var(--radius);
+        padding: 8px 0;
+        font-size: 13px;
+        font-weight: 600;
+        cursor: pointer;
+        font-family: var(--sans);
+      }
+      .btn-rq-save:hover { opacity: 0.9; }
+
+      /* Link paste row (edit mode) */
+      .rq-link-paste-row {
+        display: flex;
+        gap: 6px;
+        align-items: center;
+        flex-shrink: 0;
+      }
+      .rq-link-input {
+        flex: 1;
+        font-size: 12px;
+        font-family: var(--mono);
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        padding: 6px 10px;
+        background: white;
+        color: var(--text);
+        outline: none;
+      }
+      .rq-link-input:focus { border-color: var(--ink); }
+      .btn-rq-fetch {
+        font-size: 12px;
+        padding: 6px 12px;
+        border-radius: 6px;
+        border: 1px solid var(--border);
+        background: white;
+        cursor: pointer;
+        font-family: var(--sans);
+        color: var(--text);
+        white-space: nowrap;
+        flex-shrink: 0;
+      }
+      .btn-rq-fetch:hover { border-color: var(--ink); }
+      .rq-fetch-status {
+        font-size: 11px;
+        min-height: 16px;
+        color: var(--muted);
+      }
+      .rq-fetch-status.success { color: var(--success); }
+      .rq-fetch-status.error   { color: var(--danger); }
+
+      /* Utility buttons (edit mode) */
+      .rq-edit-utils {
+        display: flex;
+        gap: 6px;
+        flex-shrink: 0;
+        flex-wrap: wrap;
+      }
+      .btn-rq-util {
+        font-size: 12px;
+        color: #444;
+        background: none;
+        border: 1px solid #bbb;
+        border-radius: 4px;
+        cursor: pointer;
+        font-family: var(--sans);
+        padding: 3px 8px;
+        white-space: nowrap;
+      }
+      .btn-rq-util:hover { border-color: var(--ink); color: var(--ink); }
+
+      /* Action bar grayed in edit mode */
+      .rq-card-actions.is-editing button {
+        opacity: 0.3;
+        pointer-events: none;
+      }
+
+      /* Sticky save bar inside result column */
+      .rq-save-bar {
+        position: sticky;
+        bottom: 0;
+        background: #fff;
+        padding: 10px 0 2px;
+        border-top: 1px solid #e5e5e3;
+        flex-shrink: 0;
+        margin-top: auto;
+      }
+      .rq-save-bar .btn-rq-save { width: 100%; }
+
       .rq-stamp {
         position: absolute;
         top: 10px;
@@ -1216,12 +1370,11 @@
       .rq-stamp.stamp-lo-taom { background: var(--danger); }
 
       .rq-nav {
-        height: 60px;
+        height: 40px;
         display: flex;
         align-items: center;
         justify-content: center;
         gap: 12px;
-        padding: 0 24px;
         direction: ltr;
       }
       .rq-arrow {
@@ -1677,11 +1830,13 @@
           <span class="queue-header-counter" id="queue-header-counter">טוען...</span>
           <button class="btn-queue-action" id="btn-skip-to-summary">דלג לסיכום ←</button>
         </div>
-        <div class="queue-stage" id="queue-stage"></div>
-        <div class="rq-nav" id="rq-nav">
-          <button class="rq-arrow" id="rq-arrow-prev" aria-label="הקודם">→</button>
-          <div class="rq-dots" id="rq-dots"></div>
+        <div class="rq-stage-wrap">
           <button class="rq-arrow" id="rq-arrow-next" aria-label="הבא">←</button>
+          <div class="queue-stage" id="queue-stage"></div>
+          <button class="rq-arrow" id="rq-arrow-prev" aria-label="הקודם">→</button>
+        </div>
+        <div class="rq-nav" id="rq-nav">
+          <div class="rq-dots" id="rq-dots"></div>
         </div>
       </div>
       <!-- /screen-review -->
@@ -1690,7 +1845,7 @@
       <div id="screen-summary" class="screen">
         <div class="queue-header" id="summary-header">
           <span class="queue-header-counter" id="summary-header-counter"></span>
-          <button class="btn-queue-action" id="btn-go-review" disabled>עריכת פריטים ←</button>
+          <button class="btn-queue-action" id="btn-go-review" disabled>עריכת פריטים →</button>
         </div>
         <div class="shell">
           <div class="seg-bar-wrap">
@@ -1744,16 +1899,24 @@
     <!-- /app-body -->
 
     <script type="module">
-      import { processFilenames, IMAGE_EXTENSIONS } from "./lookup.js";
+      import { processFilenames, IMAGE_EXTENSIONS, fetchFromUrl } from "./lookup.js";
 
       // ════════════════════════════════════════════════════════════
       //  UTILITIES
       // ════════════════════════════════════════════════════════════
       let fileObjectMap = {}; // filename → File object (from folder picker)
       let runTitle = ""; // user-supplied title for the run (from "כותרת" field)
-      const thumbnailUrls = {}; // filename → cached blob URL
+      const thumbnailUrls = {}; // filename → cached blob URL (current session)
+      let localThumbCache = {}; // filename → blob URL pre-fetched from IndexedDB (loaded runs)
       let fileEntries = []; // [{id, name, file, invalid}]
       let nextEntryId = 0;
+
+      let thumbDb = null;
+      (function openThumbDb() {
+        const req = indexedDB.open('copyright_tool_thumbs', 1);
+        req.onupgradeneeded = (e) => e.target.result.createObjectStore('thumbs');
+        req.onsuccess = (e) => { thumbDb = e.target.result; };
+      })();
 
       function showScreen(id) {
         document
@@ -1916,6 +2079,7 @@
           localStorage.setItem(STORAGE_KEY, JSON.stringify(runs));
         } catch {}
         if (activeRunId === id) activeRunId = null;
+        deleteRunThumbs(id);
         renderSidebar();
       }
 
@@ -1924,10 +2088,11 @@
           localStorage.removeItem(STORAGE_KEY);
         } catch {}
         activeRunId = null;
+        clearAllThumbs();
         renderSidebar();
       }
 
-      function loadRunById(id) {
+      async function loadRunById(id) {
         const run = loadRuns().find((r) => r.id === id);
         if (!run) return;
         activeRunId = id;
@@ -1958,11 +2123,19 @@
           fileEntries = [];
           nextEntryId = 0;
           fileObjectMap = {};
+          localThumbCache = {};
           runTitle = run.label || "";
           document.getElementById("run-title").value = runTitle;
           renderFileEntries();
           showScreen("screen-setup");
         } else {
+          // Pre-fetch source thumbnails from IndexedDB so renderCarouselItemCard stays synchronous
+          localThumbCache = {};
+          await Promise.all(reviewState.rows.map(async (row) => {
+            const fname = row["שם קובץ"];
+            const blob = await loadThumb(id, fname);
+            if (blob) localThumbCache[fname] = URL.createObjectURL(blob);
+          }));
           renderQueueScreen();
           if (targetScreen === "screen-summary") buildSummaryFromReview();
           showScreen(targetScreen);
@@ -2279,6 +2452,7 @@
         fileEntries = [];
         nextEntryId = 0;
         fileObjectMap = {};
+        localThumbCache = {};
         runTitle = "";
         document.getElementById("run-title").value = "";
         document.getElementById("folder-input").value = "";
@@ -2373,6 +2547,14 @@
             );
 
             initReview(results, summary.potentialDuplicates, summary);
+            await Promise.all(reviewState.rows.map(async (row) => {
+              const fname = row["שם קובץ"];
+              const file = fileObjectMap[fname];
+              if (file) {
+                const blob = await generateThumbnail(file);
+                await saveThumb(activeRunId, fname, blob);
+              }
+            }));
             saveRun(reviewState);
             showScreen("screen-review");
           } catch (e) {
@@ -2413,6 +2595,7 @@
         rawStems: {},
       };
       let currentCardIdx = 0;
+      let cardEditMode = false;
 
       function computeStatus(row, dupeGroups, notedItems) {
         if (!row["מקור"] || !row["סוג זכויות היוצרים"]) return "לא זוהה";
@@ -2483,6 +2666,7 @@
       // ── Queue screen ──────────────────────────────────────────────────────────────
 
       function renderQueueScreen() {
+        cardEditMode = false;
         recomputeAllStatuses();
         renderQueueHeader();
         currentCardIdx = 0;
@@ -2551,9 +2735,21 @@
       function navigateToCard(idx) {
         const items = buildCarouselItems();
         if (idx < 0 || idx >= items.length) return;
+        cardEditMode = false;
         currentCardIdx = idx;
         renderCarousel();
         renderQueueHeader();
+      }
+
+      function redrawCard() {
+        const items = buildCarouselItems();
+        const item  = items[currentCardIdx];
+        const stage = document.getElementById('queue-stage');
+        if (!item) { stage.innerHTML = ''; return; }
+        stage.innerHTML = item.type === 'dupe'
+          ? renderDupeCard(item.data)
+          : renderCarouselItemCard(item.data);
+        attachCarouselListeners(items);
       }
 
       function advanceToNextUnstamped() {
@@ -2568,29 +2764,35 @@
             navigateToCard(i); return;
           }
         }
+        if (reviewState.rows.length > 0 && reviewState.rows.every(r => r._stamp !== null)) {
+          buildSummaryFromReview();
+          showScreen("screen-summary");
+          return;
+        }
         renderCarousel();
         renderQueueHeader();
       }
 
+      function replaceWithPlaceholder(el, msg) {
+        el.parentElement.innerHTML = '<div class="rq-thumb-placeholder"><span>' + msg + '</span></div>';
+      }
+
       function renderCarouselItemCard(row) {
         const fname = row["שם קובץ"];
-        const localThumb = getThumbnailUrl(fname);
+        const localThumb = canPreview(fname)
+          ? (getThumbnailUrl(fname) || localThumbCache[fname] || null)
+          : null;
         const apiThumb = row._thumbnailUrl;
 
         const sourceThumbHtml = localThumb
           ? `<div class="rq-thumb-source"><img src="${escHtml(localThumb)}" loading="lazy"
-               onerror="this.parentElement.innerHTML='<div class=\\"rq-thumb-placeholder\\"><span>🖼</span><span>no available image</span></div>'"></div>`
-          : `<div class="rq-thumb-source"><div class="rq-thumb-placeholder"><span>🖼</span><span>no available image</span></div></div>`;
+               onerror="replaceWithPlaceholder(this,'no source thumbnail')"></div>`
+          : `<div class="rq-thumb-source"><div class="rq-thumb-placeholder"><span>no source thumbnail</span></div></div>`;
 
-        const sourceUrl = escHtml(row["קישור למדיה במקור"] || "");
         const apiThumbHtml = apiThumb
           ? `<div class="rq-thumb-api"><img src="${escHtml(apiThumb)}" loading="lazy"
-               onerror="this.parentElement.innerHTML='${sourceUrl
-                 ? `<a class=\\"rq-thumb-api-link\\" href=\\"${sourceUrl}\\" target=\\"_blank\\">צפה בתמונה במקור ↗</a>`
-                 : `<div class=\\"rq-thumb-placeholder\\"><span>🖼</span></div>`}'"></div>`
-          : sourceUrl
-            ? `<div class="rq-thumb-api"><a class="rq-thumb-api-link" href="${sourceUrl}" target="_blank">צפה בתמונה במקור ↗</a></div>`
-            : `<div class="rq-thumb-api"><div class="rq-thumb-placeholder"><span>🖼</span></div></div>`;
+               onerror="this.parentElement.style.display='none'"></div>`
+          : `<div class="rq-thumb-api"><div class="rq-thumb-placeholder"><span>no result image</span></div></div>`;
 
         const stemForSearch = fname.replace(/\.[^.]+$/, "").replace(/[_\-]/g, " ");
         const searchUrl = `https://www.google.com/search?tbm=isch&q=${encodeURIComponentSafe(stemForSearch)}`;
@@ -2637,27 +2839,49 @@
           ? `<div class="rq-stamp ${row._stamp === "תואם" ? "stamp-taom" : "stamp-lo-taom"}">${row._stamp === "תואם" ? "✓" : "✕"}</div>`
           : "";
 
+        const editUtilsHtml = cardEditMode ? `
+          <div class="rq-edit-utils">
+            <button class="btn-rq-util" data-action="clear">נקה שדות</button>
+            <button class="btn-rq-util" data-action="reset">החזר לתוצאת החיפוש</button>
+            <button class="btn-rq-util" data-action="toggle-paste">הדבק קישור ▾</button>
+          </div>
+          <div class="rq-link-paste-row" style="display:none">
+            <input class="rq-link-input" type="text" dir="ltr"
+              placeholder="הדבק קישור (Wikimedia, LOC, Pexels, Shutterstock)..." />
+            <button class="btn-rq-fetch">טען ←</button>
+          </div>
+          <div class="rq-fetch-status" style="display:none"></div>` : '';
+
+        const saveBtnHtml = cardEditMode ? `
+          <div class="rq-save-bar">
+            <button class="btn-rq-save" data-fname="${escHtml(fname)}">שמור</button>
+          </div>` : '';
+
+        const resultColClass = cardEditMode ? 'rq-col-result' : 'rq-col-result is-read-mode';
+
+        const actionsHtml = `
+          <button class="btn-rq-confirm" data-fname="${escHtml(fname)}"${cardEditMode ? ' disabled' : ''}>אשר ✓</button>
+          <button class="btn-rq-edit" data-fname="${escHtml(fname)}"${cardEditMode ? ' disabled' : ''}>תקן</button>
+          <button class="btn-rq-delete" data-fname="${escHtml(fname)}"${cardEditMode ? ' disabled' : ''}>מחק</button>`;
+
         return `<div class="rq-card" data-fname="${escHtml(fname)}">
   ${stampHtml}
   <div class="rq-card-cols">
     <div class="rq-col-source">
-      <span class="rq-col-label">מקור</span>
       ${sourceThumbHtml}
       <span class="rq-fname">${escHtml(fname)}</span>
       <a class="rq-google-link" href="${escHtml(searchUrl)}" target="_blank">🔍 חפש ב-Google Images</a>
     </div>
-    <div class="rq-col-result">
-      <span class="rq-col-label">תוצאה</span>
+    <div class="${resultColClass}">
       ${apiThumbHtml}
+      ${editUtilsHtml}
       ${fieldsHtml}
       ${notesHtml}
-      <button class="rq-reset-original" data-fname="${escHtml(fname)}">↺ איפוס לנתוני המקור</button>
+      ${saveBtnHtml}
     </div>
   </div>
-  <div class="rq-card-actions">
-    <button class="btn-rq-taom" data-fname="${escHtml(fname)}">✓ תואם</button>
-    <button class="btn-rq-lo-taom" data-fname="${escHtml(fname)}">✕ לא תואם</button>
-    <button class="btn-rq-reset" data-fname="${escHtml(fname)}">איפוס</button>
+  <div class="rq-card-actions${cardEditMode ? ' is-editing' : ''}">
+    ${actionsHtml}
   </div>
 </div>`;
       }
@@ -2667,7 +2891,7 @@
         const panelsHtml = g.files
           .map((fn) => {
             const thumbSrc =
-              getThumbnailUrl(fn) ||
+              (canPreview(fn) ? getThumbnailUrl(fn) : null) ||
               (reviewState.rows.find((r) => r["שם קובץ"] === fn) || {})
                 ._thumbnailUrl;
             const thumbHtml = thumbSrc
@@ -2714,7 +2938,8 @@
           });
         });
 
-        stage.querySelectorAll(".btn-rq-taom").forEach((btn) => {
+        // ── Read mode: confirm (אשר) ──
+        stage.querySelectorAll(".btn-rq-confirm").forEach((btn) => {
           btn.addEventListener("click", () => {
             const row = reviewState.rows.find((r) => r["שם קובץ"] === btn.dataset.fname);
             if (!row) return;
@@ -2725,45 +2950,127 @@
           });
         });
 
-        stage.querySelectorAll(".btn-rq-lo-taom").forEach((btn) => {
-          btn.addEventListener("click", () => {
-            const row = reviewState.rows.find((r) => r["שם קובץ"] === btn.dataset.fname);
-            if (!row) return;
-            row._stamp = "לא תואם";
-            renderCarousel();
-            renderQueueHeader();
-            setTimeout(() => advanceToNextUnstamped(), 350);
-          });
-        });
-
-        stage.querySelectorAll(".btn-rq-reset").forEach((btn) => {
+        // ── Read mode: edit (תקן) ──
+        stage.querySelectorAll(".btn-rq-edit").forEach((btn) => {
           btn.addEventListener("click", () => {
             const row = reviewState.rows.find((r) => r["שם קובץ"] === btn.dataset.fname);
             if (!row) return;
             row._stamp = null;
+            cardEditMode = true;
+            redrawCard();
+            renderQueueHeader();
+          });
+        });
+
+        // ── Read mode: delete (מחק) ──
+        stage.querySelectorAll(".btn-rq-delete").forEach((btn) => {
+          btn.addEventListener("click", () => {
+            if (!confirm("למחוק את הפריט הזה לצמיתות?")) return;
+            const fname = btn.dataset.fname;
+            reviewState.rows = reviewState.rows.filter((r) => r["שם קובץ"] !== fname);
+            recomputeAllStatuses();
+            const newItems = buildCarouselItems();
+            if (currentCardIdx >= newItems.length) currentCardIdx = Math.max(0, newItems.length - 1);
             renderCarousel();
             renderQueueHeader();
           });
         });
 
-        stage.querySelectorAll(".rq-reset-original").forEach((btn) => {
+        // ── Edit mode: save (שמור) ──
+        stage.querySelectorAll(".btn-rq-save").forEach((btn) => {
           btn.addEventListener("click", () => {
             const fname = btn.dataset.fname;
             const row = reviewState.rows.find((r) => r["שם קובץ"] === fname);
-            if (!row || !row._originalData) return;
-            const orig = row._originalData;
-            const fieldsToRestore = [
-              "שם פריט", "מקור", "קישור למדיה במקור", "סוג זכויות היוצרים",
-              "יש צורך במתן קרדיט?", "איך לרשום את הקרדיט?",
-              "מותר לשימוש מסחרי?", "מותר לשימוש חיצוני?", "קבצים נוספים",
-              "_isRawFilename", "_unknownLicense", "_notes", "_found", "_thumbnailUrl",
-            ];
-            for (const k of fieldsToRestore) row[k] = orig[k];
+            if (!row) return;
+            // field values already updated by [data-field] listeners
             recomputeAllStatuses();
-            renderCarousel();
+            cardEditMode = false;
+            redrawCard();
             renderQueueHeader();
           });
         });
+
+        // ── Edit mode: utility buttons ──
+        stage.querySelectorAll(".btn-rq-util").forEach((btn) => {
+          btn.addEventListener("click", () => {
+            if (btn.dataset.action === "toggle-paste") {
+              const pasteRow = stage.querySelector(".rq-link-paste-row");
+              const statusEl = stage.querySelector(".rq-fetch-status");
+              const isOpen   = pasteRow.style.display !== "none";
+              pasteRow.style.display = isOpen ? "none" : "flex";
+              if (statusEl) statusEl.style.display = isOpen ? "none" : "block";
+              btn.textContent = isOpen ? "הדבק קישור ▾" : "הדבק קישור ▴";
+              if (!isOpen) stage.querySelector(".rq-link-input")?.focus();
+              return;
+            }
+            const item = buildCarouselItems()[currentCardIdx];
+            if (!item || item.type !== "item") return;
+            const row = item.data;
+            if (btn.dataset.action === "clear") {
+              const csvFields = [
+                "שם פריט", "מקור", "קישור למדיה במקור", "סוג זכויות היוצרים",
+                "יש צורך במתן קרדיט?", "איך לרשום את הקרדיט?",
+                "מותר לשימוש מסחרי?", "מותר לשימוש חיצוני?",
+              ];
+              for (const k of csvFields) row[k] = "";
+              recomputeAllStatuses();
+              redrawCard();
+              renderQueueHeader();
+            } else if (btn.dataset.action === "reset") {
+              if (!row._originalData) return;
+              const fieldsToRestore = [
+                "שם פריט", "מקור", "קישור למדיה במקור", "סוג זכויות היוצרים",
+                "יש צורך במתן קרדיט?", "איך לרשום את הקרדיט?",
+                "מותר לשימוש מסחרי?", "מותר לשימוש חיצוני?", "קבצים נוספים",
+                "_isRawFilename", "_unknownLicense", "_notes", "_found", "_thumbnailUrl",
+              ];
+              for (const k of fieldsToRestore) row[k] = row._originalData[k];
+              recomputeAllStatuses();
+              redrawCard();
+              renderQueueHeader();
+            }
+          });
+        });
+
+        // ── Edit mode: URL fetch (טען) ──
+        const fetchBtn   = stage.querySelector(".btn-rq-fetch");
+        const linkInput  = stage.querySelector(".rq-link-input");
+        const statusEl   = stage.querySelector(".rq-fetch-status");
+        if (fetchBtn && linkInput && statusEl) {
+          async function doFetch() {
+            const url = linkInput.value.trim();
+            if (!url) return;
+            statusEl.style.display = "block";
+            statusEl.textContent = "טוען...";
+            statusEl.className = "rq-fetch-status";
+            const item = buildCarouselItems()[currentCardIdx];
+            if (!item || item.type !== "item") return;
+            const row = item.data;
+            try {
+              const result = await fetchFromUrl(url);
+              const fetchedFields = [
+                "שם פריט", "מקור", "קישור למדיה במקור", "סוג זכויות היוצרים",
+                "יש צורך במתן קרדיט?", "איך לרשום את הקרדיט?",
+                "מותר לשימוש מסחרי?", "מותר לשימוש חיצוני?",
+                "_isRawFilename", "_unknownLicense", "_notes", "_found", "_thumbnailUrl",
+              ];
+              for (const k of fetchedFields) row[k] = result[k];
+              row._found = true;
+              recomputeAllStatuses();
+              // brief success flash before redraw replaces the status element
+              statusEl.textContent = "✓ נטען בהצלחה";
+              statusEl.className = "rq-fetch-status success";
+              await new Promise((r) => setTimeout(r, 800));
+              redrawCard();
+              renderQueueHeader();
+            } catch (_) {
+              statusEl.textContent = "לא ניתן לחלץ מידע מהקישור הזה. ניתן למלא ידנית.";
+              statusEl.className = "rq-fetch-status error";
+            }
+          }
+          fetchBtn.addEventListener("click", doFetch);
+          linkInput.addEventListener("keydown", (e) => { if (e.key === "Enter") doFetch(); });
+        }
 
         stage.querySelectorAll(".btn-dupe-merge").forEach((btn) => {
           btn.addEventListener("click", () => {
@@ -2814,11 +3121,74 @@
 
       // ── Thumbnail ─────────────────────────────────────────────────────────────────
 
+      const NO_PREVIEW_EXTS = new Set(['heic', 'heif', 'eps']);
+      function canPreview(filename) {
+        const ext = (filename.split('.').pop() || '').toLowerCase();
+        return !NO_PREVIEW_EXTS.has(ext);
+      }
+
       function getThumbnailUrl(fname) {
         if (!thumbnailUrls[fname] && fileObjectMap[fname]) {
           thumbnailUrls[fname] = URL.createObjectURL(fileObjectMap[fname]);
         }
         return thumbnailUrls[fname] || null;
+      }
+
+      async function generateThumbnail(file, maxWidth = 200) {
+        return new Promise((resolve) => {
+          const img = new Image();
+          const url = URL.createObjectURL(file);
+          img.onload = () => {
+            const scale = Math.min(1, maxWidth / img.naturalWidth);
+            const w = Math.round(img.naturalWidth * scale);
+            const h = Math.round(img.naturalHeight * scale);
+            const canvas = document.createElement('canvas');
+            canvas.width = w; canvas.height = h;
+            canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+            URL.revokeObjectURL(url);
+            canvas.toBlob((blob) => resolve(blob), 'image/jpeg', 0.6);
+          };
+          img.onerror = () => { URL.revokeObjectURL(url); resolve(null); };
+          img.src = url;
+        });
+      }
+
+      function saveThumb(runId, fname, blob) {
+        if (!thumbDb || !blob) return;
+        return new Promise((resolve) => {
+          const tx = thumbDb.transaction('thumbs', 'readwrite');
+          tx.objectStore('thumbs').put(blob, `${runId}_${fname}`);
+          tx.oncomplete = resolve; tx.onerror = resolve;
+        });
+      }
+
+      function loadThumb(runId, fname) {
+        if (!thumbDb) return Promise.resolve(null);
+        return new Promise((resolve) => {
+          const tx = thumbDb.transaction('thumbs', 'readonly');
+          const req = tx.objectStore('thumbs').get(`${runId}_${fname}`);
+          req.onsuccess = () => resolve(req.result || null);
+          req.onerror = () => resolve(null);
+        });
+      }
+
+      function deleteRunThumbs(runId) {
+        if (!thumbDb) return;
+        const tx = thumbDb.transaction('thumbs', 'readwrite');
+        const store = tx.objectStore('thumbs');
+        const req = store.openCursor();
+        req.onsuccess = (e) => {
+          const cursor = e.target.result;
+          if (!cursor) return;
+          if (String(cursor.key).startsWith(`${runId}_`)) cursor.delete();
+          cursor.continue();
+        };
+      }
+
+      function clearAllThumbs() {
+        if (!thumbDb) return;
+        const tx = thumbDb.transaction('thumbs', 'readwrite');
+        tx.objectStore('thumbs').clear();
       }
 
       function escRowId(fname) {
